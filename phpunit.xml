@@ -3,8 +3,9 @@
     <testsuite name='all'>
         <directory suffix='Test.php'>./test/</directory>
     </testsuite>
-
-    <log type="coverage-clover" target="build/logs/clover.xml"/>
+    <logging>
+        <log type="coverage-clover" target="build/logs/clover.xml"/>
+    </logging>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">src</directory>
