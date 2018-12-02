@@ -30,9 +30,37 @@ class DatabaseTest extends TestCase
         $this->assertTrue($this->driver->select_db($this->dbName));
     }
 
+    public function test__constructWithDriverFailureShouldThrow()
+    {
+        $observer = $this->getMockBuilder(mysqli::class)->setMethods(['query'])->getMock();
+        $observer->expects($this->once())
+            ->method('query')->will($this->returnValue(false));
+        $this->expectException(Exception::class);
+        $this->dBHandler = new \src\Database($observer, $this->dbName);
+    }
+
     public function testDropDatabase()
     {
         $this->dBHandler->dropDatabase();
         $this->assertFalse($this->driver->select_db($this->dbName));
+    }
+
+    public function testExist()
+    {
+        $this->assertTrue($this->dBHandler->exist());
+    }
+
+    public function testGetDBName()
+    {
+        $this->assertEquals($this->dBHandler->getDBName(), $this->dbName);
+    }
+
+    public function tearDown(){
+        unset($this->dBHandler);
+    }
+
+    public function __destruct()
+    {
+        unset($this->driver);
     }
 }
