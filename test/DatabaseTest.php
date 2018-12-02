@@ -1,40 +1,38 @@
 <?php
-
 /**
- *  test case.
+ * Created by PhpStorm.
+ * User: MSI-GP60
+ * Date: 12/2/2018
+ * Time: 11:04 AM
  */
 use PHPUnit\Framework\TestCase;
-use src\Database;
+require_once(str_replace("test", "src", __DIR__."/").'Database.php');
 
 class DatabaseTest extends TestCase
 {
 
     private $dBHandler;
-    /**
-     * Prepares the environment before running a test.
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->dBHandler = Database::create();
-        // TODO Auto-generated DatabaseTest::setUp()
+    private $driver;
+    private $dbName;
+    public function __construct(){
+        parent::__construct();
+        $this->driver = new mysqli("127.0.0.1", "root", "");
+        $this->dbName = "Expenses";
     }
 
-    /**
-     * Cleans up the environment after running a test.
-     */
-    protected function tearDown()
-    {
-        // TODO Auto-generated DatabaseTest::tearDown()
-        parent::tearDown();
+    public function setUp(){
+        $this->dBHandler = new \src\Database($this->driver, $this->dbName);
     }
 
-    /**
-     * Constructs the test case.
-     */
-    public function __construct()
+    public function test__construct()
     {
-        // TODO Auto-generated constructor
+        $this->assertSame($this->dBHandler->getDriver(), $this->driver);
+        $this->assertTrue($this->driver->select_db($this->dbName));
+    }
+
+    public function testDropDatabase()
+    {
+        $this->dBHandler->dropDatabase();
+        $this->assertFalse($this->driver->select_db($this->dbName));
     }
 }
-
