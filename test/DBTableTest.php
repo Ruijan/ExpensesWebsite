@@ -13,18 +13,39 @@ use PHPUnit\Framework\TestCase;
 
 class DBTableTest extends TestCase
 {
-    private $table;
-    private $driver;
-    private $database;
-    private $name;
+    protected $table;
+    protected $driver;
+    protected $database;
+    protected $name;
+    protected $columns = ["ID" => "int(11)"];
     public function setUp(){
         $this->driver = new mysqli("127.0.0.1", "root", "");
         $this->database = new \src\Database($this->driver, "expenses");
         $this->name = "test";
+        $this->createTable();
+    }
+
+    public function createTable(){
         $this->table = new \src\DBTable($this->database, $this->name);
     }
+
     public function test__construct(){
         $this->assertTrue($this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 ") !== FALSE);
+        $this->checkTableHeaders();
+    }
+
+    public function checkTableHeaders(){
+        $columns = $this->driver->query("SHOW COLUMNS FROM ".$this->name);
+        $existingColumn = [];
+        foreach($this->columns as $column => $value) {
+            $existingColumn[$column] = 0;
+        }
+        $this->assertEquals($columns->num_rows, count($this->columns));
+        foreach($columns as $column){
+            $this->assertEquals($column["Type"], $this->columns[$column["Field"]]);
+            $existingColumn[$column["Field"]] += 1;
+            $this->assertEquals($existingColumn[$column["Field"]], 1);
+        }
     }
 
     public function testCouldNotConstructTable(){
