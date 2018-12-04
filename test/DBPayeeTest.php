@@ -6,31 +6,26 @@
  * Time: 9:13 PM
  */
 
-require_once(str_replace("test", "src", __DIR__."/").'DBPayer.php');
+require_once(str_replace("test", "src", __DIR__."/").'DBPayee.php');
 use PHPUnit\Framework\TestCase;
 
-class DBPayerTest extends TestCase
+class DBPayeeTest extends TestCase
 {
-    private $categories;
+    private $payee;
     private $driver;
     private $database;
     private $columns = ["ID" => "int(11)",
-        "FIRST_NAME" => "char(50)",
         "NAME" => "char(50)",
-        "EMAIL" => "char(50)",
-        "USERNAME" => "char(50)",
-        "PASSWORD" => "char(50)",
-        "REGISTERED_DATE" => "datetime",
-        "LAST_CONNECTION" => "datetime"];
+        "ADDED_DATE" => "datetime"];
 
     public function setUp(){
         $this->driver = new mysqli("127.0.0.1", "root", "");
         $this->database = new \src\Database($this->driver, "expenses");
-        $this->categories = new \src\DBPayer($this->database);
+        $this->payee = new \src\DBPayee($this->database);
     }
     public function test__construct(){
-        $this->assertTrue($this->driver->query("SELECT 1 FROM payers LIMIT 1 ") !== FALSE);
-        $columns = $this->driver->query("SHOW COLUMNS FROM payers");
+        $this->assertTrue($this->driver->query("SELECT 1 FROM payees LIMIT 1 ") !== FALSE);
+        $columns = $this->driver->query("SHOW COLUMNS FROM payees");
         $existingColumn = [];
         foreach($this->columns as $column => $value) {
             $existingColumn[$column] = 0;
@@ -44,8 +39,8 @@ class DBPayerTest extends TestCase
     }
 
     public function tearDown(){
-        if($this->driver->query("SELECT 1 FROM payer LIMIT 1 ")) {
-            $this->payer->dropTable();
+        if($this->driver->query("SELECT 1 FROM payees LIMIT 1 ")) {
+            $this->payee->dropTable();
         }
     }
 }
