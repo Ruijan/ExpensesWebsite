@@ -7,7 +7,7 @@
  */
 
 require_once(str_replace("test", "src", __DIR__."/").'DBTable.php');
-require_once(str_replace("test", "src", __DIR__."/").'Database.php');
+
 require_once("TableCreationTest.php");
 
 class DBTableTest extends TableCreationTest
@@ -23,7 +23,7 @@ class DBTableTest extends TableCreationTest
         $this->table = new \src\DBTable($this->database, $this->name);
     }
 
-    public function testCouldNotConstructTable(){
+    public function testCouldNotConstructTableTwice(){
         $this->driver = new mysqli("127.0.0.1", "root", "");
         $this->database = new \src\Database($this->driver, "expenses");
         $this->expectException(Exception::class);
