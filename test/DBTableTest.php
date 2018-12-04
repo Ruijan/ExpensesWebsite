@@ -8,23 +8,19 @@
 
 require_once(str_replace("test", "src", __DIR__."/").'DBTable.php');
 require_once(str_replace("test", "src", __DIR__."/").'Database.php');
+require_once("TableCreationTest.php");
 
-use PHPUnit\Framework\TestCase;
-
-class DBTableTest extends TestCase
+class DBTableTest extends TableCreationTest
 {
-    private $table;
-    private $driver;
-    private $database;
-    private $name;
-    public function setUp(){
-        $this->driver = new mysqli("127.0.0.1", "root", "");
-        $this->database = new \src\Database($this->driver, "expenses");
+    public function setUp()
+    {
         $this->name = "test";
-        $this->table = new \src\DBTable($this->database, $this->name);
+        $this->columns = ["ID" => "int(11)"];
+        parent::setUp();
     }
-    public function test__construct(){
-        $this->assertTrue($this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 ") !== FALSE);
+
+    public function createTable(){
+        $this->table = new \src\DBTable($this->database, $this->name);
     }
 
     public function testCouldNotConstructTable(){
@@ -45,11 +41,5 @@ class DBTableTest extends TestCase
         $this->expectException(Exception::class);
         $this->table->dropTable();
         $this->assertFalse($this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 "));
-    }
-
-    public function tearDown(){
-        if($this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 ")) {
-            $this->table->dropTable();
-        }
     }
 }
