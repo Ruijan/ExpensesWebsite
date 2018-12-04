@@ -14,6 +14,7 @@ class ExpenseTest extends TestCase
     private $expense;
     private $expenseArray = array(
         "id" => 1,
+        "payer" => "Julien",
         "date" => "2018-01-01 00:00:00",
         "location" => "Lausanne",
         "payee" => "Migros",
@@ -26,6 +27,7 @@ class ExpenseTest extends TestCase
 
     private $expenseArrayWithCapital = array(
         "ID" => 1,
+        "payer" => "Julien",
         "Date" => "2018-01-01 00:00:00",
         "Location" => "Lausanne",
         "Payee" => "Migros",

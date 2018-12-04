@@ -21,7 +21,6 @@ class DBExpensesTest extends TestCase
         $this->expenses = new \src\DBExpenses($this->database);
     }
     public function test__construct(){
-
         $this->assertTrue($this->driver->query("SELECT 1 FROM expenses LIMIT 1 ") !== FALSE);
     }
 
@@ -39,7 +38,8 @@ class DBExpensesTest extends TestCase
     }
 
     public function tearDown(){
-        $this->expenses->dropTable();
+        if($this->driver->query("SELECT 1 FROM expenses LIMIT 1 ")) {
+            $this->expenses->dropTable();
+        }
     }
-
 }

@@ -14,6 +14,8 @@ class Expense
     protected $id;
     protected $date;
     protected $location;
+    protected $payer;
+    protected $payerID;
     protected $payee;
     protected $payeeID;
     protected $category;
@@ -38,6 +40,9 @@ class Expense
             }
             elseif($key == "location"){
                 $this->location = $value;
+            }
+            elseif($key == "payer"){
+                $this->payer = $value;
             }
             elseif($key == "payee"){
                 $this->payee = $value;
@@ -65,6 +70,7 @@ class Expense
             "id" => $this->id,
             "date" => $this->date,
             "location" => $this->location,
+            "payer" => $this->payer,
             "payee" => $this->payee,
             "category" => $this->category,
             "sub_category" => $this->subCategory,

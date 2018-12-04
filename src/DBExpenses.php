@@ -35,6 +35,8 @@ class DBExpenses
 
     public function dropTable(){
         $query = "DROP TABLE expenses";
-        $this->driver->query($query);
+        if ($this->driver->query($query) === FALSE) {
+            throw new \Exception("Couldn't drop table expenses in ".$this->database->getDBName().". Reason: ".$this->driver->error_list[0]["error"]);
+        }
     }
 }
