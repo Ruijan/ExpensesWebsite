@@ -7,30 +7,20 @@
  */
 
 namespace src;
+require_once ("DBTable.php");
 
-
-class DBCategories
+class DBCategories extends DBTable
 {
-    private $database;
-    private $driver;
     public function __construct($database){
-        $this->driver = $database->getDriver();
-        $this->database = $database;
-        $query = "CREATE TABLE categories (
-                        ID int(11) AUTO_INCREMENT UNIQUE,
-                        NAME char(50) NOT NULL,
-                        PAYEE_ID int(11) NOT NULL,
-                        ADDED_DATE datetime DEFAULT '2018-01-01 00:00:00',
-                        PRIMARY KEY (ID))";
-        if ($this->driver->query($query) === FALSE) {
-            throw new \Exception("Couldn't create table categories in ".$this->database->getDBName().". Reason: ".$this->driver->error_list[0]["error"]);
-        }
+        parent::__construct($database, "categories");
     }
 
-    public function dropTable(){
-        $query = "DROP TABLE categories";
-        if ($this->driver->query($query) === FALSE) {
-            throw new \Exception("Couldn't drop table categories in ".$this->database->getDBName().". Reason: ".$this->driver->error_list[0]["error"]);
-        }
+    public function getTableHeader()
+    {
+        return "ID int(11) AUTO_INCREMENT UNIQUE,
+                        NAME char(50) NOT NULL,
+                        PAYER_ID int(11) NOT NULL,
+                        ADDED_DATE datetime DEFAULT '2018-01-01 00:00:00',
+                        PRIMARY KEY (ID)";
     }
 }

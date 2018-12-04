@@ -14,28 +14,29 @@ class DBCategoryTest extends TestCase
     private $categories;
     private $driver;
     private $database;
+    private $columns = ["ID" => "int(11)",
+        "NAME" => "char(50)",
+        "PAYER_ID" => "int(11)",
+        "ADDED_DATE" => "datetime"];
 
     public function setUp(){
         $this->driver = new mysqli("127.0.0.1", "root", "");
         $this->database = new \src\Database($this->driver, "expenses");
         $this->categories = new \src\DBCategories($this->database);
     }
-
     public function test__construct(){
         $this->assertTrue($this->driver->query("SELECT 1 FROM categories LIMIT 1 ") !== FALSE);
-    }
-
-    public function testCouldNotConstructTable(){
-        $this->driver = new mysqli("127.0.0.1", "root", "");
-        $this->database = new \src\Database($this->driver, "expenses");
-        $this->expectException(Exception::class);
-        $this->categories = new \src\DBCategories($this->database);
-        $this->assertTrue($this->driver->query("SELECT 1 FROM categories LIMIT 1 "));
-    }
-
-    public function testDropTable(){
-        $this->categories->dropTable();
-        $this->assertFalse($this->driver->query("SELECT 1 FROM categories LIMIT 1 "));
+        $columns = $this->driver->query("SHOW COLUMNS FROM categories");
+        $existingColumn = [];
+        foreach($this->columns as $column => $value) {
+            $existingColumn[$column] = 0;
+        }
+        $this->assertEquals($columns->num_rows, count($this->columns));
+        foreach($columns as $column){
+            $this->assertEquals($column["Type"], $this->columns[$column["Field"]]);
+            $existingColumn[$column["Field"]] += 1;
+            $this->assertEquals($existingColumn[$column["Field"]], 1);
+        }
     }
 
     public function tearDown(){
