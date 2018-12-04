@@ -32,9 +32,11 @@ class DatabaseTest extends TestCase
 
     public function test__constructWithDriverFailureShouldThrow()
     {
-        $observer = $this->getMockBuilder(mysqli::class)->setMethods(['query'])->getMock();
+        $observer = $this->getMockBuilder(mysqli::class)->setMethods(['query', 'real_escape_string'])->getMock();
         $observer->expects($this->once())
             ->method('query')->will($this->returnValue(false));
+        $observer->expects($this->once())
+            ->method('real_escape_string')->will($this->returnValue(false));
         $this->expectException(Exception::class);
         $this->dBHandler = new \src\Database($observer, $this->dbName);
     }
@@ -43,6 +45,14 @@ class DatabaseTest extends TestCase
     {
         $this->dBHandler->dropDatabase();
         $this->assertFalse($this->driver->select_db($this->dbName));
+    }
+
+    public function testDropDatabaseTwiceShouldThrow()
+    {
+        $this->expectException(Exception::class);
+        $this->dBHandler->dropDatabase();
+        $this->dBHandler->dropDatabase();
+
     }
 
     public function testExist()
