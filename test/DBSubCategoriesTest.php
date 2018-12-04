@@ -7,9 +7,9 @@
  */
 
 require_once(str_replace("test", "src", __DIR__."/").'DBSubCategories.php');
-require_once("DBTableTest.php");
+require_once("TableCreationTest.php");
 
-class DBSubCategoriesTest extends DBTableTest
+class DBSubCategoriesTest extends TableCreationTest
 {
     public function setUp(){
         parent::setUp();
