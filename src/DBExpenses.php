@@ -7,36 +7,26 @@
  */
 
 namespace src;
+require_once ("DBTable.php");
 
-
-class DBExpenses
+class DBExpenses extends DBTable
 {
-    private $database;
-    private $driver;
     public function __construct($database){
-        $this->driver = $database->getDriver();
-        $this->database = $database;
-        $query = "CREATE TABLE expenses (
-                        ID int(11) AUTO_INCREMENT UNIQUE,
-                        LOCATION char(50) NOT NULL,
-                        PAYEE_ID int(11) NOT NULL,
-                        CATEGORY_ID int(1) NOT NULL,
-                        SUB_CATEGORY_ID int(1) NOT NULL,
-                        ADDED_DATE datetime DEFAULT '2018-01-01 00:00:00',
-                        EXPENSE_DATE datetime DEFAULT '2018-01-01 00:00:00',
-                        AMOUNT double NULL,
-                        CURRENCY_ID int(1) NOT NULL,
-                        STATE int NULL,
-                        PRIMARY KEY  (ID))";
-        if ($this->driver->query($query) === FALSE) {
-            throw new \Exception("Couldn't create table expenses in ".$this->database->getDBName().". Reason: ".$this->driver->error_list[0]["error"]);
-        }
+        parent::__construct($database, "expenses");
     }
 
-    public function dropTable(){
-        $query = "DROP TABLE expenses";
-        if ($this->driver->query($query) === FALSE) {
-            throw new \Exception("Couldn't drop table expenses in ".$this->database->getDBName().". Reason: ".$this->driver->error_list[0]["error"]);
-        }
+    public function getTableHeader(){
+        return "ID int(11) AUTO_INCREMENT UNIQUE,
+            LOCATION char(50) NOT NULL,
+            PAYER_ID int(11) NOT NULL,
+            PAYEE_ID int(11) NOT NULL,
+            CATEGORY_ID int(11) NOT NULL,
+            SUB_CATEGORY_ID int(11) NOT NULL,
+            ADDED_DATE datetime DEFAULT '2018-01-01 00:00:00',
+            EXPENSE_DATE datetime DEFAULT '2018-01-01 00:00:00',
+            AMOUNT double NULL,
+            CURRENCY_ID int(11) NOT NULL,
+            STATE int NULL,
+            PRIMARY KEY  (ID)";
     }
 }
