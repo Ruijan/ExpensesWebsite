@@ -94,14 +94,13 @@ class DBExpenses extends DBTable
      */
     protected function tryGettingValueFromKey($key, $expenseProperties)
     {
-        $value = NULL;
         if ($key !== "ADDED_DATE") {
             if (isset($expenseProperties[strtolower($key)]) !== TRUE) {
                 if (strpos(strtolower($key), 'id') === FALSE) {
                     throw new \Exception($key . " should not be empty.");
                 }
-                $id = 1;
-                return $id;
+                $equivalentID = 1;
+                return $equivalentID;
             }
             return "'" . $expenseProperties[strtolower($key)] . "'";
         }
