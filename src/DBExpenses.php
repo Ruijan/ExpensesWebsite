@@ -61,9 +61,7 @@ class DBExpenses extends DBTable
     {
         $resultQuery = $this->driver->query($query);
         if ($resultQuery === FALSE) {
-            print($query);
-            print($this->driver->error);
-            throw new \Exception($this->driver->error);
+            throw new \Exception($query." Failed \n".$this->driver->error);
         }
     }
 

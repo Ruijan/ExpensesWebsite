@@ -23,4 +23,10 @@ class DBPayeeTest extends TableCreationTest
     {
         $this->table = new \src\DBPayee($this->database);
     }
+
+    /*public function testAddPayee(){
+        $this->table->addExpense($this->expense);
+        $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all()[0][0];
+        $this->assertEquals(1, $nbExpenses);
+    }*/
 }
