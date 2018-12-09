@@ -59,6 +59,8 @@ class DBExpensesTest extends TableCreationTest
         $this->expense->expects($this->once())
             ->method('asArray')
             ->with()->will($this->returnValue($wrongExpenseArray));
+        $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all();
+        print_r($nbExpenses);
         try{
             $this->table->addExpense($this->expense);
             $this->assertTrue(False);
