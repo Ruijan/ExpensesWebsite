@@ -11,6 +11,18 @@ use mysql_xdevapi\Exception;
 
 require_once ("DBTable.php");
 
+class DBExpensesAddException extends \Exception{
+    public function __construct($message){
+        parent::__construct("Could not add expense in table expenses: ".$message);
+    }
+}
+
+class DBExpensesInsertionKeyException extends \Exception{
+    public function __construct($key){
+        parent::__construct($key." should not be empty.");
+    }
+}
+
 class DBExpenses extends DBTable
 {
     private $header = ["ID", "LOCATION", "PAYER_ID", "PAYEE_ID", "CATEGORY_ID", "SUB_CATEGORY_ID",
@@ -39,10 +51,6 @@ class DBExpenses extends DBTable
         $this->tryAddingExpense($query);
     }
 
-    /**
-     * @param $expense
-     * @return string
-     */
     protected function getInsertExpenseQuery($expense): string
     {
         $insertHeader = array_slice($this->header, 1);
@@ -53,25 +61,16 @@ class DBExpenses extends DBTable
         return $query;
     }
 
-    /**
-     * @param string $query
-     * @throws \Exception
-     */
     protected function tryAddingExpense(string $query): void
     {
         $resultQuery = $this->driver->query($query);
         if ($resultQuery === FALSE) {
             print($query);
             print($this->driver->error);
-            throw new \Exception($this->driver->error);
+            throw new DBExpensesAddException($this->driver->error);
         }
     }
 
-    /**
-     * @param $expense
-     * @param array $insertHeader
-     * @return array
-     */
     protected function getSQLValuesToInsert($expense, array $insertHeader): array
     {
         $properties = [];
@@ -84,7 +83,7 @@ class DBExpenses extends DBTable
                         $properties[$key] = $id;
                     }
                     else{
-                        throw new \Exception($key." should not be empty.");
+                        throw new DBExpensesInsertionKeyException($key." should not be empty.");
                     }
                 }
                 else {

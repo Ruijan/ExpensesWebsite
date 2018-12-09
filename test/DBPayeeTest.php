@@ -23,12 +23,7 @@ class DBPayeeTest extends TableCreationTest
 
     public function createTable()
     {
-        try{
-            $this->table = new \src\DBPayee($this->database);
-        }
-        catch(Exception $e){
-        }
-
+        $this->table = new \src\DBPayee($this->database);
     }
 
     public function testAddPayee(){
