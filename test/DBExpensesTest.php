@@ -53,17 +53,21 @@ class DBExpensesTest extends TableCreationTest
         $this->table = new \src\DBExpenses($this->database);
     }
 
-    public function testAddExpenseWithEmptyExpenseShouldThrow(){
+    public function testAddExpenseWithWrongStateShouldThrow(){
         $wrongExpenseArray = $this->expenseArray;
         $wrongExpenseArray["state_id"] = "Paid";
         $this->expense->expects($this->once())
             ->method('asArray')
             ->with()->will($this->returnValue($wrongExpenseArray));
-        $this->expectException(\src\DBExpensesAddException::class);
-        $this->table->addExpense($this->expense);
-        $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all()[0][0];
-        $this->assertEquals(0, $nbExpenses);
 
+        try{
+            $this->table->addExpense($this->expense);
+            $this->assertTrue(False);
+        }
+        catch(\src\WrongTypeKeyException $e){
+            $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all();
+            $this->assertEquals(0, $nbExpenses[0][0]);
+        }
     }
 
     public function testAddExpense(){
@@ -78,11 +82,9 @@ class DBExpensesTest extends TableCreationTest
     public function testAddExpenseWithNoID(){
         $noIDExpense = [];
         foreach($this->expenseArray as $key => $value){
-            if(strpos($key, 'id') === false){
+            $noIDExpense[$key] = NULL;
+            if(strpos($key, 'id') === false) {
                 $noIDExpense[$key] = $value;
-            }
-            else{
-                $noIDExpense[$key] = NULL;
             }
         }
 
@@ -100,9 +102,13 @@ class DBExpensesTest extends TableCreationTest
         $this->expense->expects($this->once())
             ->method('asArray')
             ->with()->will($this->returnValue($noLocationExpense));
-        $this->expectException(Exception::class);
-        $this->table->addExpense($this->expense);
-        $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all()[0][0];
-        $this->assertEquals(0, $nbExpenses);
+        try{
+            $this->table->addExpense($this->expense);
+            $this->assertTrue(False);
+        }
+        catch(\src\InsertionKeyException $e){
+            $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all()[0][0];
+            $this->assertEquals(0, $nbExpenses);
+        }
     }
 }

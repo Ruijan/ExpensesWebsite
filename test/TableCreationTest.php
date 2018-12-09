@@ -33,7 +33,8 @@ abstract class TableCreationTest extends TestCase
     public function checkTableHeaders(){
         $columns = $this->driver->query("SHOW COLUMNS FROM ".$this->name);
         $existingColumn = [];
-        foreach($this->columns as $column => $value) {
+        $keys = array_keys($this->columns);
+        foreach($keys as $column) {
             $existingColumn[$column] = 0;
         }
         $this->assertEquals($columns->num_rows, count($this->columns));

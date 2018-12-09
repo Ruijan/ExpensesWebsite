@@ -16,12 +16,17 @@ class DBTableFactoryTest extends TestCase
     protected $database;
     private $tables = ["DBCategories", "DBCurrency", "DBExpenses", "DBPayee", "DBPayer", "DBSubCategories"];
     private $dbTables = ["categories", "sub_categories", "currencies", "expenses", "payees", "payers"];
+    private $factory;
+
+    public function setUp(){
+        $this->factory = new \src\DBTableFactory();
+    }
 
     public function testCreateTable(){
         $this->driver = new mysqli("127.0.0.1", "root", "");
         $this->database = new \src\Database($this->driver, "expenses");
         foreach($this->tables as $tableName){
-            $table = \src\DBTableFactory::createTable($tableName, $this->database);
+            $table = $this->factory->createTable($tableName, $this->database);
             $this->assertEquals(get_class($table),'src\\'.$tableName);
             $table->dropTable();
         }
@@ -31,7 +36,7 @@ class DBTableFactoryTest extends TestCase
         $this->driver = new mysqli("127.0.0.1", "root", "");
         $this->database = new \src\Database($this->driver, "expenses");
         $this->expectException(Exception::class);
-        \src\DBTableFactory::createTable("test", $this->database);
+        $this->factory->createTable("test", $this->database);
     }
 
     public function tearDown()

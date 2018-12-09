@@ -11,22 +11,36 @@ use mysql_xdevapi\Exception;
 
 require_once ("DBTable.php");
 
-class DBExpensesAddException extends \Exception{
+class AddException extends \Exception{
     public function __construct($message){
         parent::__construct("Could not add expense in table expenses: ".$message);
     }
 }
 
-class DBExpensesInsertionKeyException extends \Exception{
+class InsertionKeyException extends \Exception{
     public function __construct($key){
         parent::__construct($key." should not be empty.");
+    }
+}
+class WrongTypeKeyException extends \Exception{
+    public function __construct($key, $value, $type){
+        parent::__construct($key . " with value ".$value." has an invalid type: ".gettype($value)." instead of ".$type.".");
     }
 }
 
 class DBExpenses extends DBTable
 {
-    private $header = ["ID", "LOCATION", "PAYER_ID", "PAYEE_ID", "CATEGORY_ID", "SUB_CATEGORY_ID",
-        "ADDED_DATE", "EXPENSE_DATE", "AMOUNT", "CURRENCY_ID","STATE_ID"];
+    private $header = ["ID" => "integer",
+        "LOCATION" => "string",
+        "PAYER_ID" => "integer",
+        "PAYEE_ID" => "integer",
+        "CATEGORY_ID" => "integer",
+        "SUB_CATEGORY_ID" => "integer",
+        "ADDED_DATE" => "string",
+        "EXPENSE_DATE" => "string",
+        "AMOUNT" => "double",
+        "CURRENCY_ID" => "integer",
+        "STATE_ID" => "integer"];
     public function __construct($database){
         parent::__construct($database, "expenses");
     }
@@ -56,7 +70,7 @@ class DBExpenses extends DBTable
         $insertHeader = array_slice($this->header, 1);
         $properties = $this->getSQLValuesToInsert($expense, $insertHeader);
         $properties = implode(", ", $properties);
-        $header = implode(", ", array_slice($this->header, 1));
+        $header = implode(", ", array_keys ($insertHeader));
         $query = 'INSERT INTO ' . $this->name . ' (' . $header . ') VALUES (' . $properties . ')';
         return $query;
     }
@@ -65,9 +79,7 @@ class DBExpenses extends DBTable
     {
         $resultQuery = $this->driver->query($query);
         if ($resultQuery === FALSE) {
-            print($query);
-            print($this->driver->error);
-            throw new DBExpensesAddException($this->driver->error);
+            throw new AddException($this->driver->error);
         }
     }
 
@@ -75,24 +87,29 @@ class DBExpenses extends DBTable
     {
         $properties = [];
         $expenseProperties = $expense->asArray();
-        foreach ($insertHeader as $key) {
-            if ($key !== "ADDED_DATE") {
-                if(isset($expenseProperties[strtolower($key)]) !== TRUE){
-                    if(strpos(strtolower($key), 'id')){
-                        $id = 1;
-                        $properties[$key] = $id;
-                    }
-                    else{
-                        throw new DBExpensesInsertionKeyException($key." should not be empty.");
-                    }
-                }
-                else {
-                    $properties[$key] = "'" . $expenseProperties[strtolower($key)] . "'";
-                }
-            } else {
-                $properties["ADDED_DATE"] = "NOW()";
-            }
+        foreach ($insertHeader as $key => $type) {
+            $value = $this->tryGettingValueFromKey($key, $expenseProperties, $type);
+            $properties[$key] = $value;
         }
         return $properties;
+    }
+
+    protected function tryGettingValueFromKey($key, $expenseProperties, $type)
+    {
+        if ($key !== "ADDED_DATE") {
+            if (isset($expenseProperties[strtolower($key)]) !== TRUE) {
+                if (strpos(strtolower($key), 'id') === FALSE) {
+                    throw new InsertionKeyException($key);
+                }
+                $equivalentID = 1;
+                return $equivalentID;
+            }
+            $value = $expenseProperties[strtolower($key)];
+            if(strcmp(gettype($value),$type)){
+                throw new WrongTypeKeyException($key, $value, $type);
+            }
+            return "'" . $value . "'";
+        }
+        return "NOW()";
     }
 }

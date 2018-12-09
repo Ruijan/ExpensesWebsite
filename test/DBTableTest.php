@@ -24,11 +24,15 @@ class DBTableTest extends TableCreationTest
     }
 
     public function testCouldNotConstructTableTwice(){
-        $this->driver = new mysqli("127.0.0.1", "root", "");
-        $this->database = new \src\Database($this->driver, "expenses");
-        $this->expectException(Exception::class);
-        $this->table = new \src\DBTable($this->database, $this->name);
-        $this->assertTrue($this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 "));
+
+        try{
+            $this->table = new \src\DBTable($this->database, $this->name);
+            $this->assertTrue(false);
+        }
+        catch(Exception $e){
+            $query = $this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 ");
+            $this->assertTrue($query !== FALSE);
+        }
     }
 
     public function testDropTable(){
@@ -38,8 +42,13 @@ class DBTableTest extends TableCreationTest
 
     public function testDropTableTwiceShouldThrow(){
         $this->table->dropTable();
-        $this->expectException(Exception::class);
-        $this->table->dropTable();
-        $this->assertFalse($this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 "));
+        try{
+            $this->table->dropTable();
+            $this->assertTrue(false);
+        }
+        catch(Exception $e){
+            $query = $this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 ");
+            $this->assertFalse($query !== FALSE);
+        }
     }
 }
