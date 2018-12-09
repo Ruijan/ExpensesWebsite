@@ -13,8 +13,17 @@ require_once ("DBTable.php");
 
 class DBExpenses extends DBTable
 {
-    private $header = ["ID", "LOCATION", "PAYER_ID", "PAYEE_ID", "CATEGORY_ID", "SUB_CATEGORY_ID",
-        "ADDED_DATE", "EXPENSE_DATE", "AMOUNT", "CURRENCY_ID","STATE_ID"];
+    private $header = ["ID" => "integer",
+        "LOCATION" => "string",
+        "PAYER_ID" => "integer",
+        "PAYEE_ID" => "integer",
+        "CATEGORY_ID" => "integer",
+        "SUB_CATEGORY_ID" => "integer",
+        "ADDED_DATE" => "string",
+        "EXPENSE_DATE" => "string",
+        "AMOUNT" => "double",
+        "CURRENCY_ID" => "integer",
+        "STATE_ID" => "integer"];
     public function __construct($database){
         parent::__construct($database, "expenses");
     }
@@ -44,24 +53,16 @@ class DBExpenses extends DBTable
         }
     }
 
-    /**
-     * @param $expense
-     * @return string
-     */
     protected function getInsertExpenseQuery($expense): string
     {
         $insertHeader = array_slice($this->header, 1);
         $properties = $this->getSQLValuesToInsert($expense, $insertHeader);
         $properties = implode(", ", $properties);
-        $header = implode(", ", array_slice($this->header, 1));
+        $header = implode(", ", array_keys ($insertHeader));
         $query = 'INSERT INTO ' . $this->name . ' (' . $header . ') VALUES (' . $properties . ')';
         return $query;
     }
 
-    /**
-     * @param string $query
-     * @throws \Exception
-     */
     protected function tryAddingExpense(string $query): void
     {
         $resultQuery = $this->driver->query($query);
@@ -70,29 +71,18 @@ class DBExpenses extends DBTable
         }
     }
 
-    /**
-     * @param $expense
-     * @param array $insertHeader
-     * @return array
-     */
     protected function getSQLValuesToInsert($expense, array $insertHeader): array
     {
         $properties = [];
         $expenseProperties = $expense->asArray();
-        foreach ($insertHeader as $key) {
-            $value = $this->tryGettingValueFromKey($key, $expenseProperties);
+        foreach ($insertHeader as $key => $type) {
+            $value = $this->tryGettingValueFromKey($key, $expenseProperties, $type);
             $properties[$key] = $value;
         }
         return $properties;
     }
 
-    /**
-     * @param $key
-     * @param $expenseProperties
-     * @return int|string|null
-     * @throws \Exception
-     */
-    protected function tryGettingValueFromKey($key, $expenseProperties)
+    protected function tryGettingValueFromKey($key, $expenseProperties, $type)
     {
         if ($key !== "ADDED_DATE") {
             if (isset($expenseProperties[strtolower($key)]) !== TRUE) {
@@ -102,7 +92,11 @@ class DBExpenses extends DBTable
                 $equivalentID = 1;
                 return $equivalentID;
             }
-            return "'" . $expenseProperties[strtolower($key)] . "'";
+            $value = $expenseProperties[strtolower($key)];
+            if(strcmp(gettype($value),$type)){
+                throw new \Exception($key . " with value ".$value." has an invalid type: ".gettype($value)." instead of ".$type.".");
+            }
+            return "'" . $value . "'";
         }
         return "NOW()";
     }
