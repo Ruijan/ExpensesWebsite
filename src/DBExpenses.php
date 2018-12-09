@@ -11,6 +11,23 @@ use mysql_xdevapi\Exception;
 
 require_once ("DBTable.php");
 
+class AddException extends \Exception{
+    public function __construct($message){
+        parent::__construct("Could not add expense in table expenses: ".$message);
+    }
+}
+
+class InsertionKeyException extends \Exception{
+    public function __construct($key){
+        parent::__construct($key." should not be empty.");
+    }
+}
+class WrongTypeKeyException extends \Exception{
+    public function __construct($key, $value, $type){
+        parent::__construct($key . " with value ".$value." has an invalid type: ".gettype($value)." instead of ".$type.".");
+    }
+}
+
 class DBExpenses extends DBTable
 {
     private $header = ["ID" => "integer",
@@ -62,7 +79,7 @@ class DBExpenses extends DBTable
     {
         $resultQuery = $this->driver->query($query);
         if ($resultQuery === FALSE) {
-            throw new \Exception($query." Failed \n".$this->driver->error);
+            throw new AddException($this->driver->error);
         }
     }
 
@@ -82,14 +99,14 @@ class DBExpenses extends DBTable
         if ($key !== "ADDED_DATE") {
             if (isset($expenseProperties[strtolower($key)]) !== TRUE) {
                 if (strpos(strtolower($key), 'id') === FALSE) {
-                    throw new \Exception($key . " should not be empty.");
+                    throw new InsertionKeyException($key);
                 }
                 $equivalentID = 1;
                 return $equivalentID;
             }
             $value = $expenseProperties[strtolower($key)];
             if(strcmp(gettype($value),$type)){
-                throw new \Exception($key . " with value ".$value." has an invalid type: ".gettype($value)." instead of ".$type.".");
+                throw new WrongTypeKeyException($key, $value, $type);
             }
             return "'" . $value . "'";
         }

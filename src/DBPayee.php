@@ -19,8 +19,29 @@ class DBPayee extends DBTable
     public function getTableHeader()
     {
         return "ID int(11) AUTO_INCREMENT UNIQUE,
-                        NAME char(50) NOT NULL,
+                        NAME char(50) NOT NULL UNIQUE,
                         ADDED_DATE datetime DEFAULT '2018-01-01 00:00:00',
                         PRIMARY KEY (ID)";
+    }
+
+    public function addPayee($name){
+        $currentUTCDate = new \DateTime("now", new \DateTimeZone("UTC"));
+        $query = 'INSERT INTO '.$this->name.' (NAME, ADDED_DATE) VALUES ("'.
+            $this->driver->real_escape_string($name).'", "'.$currentUTCDate->format("Y-m-d H:i:s").'")';
+        if ($this->driver->query($query) === FALSE) {
+            throw new \Exception("Couldn't insert payee ".$name." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
+        }
+    }
+
+    public function checkIfPayeeExists($expectedPayeeID){
+        $query = "SELECT ID FROM ".$this->name." WHERE ID = ".$expectedPayeeID;
+        $result = $this->driver->query($query);
+        if ($result === FALSE ) {
+            throw new \Exception("Couldn't find payee with ID ".$expectedPayeeID." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
+        }
+        else if($result->num_rows == 0){
+            return false;
+        }
+        return $result->fetch_assoc()["ID"];
     }
 }

@@ -59,11 +59,12 @@ class DBExpensesTest extends TableCreationTest
         $this->expense->expects($this->once())
             ->method('asArray')
             ->with()->will($this->returnValue($wrongExpenseArray));
+
         try{
             $this->table->addExpense($this->expense);
             $this->assertTrue(False);
         }
-        catch(Exception $e){
+        catch(\src\WrongTypeKeyException $e){
             $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all();
             $this->assertEquals(0, $nbExpenses[0][0]);
         }
@@ -105,7 +106,7 @@ class DBExpensesTest extends TableCreationTest
             $this->table->addExpense($this->expense);
             $this->assertTrue(False);
         }
-        catch(Exception $e){
+        catch(\src\InsertionKeyException $e){
             $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all()[0][0];
             $this->assertEquals(0, $nbExpenses);
         }
