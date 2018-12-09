@@ -75,23 +75,31 @@ class DBExpenses extends DBTable
         $properties = [];
         $expenseProperties = $expense->asArray();
         foreach ($insertHeader as $key) {
-            if ($key !== "ADDED_DATE") {
-                if(isset($expenseProperties[strtolower($key)]) !== TRUE){
-                    if(strpos(strtolower($key), 'id')){
-                        $id = 1;
-                        $properties[$key] = $id;
-                    }
-                    else{
-                        throw new \Exception($key." should not be empty.");
-                    }
-                }
-                else {
-                    $properties[$key] = "'" . $expenseProperties[strtolower($key)] . "'";
-                }
-            } else {
-                $properties["ADDED_DATE"] = "NOW()";
-            }
+            $value = $this->tryGettingValueFromKey($key, $expenseProperties);
+            $properties[$key] = $value;
         }
         return $properties;
+    }
+
+    /**
+     * @param $key
+     * @param $expenseProperties
+     * @return int|string|null
+     * @throws \Exception
+     */
+    protected function tryGettingValueFromKey($key, $expenseProperties)
+    {
+        $value = NULL;
+        if ($key !== "ADDED_DATE") {
+            if (isset($expenseProperties[strtolower($key)]) !== TRUE) {
+                if (strpos(strtolower($key), 'id') === FALSE) {
+                    throw new \Exception($key . " should not be empty.");
+                }
+                $id = 1;
+                return $id;
+            }
+            return "'" . $expenseProperties[strtolower($key)] . "'";
+        }
+        return "NOW()";
     }
 }

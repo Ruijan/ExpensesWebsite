@@ -78,11 +78,9 @@ class DBExpensesTest extends TableCreationTest
     public function testAddExpenseWithNoID(){
         $noIDExpense = [];
         foreach($this->expenseArray as $key => $value){
-            if(strpos($key, 'id') === false){
+            $noIDExpense[$key] = NULL;
+            if(strpos($key, 'id') === false) {
                 $noIDExpense[$key] = $value;
-            }
-            else{
-                $noIDExpense[$key] = NULL;
             }
         }
 
