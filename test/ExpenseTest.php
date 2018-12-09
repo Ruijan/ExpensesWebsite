@@ -15,7 +15,7 @@ class ExpenseTest extends TestCase
     private $expenseArray = array(
         "id" => 1,
         "payer" => "Julien",
-        "date" => "2018-01-01 00:00:00",
+        "expense_date" => "2018-01-01 00:00:00",
         "location" => "Lausanne",
         "payee" => "Migros",
         "category" => "Food",
@@ -28,7 +28,7 @@ class ExpenseTest extends TestCase
     private $expenseArrayWithCapital = array(
         "ID" => 1,
         "payer" => "Julien",
-        "Date" => "2018-01-01 00:00:00",
+        "Expense_Date" => "2018-01-01 00:00:00",
         "Location" => "Lausanne",
         "Payee" => "Migros",
         "Category" => "Food",
@@ -40,11 +40,24 @@ class ExpenseTest extends TestCase
 
     public function test__construct(){
         $this->expense = new \src\Expense($this->expenseArray);
-        $this->assertEquals($this->expenseArray, $this->expense->asArray());
+        $this->assertEquals($this->expenseArray, $this->expense->asPrintableArray());
     }
 
     public function test__constructWithCapitalKeys(){
         $this->expense = new \src\Expense($this->expenseArrayWithCapital);
-        $this->assertEquals($this->expenseArray, $this->expense->asArray());
+        $this->assertEquals($this->expenseArray, $this->expense->asPrintableArray());
+    }
+
+    public function testAsArray(){
+        $fullArray = $this->expenseArray;
+        $fullArray["payer_id"] = NULL;
+        $fullArray["payee_id"] = NULL;
+        $fullArray["category_id"] = NULL;
+        $fullArray["sub_category_id"] = NULL;
+        $fullArray["currency_id"] = NULL;
+        $fullArray["state_id"] = NULL;
+        $this->expense = new \src\Expense($this->expenseArrayWithCapital);
+        $this->assertArraySubset($fullArray, $this->expense->asArray(), true);
+
     }
 }

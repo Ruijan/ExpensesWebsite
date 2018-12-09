@@ -65,6 +65,20 @@ class DatabaseTest extends TestCase
         $this->assertEquals($this->dBHandler->getDBName(), $this->dbName);
     }
 
+    public function test__destruct(){
+        $observer = $this->getMockBuilder(mysqli::class)->setMethods(['close', 'select_db', 'query', 'real_escape_string'])->getMock();
+        $observer->expects($this->once())
+            ->method('query')->will($this->returnValue(true));
+        $observer->expects($this->once())
+            ->method('real_escape_string')->will($this->returnValue(true));
+        $observer->expects($this->once())
+            ->method('select_db');
+        $observer->expects($this->once())
+            ->method('close');
+        $this->dBHandler = new \src\Database($observer, $this->dbName);
+        unset($this->dBHandler);
+    }
+
     public function tearDown(){
         unset($this->dBHandler);
     }

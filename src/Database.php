@@ -36,5 +36,10 @@ class Database
             throw new \Exception("Couldn't drop database ".$this->databaseName.".");
         }
     }
+
+    public function __destruct()
+    {
+        $this->driver->close();
+    }
 }
 

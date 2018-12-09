@@ -35,7 +35,7 @@ class Expense
             if($key == "id"){
                 $this->id = $value;
             }
-            elseif($key == "date"){
+            elseif($key == "expense_date"){
                 $this->date = $value;
             }
             elseif($key == "location"){
@@ -65,10 +65,10 @@ class Expense
         }
     }
 
-    public function asArray(){
+    public function asPrintableArray(){
         return array(
             "id" => $this->id,
-            "date" => $this->date,
+            "expense_date" => $this->date,
             "location" => $this->location,
             "payer" => $this->payer,
             "payee" => $this->payee,
@@ -77,6 +77,27 @@ class Expense
             "amount" => $this->amount,
             "currency" => $this->currency,
             "state" => $this->state
+        );
+    }
+
+    public function asArray(){
+        return array(
+            "id" => $this->id,
+            "expense_date" => $this->date,
+            "location" => $this->location,
+            "payer" => $this->payer,
+            "payer_id" => $this->payerID,
+            "payee" => $this->payee,
+            "payee_id" => $this->payeeID,
+            "category" => $this->category,
+            "category_id" => $this->categoryID,
+            "sub_category" => $this->subCategory,
+            "sub_category_id" => $this->subCategoryID,
+            "amount" => $this->amount,
+            "currency" => $this->currency,
+            "currency_id" => $this->currencyID,
+            "state" => $this->state,
+            "state_id" => $this->stateID
         );
     }
 }
