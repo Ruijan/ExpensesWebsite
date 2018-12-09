@@ -53,7 +53,7 @@ class DBExpensesTest extends TableCreationTest
         $this->table = new \src\DBExpenses($this->database);
     }
 
-    public function testAddEmptyExpenseShouldThrow(){
+    public function testAddExpenseWithWrongStateShouldThrow(){
         $wrongExpenseArray = $this->expenseArray;
         $wrongExpenseArray["state_id"] = "Paid";
         $this->expense->expects($this->once())
