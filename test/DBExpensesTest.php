@@ -53,17 +53,20 @@ class DBExpensesTest extends TableCreationTest
         $this->table = new \src\DBExpenses($this->database);
     }
 
-    public function testAddExpenseWithEmptyExpenseShouldThrow(){
+    public function testAddEmptyExpenseShouldThrow(){
         $wrongExpenseArray = $this->expenseArray;
         $wrongExpenseArray["state_id"] = "Paid";
         $this->expense->expects($this->once())
             ->method('asArray')
             ->with()->will($this->returnValue($wrongExpenseArray));
-        $this->expectException(Exception::class);
-        $this->table->addExpense($this->expense);
-        $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all()[0][0];
-        $this->assertEquals(0, $nbExpenses);
-
+        try{
+            $this->table->addExpense($this->expense);
+            $this->assertTrue(False);
+        }
+        catch(Exception $e){
+            $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all()[0][0];
+            $this->assertEquals(0, $nbExpenses);
+        }
     }
 
     public function testAddExpense(){
@@ -98,9 +101,13 @@ class DBExpensesTest extends TableCreationTest
         $this->expense->expects($this->once())
             ->method('asArray')
             ->with()->will($this->returnValue($noLocationExpense));
-        $this->expectException(Exception::class);
-        $this->table->addExpense($this->expense);
-        $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all()[0][0];
-        $this->assertEquals(0, $nbExpenses);
+        try{
+            $this->table->addExpense($this->expense);
+            $this->assertTrue(False);
+        }
+        catch(Exception $e){
+            $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all()[0][0];
+            $this->assertEquals(0, $nbExpenses);
+        }
     }
 }
