@@ -86,18 +86,18 @@ class Expense
             "expense_date" => $this->date,
             "location" => $this->location,
             "payer" => $this->payer,
-            "payerID" => $this->payerID,
+            "payer_id" => $this->payerID,
             "payee" => $this->payee,
-            "payeeID" => $this->payeeID,
+            "payee_id" => $this->payeeID,
             "category" => $this->category,
-            "categoryID" => $this->categoryID,
+            "category_id" => $this->categoryID,
             "sub_category" => $this->subCategory,
-            "sub_categoryID" => $this->subCategoryID,
+            "sub_category_id" => $this->subCategoryID,
             "amount" => $this->amount,
             "currency" => $this->currency,
-            "currencyID" => $this->currencyID,
+            "currency_id" => $this->currencyID,
             "state" => $this->state,
-            "stateID" => $this->stateID
+            "state_id" => $this->stateID
         );
     }
 }

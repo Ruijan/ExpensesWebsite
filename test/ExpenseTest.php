@@ -47,4 +47,17 @@ class ExpenseTest extends TestCase
         $this->expense = new \src\Expense($this->expenseArrayWithCapital);
         $this->assertEquals($this->expenseArray, $this->expense->asPrintableArray());
     }
+
+    public function testAsArray(){
+        $fullArray = $this->expenseArray;
+        $fullArray["payer_id"] = NULL;
+        $fullArray["payee_id"] = NULL;
+        $fullArray["category_id"] = NULL;
+        $fullArray["sub_category_id"] = NULL;
+        $fullArray["currency_id"] = NULL;
+        $fullArray["state_id"] = NULL;
+        $this->expense = new \src\Expense($this->expenseArrayWithCapital);
+        $this->assertArraySubset($fullArray, $this->expense->asArray(), true);
+
+    }
 }

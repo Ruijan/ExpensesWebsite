@@ -44,13 +44,8 @@ class DBExpenses extends DBTable
     }
 
     public function addExpense($expense){
-        try{
-            $query = $this->getInsertExpenseQuery($expense);
-            $this->tryAddingExpense($query);
-        }
-        catch(Exception $error){
-            throw $error;
-        }
+        $query = $this->getInsertExpenseQuery($expense);
+        $this->tryAddingExpense($query);
     }
 
     protected function getInsertExpenseQuery($expense): string
