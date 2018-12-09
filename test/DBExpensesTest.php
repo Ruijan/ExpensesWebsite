@@ -66,6 +66,7 @@ class DBExpensesTest extends TableCreationTest
             $this->assertTrue(False);
         }
         catch(Exception $e){
+            print("Error: ".$e->getMessage()."\n");
             $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all();
             print_r($nbExpenses);
             $this->assertEquals(0, $nbExpenses[0][0]);
