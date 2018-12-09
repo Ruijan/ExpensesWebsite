@@ -44,9 +44,11 @@ class DBTableFactoryTest extends TestCase
 
     public function __destruct()
     {
-        foreach($this->dbTables as $tableName){
-            $query = "DROP TABLE ".$tableName;
-            $this->driver->query($query);
+        if($this->driver->connect_errno === FALSE) {
+            foreach ($this->dbTables as $tableName) {
+                $query = "DROP TABLE " . $tableName;
+                $this->driver->query($query);
+            }
         }
     }
 }
