@@ -43,9 +43,8 @@ class DBExpenses extends DBTable
      * @param $expense
      * @return string
      */
-    public function getInsertExpenseQuery($expense): string
+    protected function getInsertExpenseQuery($expense): string
     {
-
         $insertHeader = array_slice($this->header, 1);
         $properties = $this->getSQLValuesToInsert($expense, $insertHeader);
         $properties = implode(", ", $properties);
@@ -58,7 +57,7 @@ class DBExpenses extends DBTable
      * @param string $query
      * @throws \Exception
      */
-    public function tryAddingExpense(string $query): void
+    protected function tryAddingExpense(string $query): void
     {
         $resultQuery = $this->driver->query($query);
         if ($resultQuery === FALSE) {
@@ -73,13 +72,24 @@ class DBExpenses extends DBTable
      * @param array $insertHeader
      * @return array
      */
-    public function getSQLValuesToInsert($expense, array $insertHeader): array
+    protected function getSQLValuesToInsert($expense, array $insertHeader): array
     {
         $properties = [];
         $expenseProperties = $expense->asArray();
         foreach ($insertHeader as $key) {
             if ($key !== "ADDED_DATE") {
-                $properties[$key] = "'" . $expenseProperties[strtolower($key)] . "'";
+                if(isset($expenseProperties[strtolower($key)]) !== TRUE){
+                    if(strpos(strtolower($key), 'id')){
+                        $id = 1;
+                        $properties[$key] = $id;
+                    }
+                    else{
+                        throw new \Exception($key." should not be empty.");
+                    }
+                }
+                else {
+                    $properties[$key] = "'" . $expenseProperties[strtolower($key)] . "'";
+                }
             } else {
                 $properties["ADDED_DATE"] = "NOW()";
             }

@@ -11,6 +11,7 @@ require_once(str_replace("test", "src", __DIR__."/").'DBExpenses.php');
 
 class DBExpensesTest extends TableCreationTest
 {
+    private $expense;
     private $expenseArray = array(
         "id" => 1,
         "payer" => "Julien",
@@ -44,6 +45,7 @@ class DBExpensesTest extends TableCreationTest
             "CURRENCY_ID" => "int(11)",
             "STATE_ID" => "int(11)"];
         $this->name = "expenses";
+        $this->expense = parent::getMockBuilder(\Expense::class)->setMethods(['asArray'])->getMock();
     }
 
     public function createTable()
@@ -52,26 +54,55 @@ class DBExpensesTest extends TableCreationTest
     }
 
     public function testAddExpenseWithEmptyExpenseShouldThrow(){
-        $expense = parent::getMockBuilder(\Expense::class)->setMethods(['asArray'])->getMock();
-        $expense->expects($this->once())
+        $wrongExpenseArray = $this->expenseArray;
+        $wrongExpenseArray["state_id"] = "Paid";
+        $this->expense->expects($this->once())
             ->method('asArray')
-            ->with()->will($this->returnValue($this->expenseArray));
+            ->with()->will($this->returnValue($wrongExpenseArray));
         $this->expectException(Exception::class);
-        $this->table->addExpense($expense);
+        $this->table->addExpense($this->expense);
         $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all()[0][0];
-        $this->assertEquals($nbExpenses, 0);
+        $this->assertEquals(0, $nbExpenses);
 
     }
 
     public function testAddExpense(){
-        $expense = parent::getMockBuilder(\Expense::class)->setMethods(['asArray'])->getMock();
-        $expense->expects($this->once())
+        $this->expense->expects($this->once())
             ->method('asArray')
             ->with()->will($this->returnValue($this->expenseArray));
-        $this->table->addExpense($expense);
+        $this->table->addExpense($this->expense);
         $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all()[0][0];
-        print_r($nbExpenses);
-        $this->assertEquals($nbExpenses, 1);
+        $this->assertEquals(1, $nbExpenses);
     }
 
+    public function testAddExpenseWithNoID(){
+        $noIDExpense = [];
+        foreach($this->expenseArray as $key => $value){
+            if(strpos($key, 'id') === false){
+                $noIDExpense[$key] = $value;
+            }
+            else{
+                $noIDExpense[$key] = NULL;
+            }
+        }
+
+        $this->expense->expects($this->once())
+            ->method('asArray')
+            ->with()->will($this->returnValue($noIDExpense));
+        $this->table->addExpense($this->expense);
+        $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all()[0][0];
+        $this->assertEquals(1, $nbExpenses);
+    }
+
+    public function testAddExpenseWithNoLocation(){
+        $noLocationExpense = $this->expenseArray;
+        $noLocationExpense["location"] = NULL;
+        $this->expense->expects($this->once())
+            ->method('asArray')
+            ->with()->will($this->returnValue($noLocationExpense));
+        $this->expectException(Exception::class);
+        $this->table->addExpense($this->expense);
+        $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all()[0][0];
+        $this->assertEquals(0, $nbExpenses);
+    }
 }
