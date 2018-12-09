@@ -6,6 +6,7 @@
  * Time: 10:50 PM
  */
 require_once(str_replace("test", "src", __DIR__."/").'Database.php');
+
 use PHPUnit\Framework\TestCase;
 
 abstract class TableCreationTest extends TestCase

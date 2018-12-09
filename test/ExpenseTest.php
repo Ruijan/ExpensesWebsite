@@ -7,6 +7,7 @@
  */
 
 require_once(str_replace("test", "src", __DIR__."/").'Expense.php');
+
 use PHPUnit\Framework\TestCase;
 
 class ExpenseTest extends TestCase
