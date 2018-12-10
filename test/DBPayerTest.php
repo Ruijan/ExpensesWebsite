@@ -11,6 +11,13 @@ require_once("TableCreationTest.php");
 
 class DBPayerTest extends TableCreationTest
 {
+    private $payer = ["FIRST_NAME" => "Julien",
+        "NAME" => "Rechenmann",
+        "EMAIL" => "jujudavid321@hotmail.com",
+        "USERNAME" => "ruijan",
+        "PASSWORD" => "admin",
+        "REGISTERED_DATE" => "",
+        "LAST_CONNECTION" => ""];
     public function setUp(){
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
@@ -22,10 +29,71 @@ class DBPayerTest extends TableCreationTest
             "REGISTERED_DATE" => "datetime",
             "LAST_CONNECTION" => "datetime"];
         $this->name = "payers";
+        $this->payer["REGISTERED_DATE"] = new \DateTime("now", new \DateTimeZone("UTC"));
+        $this->payer["REGISTERED_DATE"] = $this->payer["REGISTERED_DATE"]->format("Y-m-d H:i:s");
+        $this->payer["LAST_CONNECTION"] = $this->payer["REGISTERED_DATE"];
     }
 
     public function createTable()
     {
         $this->table = new \src\DBPayer($this->database);
+    }
+
+    public function testAddPayer(){
+        $this->table->addPayer($this->payer);
+        $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();
+        $this->assertArraySubset($this->payer, $result, true);
+    }
+
+    public function testAddPayerTwiceShouldThrow(){
+        $this->table->addPayer($this->payer);
+        try{
+            $this->table->addPayer($this->payer);
+        }
+        catch (Exception $e){
+            $count = 0;
+            $result = $this->driver->query("SELECT * FROM ".$this->name);
+            while($row = $result->fetch_assoc()){
+                $this->assertArraySubset($this->payer, $row, true);
+                $count += 1;
+            }
+            $this->assertEquals(1, $count);
+            return;
+        }
+        $this->assertTrue(false);
+    }
+
+    public function testCheckIfPayerIDExist(){
+        $this->table->addPayer($this->payer);
+        $expectedPayerID = 1;
+        $payerID = $this->table->checkIfPayerIDExists($expectedPayerID);
+        $this->assertEquals($expectedPayerID, $payerID);
+    }
+
+    public function testCheckIfPayerIDExistReturnFalse(){
+        $this->table->addPayer($this->payer);
+        $expectedPayerID = 2;
+        $payerID = $this->table->checkIfPayerIDExists($expectedPayerID);
+        $this->assertFalse($payerID);
+    }
+
+    public function testCheckIfPayerIDExistWithStringShouldThrow(){
+        $this->table->addPayer($this->payer);
+        $expectedPayerID = "Palalal";
+        $this->expectException(\Exception::class);
+        $this->table->checkIfPayerIDExists($expectedPayerID);
+    }
+
+    public function testCheckIfPayerEmailExist(){
+        $this->table->addPayer($this->payer);
+        $expectedPayerID = 1;
+        $payerID = $this->table->checkIfPayerEmailExists($this->payer["EMAIL"]);
+        $this->assertEquals($expectedPayerID, $payerID);
+    }
+
+    public function testCheckIfPayerEmailExistReturnFalse(){
+        $this->table->addPayer($this->payer);
+        $payerID = $this->table->checkIfPayerEmailExists("test@hotmail.com");
+        $this->assertFalse($payerID);
     }
 }
