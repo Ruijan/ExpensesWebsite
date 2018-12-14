@@ -51,14 +51,38 @@ class ExpenseTest extends TestCase
 
     public function testAsArray(){
         $fullArray = $this->expenseArray;
-        $fullArray["payer_id"] = NULL;
-        $fullArray["payee_id"] = NULL;
-        $fullArray["category_id"] = NULL;
-        $fullArray["sub_category_id"] = NULL;
-        $fullArray["currency_id"] = NULL;
-        $fullArray["state_id"] = NULL;
-        $this->expense = new \src\Expense($this->expenseArrayWithCapital);
+        $fullArray["payer_id"] = random_int(1, 100);
+        $fullArray["payee_id"] = random_int(1, 100);
+        $fullArray["category_id"] = random_int(1, 100);
+        $fullArray["sub_category_id"] = random_int(1, 100);
+        $fullArray["currency_id"] = random_int(1, 100);
+        $fullArray["state_id"] = random_int(1, 100);
+        $this->expense = new \src\Expense($fullArray);
         $this->assertArraySubset($fullArray, $this->expense->asArray(), true);
+    }
 
+    public function test1000CreationAsArray(){
+        $fullArray = [];
+        for($x = 0; $x <= 1000; $x++)
+        {
+            $fullArray[$x] = $this->expenseArray;
+            $fullArray[$x]["payer_id"] = random_int(1, 100);
+            $fullArray[$x]["payee_id"] = random_int(1, 100);
+            $fullArray[$x]["category_id"] = random_int(1, 100);
+            $fullArray[$x]["sub_category_id"] = random_int(1, 100);
+            $fullArray[$x]["currency_id"] = random_int(1, 100);
+            $fullArray[$x]["state_id"] = random_int(1, 100);
+        }
+        $timePre = microtime(true);
+        for($x = 0; $x <= 1000; $x++)
+        {
+            $this->expense = new \src\Expense($fullArray[$x]);
+            $this->assertArraySubset($fullArray[$x], $this->expense->asArray(), true);
+        }
+        $timePost = microtime(true);
+        $exec_time = ($timePost - $timePre);
+
+        echo "Time to create and obtain 1000 Expenses in array: ".round($exec_time, 4)."s";
+        $this->assertTrue($exec_time < 0.01);
     }
 }

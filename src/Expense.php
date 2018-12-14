@@ -9,64 +9,47 @@
 namespace src;
 
 
+use mysql_xdevapi\Exception;
+
 class Expense
 {
-    protected $id;
-    protected $date;
-    protected $location;
-    protected $payer;
-    protected $payerID;
-    protected $payee;
-    protected $payeeID;
-    protected $category;
-    protected $categoryID;
-    protected $subCategory;
-    protected $subCategoryID;
-    protected $amount;
-    protected $currency;
-    protected $currencyID;
-    protected $state;
-    protected $stateID;
+    protected $data = ["id" => NULL,
+        "expense_date" => NULL,
+        "location" => NULL,
+        "payer" => NULL,
+        "payer_id" => NULL,
+        "payee" => NULL,
+        "payee_id" => NULL,
+        "category" => NULL,
+        "category_id" => NULL,
+        "sub_category" => NULL,
+        "sub_category_id" => NULL,
+        "amount" => NULL,
+        "currency" => NULL,
+        "currency_id" => NULL,
+        "state" => NULL,
+        "state_id" => NULL
+        ];
 
     public function __construct($array)
     {
-        foreach ($array as $key => $value){
-            $key = strtolower($key);
-            if($key == "id"){
-                $this->id = $value;
-            }
-            elseif($key == "expense_date"){
-                $this->date = $value;
-            }
-            elseif($key == "location"){
-                $this->location = $value;
-            }
-            elseif($key == "payer"){
-                $this->payer = $value;
-            }
-            elseif($key == "payee"){
-                $this->payee = $value;
-            }
-            elseif($key == "category"){
-                $this->category = $value;
-            }
-            elseif($key == "sub_category"){
-                $this->subCategory = $value;
-            }
-            elseif($key == "amount"){
-                $this->amount = $value;
-            }
-            elseif($key == "currency"){
-                $this->currency = $value;
-            }
-            elseif($key == "state"){
-                $this->state = $value;
+        $newArray = $array;
+        $diffKeys = array_diff_key($newArray, $this->data);
+        if(array_intersect_key($diffKeys, $this->data) !== $diffKeys) {
+            $newArray = array_change_key_case($newArray, CASE_LOWER);
+            $diffKeys = array_diff_key($newArray, $this->data);
+            if(array_intersect_key($diffKeys, $this->data) !== $diffKeys) {
+                throw new \Exception();
             }
         }
+        $this->data = array_merge($this->data, $newArray);
+
     }
 
     public function asPrintableArray(){
-        return array(
+        $keys = array("id", "expense_date", "location", "payer", "payee",
+            "category", "sub_category", "amount", "currency", "state");
+        return array_intersect_key($this->data, array_flip($keys));/*array(
             "id" => $this->id,
             "expense_date" => $this->date,
             "location" => $this->location,
@@ -77,27 +60,10 @@ class Expense
             "amount" => $this->amount,
             "currency" => $this->currency,
             "state" => $this->state
-        );
+        );*/
     }
 
     public function asArray(){
-        return array(
-            "id" => $this->id,
-            "expense_date" => $this->date,
-            "location" => $this->location,
-            "payer" => $this->payer,
-            "payer_id" => $this->payerID,
-            "payee" => $this->payee,
-            "payee_id" => $this->payeeID,
-            "category" => $this->category,
-            "category_id" => $this->categoryID,
-            "sub_category" => $this->subCategory,
-            "sub_category_id" => $this->subCategoryID,
-            "amount" => $this->amount,
-            "currency" => $this->currency,
-            "currency_id" => $this->currencyID,
-            "state" => $this->state,
-            "state_id" => $this->stateID
-        );
+        return $this->data;
     }
 }
