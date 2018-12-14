@@ -19,10 +19,24 @@ class DBTable
         $this->database = $database;
         $this->driver = $database->getDriver();
         $this->name = $name;
+    }
+
+    public function init(){
         $query = "CREATE TABLE ".$this->name." (".$this->getTableHeader().")";
         if ($this->driver->query($query) === FALSE) {
             throw new \Exception("Couldn't create table ".$this->name." in ".$this->database->getDBName().". Reason: ".$this->driver->error_list[0]["error"]);
         }
+    }
+
+    public function getDatabase(){
+        return $this->database;
+    }
+
+    public function getDriver(){
+        return $this->driver;
+    }
+    public function getName(){
+        return $this->name;
     }
 
     public function getTableHeader(){

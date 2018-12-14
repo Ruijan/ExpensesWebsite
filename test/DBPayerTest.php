@@ -39,6 +39,10 @@ class DBPayerTest extends TableCreationTest
         $this->table = new \src\DBPayer($this->database);
     }
 
+    public function initTable(){
+        $this->table->init();
+    }
+
     public function testAddPayer(){
         $this->table->addPayer($this->payer);
         $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();
@@ -67,7 +71,7 @@ class DBPayerTest extends TableCreationTest
         $this->table->addPayer($this->payer);
         $expectedPayerID = 1;
         $payerID = $this->table->checkIfPayerIDExists($expectedPayerID);
-        $this->assertEquals($expectedPayerID, $payerID);
+        $this->assertTrue($payerID);
     }
 
     public function testCheckIfPayerIDExistReturnFalse(){

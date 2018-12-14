@@ -26,6 +26,10 @@ class DBPayeeTest extends TableCreationTest
         $this->table = new \src\DBPayee($this->database);
     }
 
+    public function initTable(){
+        $this->table->init();
+    }
+
     public function testAddPayee(){
         $this->table->addPayee($this->payeeName);
         $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();

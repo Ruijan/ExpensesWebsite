@@ -54,7 +54,7 @@ class DBPayer extends DBTable
         else if($result->num_rows == 0){
             return false;
         }
-        return $result->fetch_assoc()["ID"];
+        return true;
     }
     public function checkIfPayerEmailExists($email){
         $query = "SELECT ID FROM ".$this->name." WHERE EMAIL = '".$this->driver->real_escape_string($email)."'";

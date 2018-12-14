@@ -23,16 +23,8 @@ class DBTableTest extends TableCreationTest
         $this->table = new \src\DBTable($this->database, $this->name);
     }
 
-    public function testCouldNotConstructTableTwice(){
-
-        try{
-            $this->table = new \src\DBTable($this->database, $this->name);
-            $this->assertTrue(false);
-        }
-        catch(Exception $e){
-            $query = $this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 ");
-            $this->assertTrue($query !== FALSE);
-        }
+    public function initTable(){
+        $this->table->init();
     }
 
     public function testDropTable(){

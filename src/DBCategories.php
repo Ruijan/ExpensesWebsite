@@ -43,7 +43,7 @@ class DBCategories extends DBTable
             $indexValue += 1;
         }
         $values = implode(", ", $values);
-        $query = 'INSERT INTO '.$this->name.
+        $query = 'INSERT INTO '.$this->driver->real_escape_string($this->name).
             ' (NAME, PAYER_ID, ADDED_DATE) VALUES ('.$values.')';
         if ($this->driver->query($query) === FALSE) {
             throw new \Exception("Couldn't insert category ".implode(" ,", $category)." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);

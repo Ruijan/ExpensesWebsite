@@ -23,37 +23,19 @@ class DBTableFactoryTest extends TestCase
     }
 
     public function testCreateTable(){
-        $this->driver = new mysqli("127.0.0.1", "root", "");
-        $this->database = new \src\Database($this->driver, "expenses");
+        $this->database = $this->getMockBuilder(\src\Database::class)->disableOriginalConstructor()->setMethods(["getDriver", "getTableByName"])->getMock();
+        $this->database->expects($this->once())
+            ->method('getTableByName')
+            ->with("dbpayer");
         foreach($this->tables as $tableName){
             $table = $this->factory->createTable($tableName, $this->database);
             $this->assertEquals(get_class($table),'src\\'.$tableName);
-            $table->dropTable();
         }
     }
 
     public function testCreateTableWithWrongNameShouldThrow(){
-        $this->driver = new mysqli("127.0.0.1", "root", "");
-        $this->database = new \src\Database($this->driver, "expenses");
+        $this->database = $this->getMockBuilder(\src\Database::class)->disableOriginalConstructor()->setMethods(["getDriver", "getTableByName"])->getMock();
         $this->expectException(Exception::class);
         $this->factory->createTable("test", $this->database);
-    }
-
-    public function tearDown()
-    {
-        foreach($this->dbTables as $tableName){
-            $query = "DROP TABLE ".$tableName;
-            $this->driver->query($query);
-        }
-    }
-
-    public function __destruct()
-    {
-        if($this->driver->connect_errno === FALSE) {
-            foreach ($this->dbTables as $tableName) {
-                $query = "DROP TABLE " . $tableName;
-                $this->driver->query($query);
-            }
-        }
     }
 }

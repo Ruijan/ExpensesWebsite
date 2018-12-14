@@ -31,6 +31,10 @@ class DBCategoryTest extends TableCreationTest
         $this->assertEquals($this->table->getDBPayers(), $this->dbPayers);
     }
 
+    public function initTable(){
+        $this->table->init();
+    }
+
     public function testAddCategory(){
         $this->dbPayers->expects($this->once())
             ->method('checkIfPayerIDExists')->with($this->category["PAYER_ID"])->will($this->returnValue($this->category["PAYER_ID"]));
