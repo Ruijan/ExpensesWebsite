@@ -23,7 +23,7 @@ class DBTableFactory
 
         switch ($tableName) {
             case "DBCategories":
-                return new DBCategories($database);
+                return new DBCategories($database, $database->getTableByName("dbpayer"));
             case "DBSubCategories":
                 return new DBSubCategories($database);
             case "DBCurrency":

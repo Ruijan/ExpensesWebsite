@@ -21,14 +21,22 @@ abstract class TableCreationTest extends TestCase
         $this->driver = new mysqli("127.0.0.1", "root", "");
         $this->database = new \src\Database($this->driver, "expenses");
         $this->createTable();
+        $this->initTable();
     }
 
     public function test__construct(){
+        $this->assertEquals($this->name, $this->table->getName());
+        $this->assertEquals($this->driver, $this->table->getDriver());
+        $this->assertEquals($this->database, $this->table->getDatabase());
+    }
+
+    public function testInit(){
         $this->assertTrue($this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 ") !== FALSE);
         $this->checkTableHeaders();
     }
 
     abstract public function createTable();
+    abstract public function initTable();
 
     public function checkTableHeaders(){
         $columns = $this->driver->query("SHOW COLUMNS FROM ".$this->name);
@@ -43,6 +51,19 @@ abstract class TableCreationTest extends TestCase
             $existingColumn[$column["Field"]] += 1;
             $this->assertEquals($existingColumn[$column["Field"]], 1);
         }
+    }
+
+    public function testCouldNotInitTableTwice(){
+
+        try{
+            $this->initTable();
+        }
+        catch(Exception $e){
+            $query = $this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 ");
+            $this->assertTrue($query !== FALSE);
+            return;
+        }
+        $this->assertTrue(false);
     }
 
     public function tearDown(){

@@ -5,6 +5,7 @@ class Database
 {
     protected $driver;
     protected $databaseName;
+    protected $tables = [];
     public function __construct($driver, $databaseName)
     {
         $this->driver = $driver;
@@ -29,6 +30,14 @@ class Database
         return $this->databaseName;
     }
 
+    public function addTable($table, $name){
+        $this->tables[$name] = $table;
+    }
+
+    public function getTableByName($name){
+        return $this->tables[$name];
+    }
+
     public function dropDatabase(){
         $query = "DROP DATABASE ".$this->databaseName.";";
         $query = $this->driver->real_escape_string($query);
@@ -39,7 +48,9 @@ class Database
 
     public function __destruct()
     {
-        $this->driver->close();
+        if($this->driver != null){
+            $this->driver->close();
+        }
     }
 }
 

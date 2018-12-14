@@ -23,4 +23,8 @@ class DBCurrencyTest extends TableCreationTest
     {
         $this->table = new \src\DBCurrency($this->database);
     }
+
+    public function initTable(){
+        $this->table->init();
+    }
 }

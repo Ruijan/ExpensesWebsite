@@ -65,6 +65,13 @@ class DatabaseTest extends TestCase
         $this->assertEquals($this->dBHandler->getDBName(), $this->dbName);
     }
 
+    public function testAddTable()
+    {
+        $tableMock = $this->getMockBuilder(\src\DBTable::class)->disableOriginalConstructor()->getMock();
+        $this->dBHandler->addTable($tableMock, "test");
+        $this->assertEquals($this->dBHandler->getTableByName("test"), $tableMock);
+    }
+
     public function test__destruct(){
         $observer = $this->getMockBuilder(mysqli::class)->setMethods(['close', 'select_db', 'query', 'real_escape_string'])->getMock();
         $observer->expects($this->once())

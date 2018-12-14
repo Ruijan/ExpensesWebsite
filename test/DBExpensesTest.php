@@ -53,6 +53,10 @@ class DBExpensesTest extends TableCreationTest
         $this->table = new \src\DBExpenses($this->database);
     }
 
+    public function initTable(){
+        $this->table->init();
+    }
+
     public function testAddExpenseWithWrongStateShouldThrow(){
         $wrongExpenseArray = $this->expenseArray;
         $wrongExpenseArray["state_id"] = "Paid";

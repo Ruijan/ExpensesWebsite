@@ -25,4 +25,8 @@ class DBSubCategoriesTest extends TableCreationTest
     {
         $this->table = new \src\DBSubCategories($this->database);
     }
+
+    public function initTable(){
+        $this->table->init();
+    }
 }
