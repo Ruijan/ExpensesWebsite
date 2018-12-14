@@ -22,7 +22,7 @@ class DBPayer extends DBTable
                         FIRST_NAME char(50) NOT NULL,
                         NAME char(50) NOT NULL,
                         EMAIL char(50) NOT NULL UNIQUE,
-                        USERNAME char(50) NOT NULL,
+                        USERNAME char(50) NOT NULL UNIQUE,
                         PASSWORD char(50) NOT NULL,
                         REGISTERED_DATE datetime DEFAULT '2018-01-01 00:00:00',
                         LAST_CONNECTION datetime DEFAULT '2018-01-01 00:00:00',
