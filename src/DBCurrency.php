@@ -19,8 +19,17 @@ class DBCurrency extends DBTable
     public function getTableHeader()
     {
         return "ID int(11) AUTO_INCREMENT UNIQUE,
-                        NAME char(50) NOT NULL,
+                        NAME char(50) NOT NULL UNIQUE,
+                        SHORT_NAME char(5) NOT NULL,
                         CURRENT_DOLLARS_CHANGE int(11) NOT NULL,
                         PRIMARY KEY (ID)";
+    }
+
+    public function addCurrency($name, $shortName){
+        $query = 'INSERT INTO '.$this->name.' (NAME, SHORT_NAME, CURRENT_DOLLARS_CHANGE) VALUES ("'.
+            $this->driver->real_escape_string($name).'", "'.$this->driver->real_escape_string($shortName).'", 1)';
+        if ($this->driver->query($query) === FALSE) {
+            throw new \Exception("Couldn't insert currency ".$name." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
+        }
     }
 }
