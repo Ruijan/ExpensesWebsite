@@ -24,9 +24,12 @@ class DBTableFactoryTest extends TestCase
 
     public function testCreateTable(){
         $this->database = $this->getMockBuilder(\src\Database::class)->disableOriginalConstructor()->setMethods(["getDriver", "getTableByName"])->getMock();
-        $this->database->expects($this->once())
+        $this->database->expects($this->exactly(3))
             ->method('getTableByName')
-            ->with("dbpayer");
+            ->withConsecutive(["dbpayer"], ["dbpayer"], ["dbcategories"]);
+        /*$this->database->expects($this->once())
+            ->method('getTableByName')
+            ->with("dbcategories");*/
         foreach($this->tables as $tableName){
             $table = $this->factory->createTable($tableName, $this->database);
             $this->assertEquals(get_class($table),'src\\'.$tableName);

@@ -25,7 +25,7 @@ class DBTableFactory
             case "DBCategories":
                 return new DBCategories($database, $database->getTableByName("dbpayer"));
             case "DBSubCategories":
-                return new DBSubCategories($database);
+                return new DBSubCategories($database, $database->getTableByName("dbpayer"), $database->getTableByName("dbcategories"));
             case "DBCurrency":
                 return new DBCurrency($database);
             case "DBExpenses":

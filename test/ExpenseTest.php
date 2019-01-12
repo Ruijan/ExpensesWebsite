@@ -83,6 +83,6 @@ class ExpenseTest extends TestCase
         $exec_time = ($timePost - $timePre);
 
         echo "Time to create and obtain 1000 Expenses in array: ".round($exec_time, 4)."s";
-        $this->assertTrue($exec_time < 0.01);
+        $this->assertTrue($exec_time < 0.3);
     }
 }
