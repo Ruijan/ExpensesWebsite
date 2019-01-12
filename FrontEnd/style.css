@@ -1,0 +1,19 @@
+.titleFont {
+  font-family: sans-serif;
+}
+body:before {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  display: block;
+  background-image: url("/images/background.jpg");
+  width: 1200px;
+  height: 800px;
+  -webkit-filter: blur(3px);
+  -moz-filter: blur(3px);
+  -o-filter: blur(3px);
+  -ms-filter: blur(3px);
+  filter: blur(3px);
+}
