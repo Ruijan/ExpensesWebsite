@@ -1,6 +1,26 @@
 .titleFont {
   font-family: sans-serif;
 }
+.centeredButtons{
+  width: 250px;
+  margin: 200px auto;
+  text-align: center;
+}
+.btn {
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn:hover {background: #eee;}
+
+.success {color: green;}
+.info {color: dodgerblue;}
+.warning {color: orange;}
+.danger {color: red;}
+.default {color: black;}
+
+
 body:before {
   content: "";
   position: fixed;
@@ -8,9 +28,9 @@ body:before {
   right: 0;
   z-index: -1;
   display: block;
-  background-image: url("/images/background.jpg");
-  width: 1200px;
-  height: 800px;
+  background-image: url("images/background.jpg");
+  width: 3200px;
+  height: 1200px;
   -webkit-filter: blur(3px);
   -moz-filter: blur(3px);
   -o-filter: blur(3px);
