@@ -11,7 +11,12 @@ require_once("TableCreationTest.php");
 
 class DBSubCategoriesTest extends TableCreationTest
 {
+    private $subCategory = ["PARENT_ID" => "1", "NAME" => "Food", "PAYER_ID" => "1", "ADDED_DATE" => ""];
+    private $dbPayers;
+    private $dbCategories;
     public function setUp(){
+        $this->dbPayers = $this->getMockBuilder(\src\DBPayer::class)->disableOriginalConstructor()->setMethods(['checkIfPayerIDExists'])->getMock();
+        $this->dbCategories = $this->getMockBuilder(\src\DBPayer::class)->disableOriginalConstructor()->setMethods(['checkIfCategoryIDExists'])->getMock();
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "PARENT_ID" => "int(11)",
@@ -19,14 +24,86 @@ class DBSubCategoriesTest extends TableCreationTest
             "PAYER_ID" => "int(11)",
             "ADDED_DATE" => "datetime"];
         $this->name = "sub_categories";
+        $this->subCategory["ADDED_DATE"] = new \DateTime("now", new \DateTimeZone("UTC"));
+        $this->subCategory["ADDED_DATE"] = $this->subCategory["ADDED_DATE"]->format("Y-m-d H:i:s");
     }
 
     public function createTable()
     {
-        $this->table = new \src\DBSubCategories($this->database);
+        $this->table = new \src\DBSubCategories($this->database, $this->dbPayers, $this->dbCategories);
+        $this->assertEquals($this->table->getDBPayers(), $this->dbPayers);
+        $this->assertEquals($this->table->getDBCategories(), $this->dbCategories);
     }
 
     public function initTable(){
         $this->table->init();
+    }
+
+    public function testAddCategory(){
+        $this->dbPayers->expects($this->once())
+            ->method('checkIfPayerIDExists')->with($this->subCategory["PAYER_ID"])->will($this->returnValue(true));
+        $this->dbCategories->expects($this->once())
+            ->method('checkIfCategoryIDExists')->with($this->subCategory["PARENT_ID"])->will($this->returnValue(true));
+        $this->table->addSubCategory($this->subCategory);
+        $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();
+        $this->assertArraySubset($this->subCategory, $result, true);
+    }
+
+    public function testAddCategoryWithWrongPayerIDShouldThrow(){
+        $this->dbPayers->expects($this->once())
+            ->method('checkIfPayerIDExists')->with($this->subCategory["PAYER_ID"])->will($this->returnValue(false));
+        try{
+            $this->table->addSubCategory($this->subCategory);
+        }
+        catch (Exception $e){
+            $this->checkNbRowHasBeenAdded(0);
+            return;
+        }
+        $this->assertTrue(false);
+    }
+
+    public function testAddCategoryWithWrongParentIDShouldThrow(){
+        $expectedRows = 0;
+        $currentRows = 1;
+        $this->dbPayers->expects($this->once())
+            ->method('checkIfPayerIDExists')->with($this->subCategory["PAYER_ID"])->will($this->returnValue(true));
+        $this->dbCategories->expects($this->once())
+            ->method('checkIfCategoryIDExists')->with($this->subCategory["PARENT_ID"])->will($this->returnValue(false));
+        try{
+            $this->table->addSubCategory($this->subCategory);
+        }
+        catch (Exception $e){
+            $this->checkNbRowHasBeenAdded($expectedRows);
+            $currentRows = 0;
+            return;
+        }
+        $this->assertEquals($expectedRows, $currentRows);
+    }
+
+    public function testAddCategoryTwiceShouldThrow(){
+        $this->dbPayers->expects($this->exactly(2))
+            ->method('checkIfPayerIDExists')->with($this->subCategory["PAYER_ID"])->will($this->returnValue(true));
+        $this->dbCategories->expects($this->exactly(2))
+            ->method('checkIfCategoryIDExists')->with($this->subCategory["PARENT_ID"])->will($this->returnValue(true));
+        $this->table->addSubCategory($this->subCategory);
+        try{
+            $this->table->addSubCategory($this->subCategory);
+        }
+        catch (Exception $e){
+            $this->checkNbRowHasBeenAdded(1);
+            return;
+        }
+        $this->assertEquals(1, 2);
+    }
+
+    protected function checkNbRowHasBeenAdded($expectedNbRow): void
+    {
+        $count = 0;
+        $result = $this->driver->query("SELECT * FROM " . $this->name);
+        while ($row = $result->fetch_assoc()) {
+            $this->assertArraySubset($this->subCategory, $row, true);
+            $count += 1;
+        }
+        $this->assertEquals($expectedNbRow, $count);
     }
 }
