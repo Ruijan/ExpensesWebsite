@@ -15,7 +15,7 @@ class ExpenseTest extends TestCase
     private $expense;
     private $expenseArray = array(
         "id" => 1,
-        "payer" => "Julien",
+        "account" => "Savings",
         "expense_date" => "2018-01-01 00:00:00",
         "location" => "Lausanne",
         "payee" => "Migros",
@@ -28,7 +28,7 @@ class ExpenseTest extends TestCase
 
     private $expenseArrayWithCapital = array(
         "ID" => 1,
-        "payer" => "Julien",
+        "Account" => "Savings",
         "Expense_Date" => "2018-01-01 00:00:00",
         "Location" => "Lausanne",
         "Payee" => "Migros",
@@ -51,7 +51,7 @@ class ExpenseTest extends TestCase
 
     public function testAsArray(){
         $fullArray = $this->expenseArray;
-        $fullArray["payer_id"] = random_int(1, 100);
+        $fullArray["account_id"] = random_int(1, 100);
         $fullArray["payee_id"] = random_int(1, 100);
         $fullArray["category_id"] = random_int(1, 100);
         $fullArray["sub_category_id"] = random_int(1, 100);
@@ -66,7 +66,7 @@ class ExpenseTest extends TestCase
         for($x = 0; $x <= 1000; $x++)
         {
             $fullArray[$x] = $this->expenseArray;
-            $fullArray[$x]["payer_id"] = random_int(1, 100);
+            $fullArray[$x]["account_id"] = random_int(1, 100);
             $fullArray[$x]["payee_id"] = random_int(1, 100);
             $fullArray[$x]["category_id"] = random_int(1, 100);
             $fullArray[$x]["sub_category_id"] = random_int(1, 100);

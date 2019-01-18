@@ -14,8 +14,7 @@ class DBExpensesTest extends TableCreationTest
     private $expense;
     private $expenseArray = array(
         "id" => 1,
-        "payer" => "Julien",
-        "payer_id" => 1,
+        "account_id" => 12,
         "expense_date" => "2018-01-01 00:00:00",
         "location" => "Lausanne",
         "payee" => "Migros",
@@ -35,7 +34,7 @@ class DBExpensesTest extends TableCreationTest
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "LOCATION" => "char(50)",
-            "PAYER_ID" => "int(11)",
+            "ACCOUNT_ID" => "int(11)",
             "PAYEE_ID" => "int(11)",
             "CATEGORY_ID" => "int(11)",
             "SUB_CATEGORY_ID" => "int(11)",

@@ -32,7 +32,7 @@ class DBExpenses extends DBTable
 {
     private $header = ["ID" => "integer",
         "LOCATION" => "string",
-        "PAYER_ID" => "integer",
+        "ACCOUNT_ID" => "integer",
         "PAYEE_ID" => "integer",
         "CATEGORY_ID" => "integer",
         "SUB_CATEGORY_ID" => "integer",
@@ -48,7 +48,7 @@ class DBExpenses extends DBTable
     public function getTableHeader(){
         return "ID int(11) AUTO_INCREMENT UNIQUE,
             LOCATION char(50) NOT NULL,
-            PAYER_ID int(11) NOT NULL,
+            ACCOUNT_ID int(11) NOT NULL,
             PAYEE_ID int(11) NOT NULL,
             CATEGORY_ID int(11) NOT NULL,
             SUB_CATEGORY_ID int(11) NOT NULL,

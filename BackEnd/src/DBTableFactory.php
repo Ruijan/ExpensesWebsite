@@ -15,6 +15,7 @@ require_once ("DBSubCategories.php");
 require_once ("DBExpenses.php");
 require_once ("DBPayee.php");
 require_once ("DBPayer.php");
+require_once ("DBAccount.php");
 
 
 class DBTableFactory
@@ -34,6 +35,8 @@ class DBTableFactory
                 return new DBPayee($database);
             case "DBPayer":
                 return new DBPayer($database);
+            case "DBAccount":
+                return new DBAccount($database, $database->getTableByName("dbpayer"));
         }
         throw new \Exception("Invalid table type: ". $tableName);
     }
