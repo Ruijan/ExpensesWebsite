@@ -104,5 +104,17 @@ class DBPayerTest extends TableCreationTest
         $this->assertFalse($payerID);
     }
 
-    
+    public function testValidateEmailForPayer(){
+        $this->table->addPayer($this->payer);
+        $this->table->validateEmail($this->payer["VALIDATION_ID"]);
+        $result = $this->driver->query("SELECT EMAIL_VALIDATED FROM ".$this->name." WHERE VALIDATION_ID='".$this->payer["VALIDATION_ID"]."'");
+        $row = $result->fetch_assoc();
+        $this->assertEquals("1", $row["EMAIL_VALIDATED"]);
+    }
+
+    public function testValidateEmailWithWrongValidationIDShouldThrow(){
+        $this->table->addPayer($this->payer);
+        $this->expectException(\Exception::class);
+        $this->table->validateEmail(123456);
+    }
 }

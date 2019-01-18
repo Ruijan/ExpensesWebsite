@@ -69,4 +69,16 @@ class DBPayer extends DBTable
         }
         return $result->fetch_assoc()["ID"];
     }
+
+    public function validateEmail($validationID){
+        $result = $this->driver->query("SELECT EMAIL_VALIDATED FROM ".$this->name." WHERE VALIDATION_ID='".$this->driver->real_escape_string($validationID)."'");
+        $row = $result->fetch_assoc();
+        if (!$row or $row["EMAIL_VALIDATED"] == "1") {
+            throw new \Exception("Couldn't validate email with ID ".$validationID." in ".$this->name.". Either the ID is invalid or this email address has already been validated.");
+        }
+        $query = "UPDATE ".$this->name." SET EMAIL_VALIDATED = 1 WHERE VALIDATION_ID = '".$this->driver->real_escape_string($validationID)."'";
+        if ($this->driver->query($query) === FALSE) {
+            throw new \Exception("Couldn't validate email address with id ".$this->driver->real_escape_string($validationID)." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
+        }
+    }
 }
