@@ -16,8 +16,8 @@ class Expense
     protected $data = ["id" => NULL,
         "expense_date" => NULL,
         "location" => NULL,
-        "payer" => NULL,
-        "payer_id" => NULL,
+        "account" => NULL,
+        "account_id" => NULL,
         "payee" => NULL,
         "payee_id" => NULL,
         "category" => NULL,
@@ -47,7 +47,7 @@ class Expense
     }
 
     public function asPrintableArray(){
-        $keys = array("id", "expense_date", "location", "payer", "payee",
+        $keys = array("id", "expense_date", "location", "account", "payee",
             "category", "sub_category", "amount", "currency", "state");
         return array_intersect_key($this->data, array_flip($keys));/*array(
             "id" => $this->id,
