@@ -30,11 +30,11 @@ class DBAccount extends DBTable
 
     public function addAccount($name, $currentAmount, $payerID){
         if($this->dbPayers->checkIfPayerIDExists($payerID) !== false){
-            throw new \Exception("Couldn't insert account ".$name.", ".$currentAmount.", ".$payerID.", "." in ".$this->name.
+            throw new \Exception("Couldn't insert account ".$name.", ".$currentAmount.", ".$payerID." in ".$this->name.
                 ". Reason: Payer ID does not exist.");
         }
         if($this->doesAccountExists($name, $payerID) !== false){
-            throw new \Exception("Couldn't insert account ".$name.", ".$currentAmount.", ".$payerID.", "." in ".$this->name.
+            throw new \Exception("Couldn't insert account ".$name.", ".$currentAmount.", ".$payerID." in ".$this->name.
                 ". Reason: This account name already exists for this payer.");
         }
         $currentUTCDate = new \DateTime("now", new \DateTimeZone("UTC"));
