@@ -17,7 +17,8 @@ class DBPayerTest extends TableCreationTest
         "USERNAME" => "ruijan",
         "PASSWORD" => "admin",
         "REGISTERED_DATE" => "",
-        "LAST_CONNECTION" => ""];
+        "LAST_CONNECTION" => "",
+        "VALIDATION_ID" => '26457894'];
     public function setUp(){
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
@@ -27,7 +28,9 @@ class DBPayerTest extends TableCreationTest
             "USERNAME" => "char(50)",
             "PASSWORD" => "char(50)",
             "REGISTERED_DATE" => "datetime",
-            "LAST_CONNECTION" => "datetime"];
+            "LAST_CONNECTION" => "datetime",
+            "VALIDATION_ID" => "int(11)",
+            "EMAIL_VALIDATED" => "bit(1)"];
         $this->name = "payers";
         $this->payer["REGISTERED_DATE"] = new \DateTime("now", new \DateTimeZone("UTC"));
         $this->payer["REGISTERED_DATE"] = $this->payer["REGISTERED_DATE"]->format("Y-m-d H:i:s");
@@ -100,4 +103,6 @@ class DBPayerTest extends TableCreationTest
         $payerID = $this->table->checkIfPayerEmailExists("test@hotmail.com");
         $this->assertFalse($payerID);
     }
+
+    
 }

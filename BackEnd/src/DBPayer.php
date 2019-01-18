@@ -26,6 +26,8 @@ class DBPayer extends DBTable
                         PASSWORD char(50) NOT NULL,
                         REGISTERED_DATE datetime DEFAULT '2018-01-01 00:00:00',
                         LAST_CONNECTION datetime DEFAULT '2018-01-01 00:00:00',
+                        VALIDATION_ID int(11) UNIQUE,
+                        EMAIL_VALIDATED bit DEFAULT 0,
                         PRIMARY KEY (ID)";
     }
 
@@ -38,7 +40,7 @@ class DBPayer extends DBTable
         }
         $values = implode(", ", $values);
         $query = 'INSERT INTO '.$this->name.
-            ' (FIRST_NAME, NAME, EMAIL, USERNAME, PASSWORD, REGISTERED_DATE, LAST_CONNECTION) VALUES ('.
+            ' (FIRST_NAME, NAME, EMAIL, USERNAME, PASSWORD, REGISTERED_DATE, LAST_CONNECTION, VALIDATION_ID) VALUES ('.
             $values.')';
         if ($this->driver->query($query) === FALSE) {
             throw new \Exception("Couldn't insert payer ".implode(" ,", $payer)." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
