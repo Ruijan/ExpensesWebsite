@@ -47,7 +47,7 @@ abstract class TableCreationTest extends TestCase
         }
         $this->assertEquals($columns->num_rows, count($this->columns));
         foreach($columns as $column){
-            $this->assertEquals($column["Type"], $this->columns[$column["Field"]]);
+            $this->assertEquals($this->columns[$column["Field"]], $column["Type"]);
             $existingColumn[$column["Field"]] += 1;
             $this->assertEquals($existingColumn[$column["Field"]], 1);
         }
