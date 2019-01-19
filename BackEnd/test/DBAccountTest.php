@@ -47,6 +47,20 @@ class DBAccountTest extends TableCreationTest
         $this->assertEquals($this->payerID, $result["PAYER_ID"]);
     }
 
+    public function testAddAccountWithWrongPayerIDShouldThrow(){
+        $success = false;
+        $this->dbPayers->expects($this->once())
+            ->method('checkIfPayerIDExists')->with($this->payerID)->will($this->returnValue(true));
+        try{
+            $this->table->addAccount($this->accountName, $this->currentAmount, $this->payerID);
+        }
+        catch(\Exception $e){
+            $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();
+            $success = $result === NULL;
+        }
+        $this->assertTrue($success);
+    }
+
     public function testAddAccountWithExistingName(){
         $this->dbPayers->expects($this->exactly(2))
             ->method('checkIfPayerIDExists')->with($this->payerID)->will($this->returnValue(false));
