@@ -11,17 +11,17 @@ require_once("TableCreationTest.php");
 
 class DBSubCategoriesTest extends TableCreationTest
 {
-    private $subCategory = ["PARENT_ID" => "1", "NAME" => "Food", "PAYER_ID" => "1", "ADDED_DATE" => ""];
+    private $subCategory = ["PARENT_ID" => "1", "NAME" => "Food", "USER_ID" => "1", "ADDED_DATE" => ""];
     private $dbPayers;
     private $dbCategories;
     public function setUp(){
-        $this->dbPayers = $this->getMockBuilder(\src\DBPayer::class)->disableOriginalConstructor()->setMethods(['checkIfPayerIDExists'])->getMock();
-        $this->dbCategories = $this->getMockBuilder(\src\DBPayer::class)->disableOriginalConstructor()->setMethods(['checkIfCategoryIDExists'])->getMock();
+        $this->dbPayers = $this->getMockBuilder(\src\DBUser::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
+        $this->dbCategories = $this->getMockBuilder(\src\DBUser::class)->disableOriginalConstructor()->setMethods(['checkIfCategoryIDExists'])->getMock();
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "PARENT_ID" => "int(11)",
             "NAME" => "char(50)",
-            "PAYER_ID" => "int(11)",
+            "USER_ID" => "int(11)",
             "ADDED_DATE" => "datetime"];
         $this->name = "sub_categories";
         $this->subCategory["ADDED_DATE"] = new \DateTime("now", new \DateTimeZone("UTC"));
@@ -41,9 +41,9 @@ class DBSubCategoriesTest extends TableCreationTest
 
     public function testAddCategory(){
         $this->dbPayers->expects($this->once())
-            ->method('checkIfPayerIDExists')->with($this->subCategory["PAYER_ID"])->will($this->returnValue(true));
+            ->method('checkIfIDExists')->with($this->subCategory["USER_ID"])->will($this->returnValue(true));
         $this->dbCategories->expects($this->once())
-            ->method('checkIfCategoryIDExists')->with($this->subCategory["PARENT_ID"])->will($this->returnValue(true));
+            ->method('checkIfCategoryIDExists')->with($this->subCategory["USER_ID"])->will($this->returnValue(true));
         $this->table->addSubCategory($this->subCategory);
         $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();
         $this->assertArraySubset($this->subCategory, $result, true);
@@ -51,7 +51,7 @@ class DBSubCategoriesTest extends TableCreationTest
 
     public function testAddCategoryWithWrongPayerIDShouldThrow(){
         $this->dbPayers->expects($this->once())
-            ->method('checkIfPayerIDExists')->with($this->subCategory["PAYER_ID"])->will($this->returnValue(false));
+            ->method('checkIfIDExists')->with($this->subCategory["USER_ID"])->will($this->returnValue(false));
         try{
             $this->table->addSubCategory($this->subCategory);
         }
@@ -66,9 +66,9 @@ class DBSubCategoriesTest extends TableCreationTest
         $expectedRows = 0;
         $currentRows = 1;
         $this->dbPayers->expects($this->once())
-            ->method('checkIfPayerIDExists')->with($this->subCategory["PAYER_ID"])->will($this->returnValue(true));
+            ->method('checkIfIDExists')->with($this->subCategory["USER_ID"])->will($this->returnValue(true));
         $this->dbCategories->expects($this->once())
-            ->method('checkIfCategoryIDExists')->with($this->subCategory["PARENT_ID"])->will($this->returnValue(false));
+            ->method('checkIfCategoryIDExists')->with($this->subCategory["USER_ID"])->will($this->returnValue(false));
         try{
             $this->table->addSubCategory($this->subCategory);
         }
@@ -82,9 +82,9 @@ class DBSubCategoriesTest extends TableCreationTest
 
     public function testAddCategoryTwiceShouldThrow(){
         $this->dbPayers->expects($this->exactly(2))
-            ->method('checkIfPayerIDExists')->with($this->subCategory["PAYER_ID"])->will($this->returnValue(true));
+            ->method('checkIfIDExists')->with($this->subCategory["USER_ID"])->will($this->returnValue(true));
         $this->dbCategories->expects($this->exactly(2))
-            ->method('checkIfCategoryIDExists')->with($this->subCategory["PARENT_ID"])->will($this->returnValue(true));
+            ->method('checkIfCategoryIDExists')->with($this->subCategory["USER_ID"])->will($this->returnValue(true));
         $this->table->addSubCategory($this->subCategory);
         try{
             $this->table->addSubCategory($this->subCategory);

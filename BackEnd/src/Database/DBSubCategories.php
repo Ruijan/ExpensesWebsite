@@ -24,7 +24,7 @@ class DBSubCategories extends DBTable
         return "ID int(11) AUTO_INCREMENT UNIQUE,
                         PARENT_ID int(11) NOT NULL,
                         NAME char(50) NOT NULL UNIQUE,
-                        PAYER_ID int(11) NOT NULL,
+                        USER_ID int(11) NOT NULL,
                         ADDED_DATE datetime DEFAULT '2018-01-01 00:00:00',
                         PRIMARY KEY (ID)";
     }
@@ -38,11 +38,11 @@ class DBSubCategories extends DBTable
     }
 
     public function addSubCategory($subCategory){
-        if($this->dbPayers->checkIfPayerIDExists($subCategory["PAYER_ID"]) !== true){
+        if($this->dbPayers->checkIfIDExists($subCategory["USER_ID"]) == false){
             throw new \Exception("Couldn't insert sub category ".implode(" ,", $subCategory)." in ".$this->name.
                 ". Reason: Payer ID does not exist.");
         }
-        if($this->dbCategories->checkIfCategoryIDExists($subCategory["PARENT_ID"]) !== true){
+        if($this->dbCategories->checkIfCategoryIDExists($subCategory["PARENT_ID"]) == false){
             throw new \Exception("Couldn't insert sub category ".implode(" ,", $subCategory)." in ".$this->name.
                 ". Reason: Parent Category ID does not exist.");
         }
@@ -54,7 +54,7 @@ class DBSubCategories extends DBTable
         }
         $values = implode(", ", $values);
         $query = 'INSERT INTO '.$this->driver->real_escape_string($this->name).
-            ' (PARENT_ID, NAME, PAYER_ID, ADDED_DATE) VALUES ('.$values.')';
+            ' (PARENT_ID, NAME, USER_ID, ADDED_DATE) VALUES ('.$values.')';
         if ($this->driver->query($query) === FALSE) {
             throw new \Exception("Couldn't insert sub category ".implode(", ", $subCategory)."in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
         }

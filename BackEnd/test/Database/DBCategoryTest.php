@@ -11,14 +11,14 @@ require_once("TableCreationTest.php");
 
 class DBCategoryTest extends TableCreationTest
 {
-    private $dbPayers;
-    private $category = ["NAME" => "Food", "PAYER_ID" => "1", "ADDED_DATE" => ""];
+    private $usersTable;
+    private $category = ["NAME" => "Food", "USER_ID" => "1", "ADDED_DATE" => ""];
     public function setUp(){
-        $this->dbPayers = $this->getMockBuilder(\src\DBPayer::class)->disableOriginalConstructor()->setMethods(['checkIfPayerIDExists'])->getMock();
+        $this->usersTable = $this->getMockBuilder(\src\DBUser::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "NAME" => "char(50)",
-            "PAYER_ID" => "int(11)",
+            "USER_ID" => "int(11)",
             "ADDED_DATE" => "datetime"];
         $this->name = "categories";
         $this->category["ADDED_DATE"] = new \DateTime("now", new \DateTimeZone("UTC"));
@@ -27,8 +27,8 @@ class DBCategoryTest extends TableCreationTest
 
     public function createTable()
     {
-        $this->table = new \src\DBCategories($this->database, $this->dbPayers);
-        $this->assertEquals($this->table->getDBPayers(), $this->dbPayers);
+        $this->table = new \src\DBCategories($this->database, $this->usersTable);
+        $this->assertEquals($this->table->getUsersTable(), $this->usersTable);
     }
 
     public function initTable(){
@@ -36,16 +36,16 @@ class DBCategoryTest extends TableCreationTest
     }
 
     public function testAddCategory(){
-        $this->dbPayers->expects($this->once())
-            ->method('checkIfPayerIDExists')->with($this->category["PAYER_ID"])->will($this->returnValue($this->category["PAYER_ID"]));
+        $this->usersTable->expects($this->once())
+            ->method('checkIfIDExists')->with($this->category["USER_ID"])->will($this->returnValue(true));
         $this->table->addCategory($this->category);
         $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();
         $this->assertArraySubset($this->category, $result, true);
     }
 
     public function testAddCategoryWithWrongPayerIDShouldThrow(){
-        $this->dbPayers->expects($this->once())
-            ->method('checkIfPayerIDExists')->with($this->category["PAYER_ID"])->will($this->returnValue(2));
+        $this->usersTable->expects($this->once())
+            ->method('checkIfIDExists')->with($this->category["USER_ID"])->will($this->returnValue(false));
         try{
             $this->table->addCategory($this->category);
         }
@@ -57,8 +57,8 @@ class DBCategoryTest extends TableCreationTest
     }
 
     public function testAddCategoryTwiceShouldThrow(){
-        $this->dbPayers->expects($this->exactly(2))
-            ->method('checkIfPayerIDExists')->with($this->category["PAYER_ID"])->will($this->returnValue($this->category["PAYER_ID"]));
+        $this->usersTable->expects($this->exactly(2))
+            ->method('checkIfIDExists')->with($this->category["USER_ID"])->will($this->returnValue(true));
         $this->table->addCategory($this->category);
         try{
             $this->table->addCategory($this->category);

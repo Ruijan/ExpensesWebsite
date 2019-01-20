@@ -9,7 +9,7 @@
 namespace src;
 require_once ("DBTable.php");
 
-class DBPayer extends DBTable
+class DBUser extends DBTable
 {
     public function __construct($database)
     {
@@ -30,7 +30,7 @@ class DBPayer extends DBTable
                         PRIMARY KEY (ID)";
     }
 
-    public function addPayer($payer){
+    public function addUser($payer){
         $values = [];
         $indexValue = 0;
         foreach ($payer as $value) {
@@ -46,7 +46,7 @@ class DBPayer extends DBTable
         }
     }
 
-    public function checkIfPayerIDExists($expectedPayerID){
+    public function checkIfIDExists($expectedPayerID){
         $query = "SELECT ID FROM ".$this->name." WHERE ID = ".$this->driver->real_escape_string($expectedPayerID);
         $result = $this->driver->query($query);
         if ($result === FALSE ) {
@@ -57,7 +57,7 @@ class DBPayer extends DBTable
         }
         return true;
     }
-    public function checkIfPayerEmailExists($email){
+    public function checkIfEmailExists($email){
         $query = "SELECT ID FROM ".$this->name." WHERE EMAIL = '".$this->driver->real_escape_string($email)."'";
         $result = $this->driver->query($query);
         if ($result === FALSE ) {
@@ -92,7 +92,7 @@ class DBPayer extends DBTable
     }
 
     public function updateLastConnection($userID, $lastConnection){
-        if(!$this->checkIfPayerIDExists($userID)){
+        if(!$this->checkIfIDExists($userID)){
             throw new \Exception("Couldn't find payee with ID ".$userID." in ".$this->name);
         }
         $query = "UPDATE ".$this->name." SET LAST_CONNECTION = '".$this->driver->real_escape_string($lastConnection)."' WHERE ID = '".$this->driver->real_escape_string($userID)."'";
@@ -102,7 +102,7 @@ class DBPayer extends DBTable
     }
 
     public function getUserFromEmail($email){
-        if($this->checkIfPayerEmailExists($email)){
+        if($this->checkIfEmailExists($email)){
             $result = $this->driver->query("SELECT ID, FIRST_NAME, NAME, REGISTERED_DATE, LAST_CONNECTION, EMAIL_VALIDATED, EMAIL  FROM ".
                 $this->name." WHERE EMAIL='".$this->driver->real_escape_string($email)."'");
             return $result->fetch_assoc();

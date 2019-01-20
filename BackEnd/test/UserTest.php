@@ -29,7 +29,7 @@ class UserTest extends TestCase
         $this->dbUser["REGISTERED_DATE"] = new \DateTime("now", new \DateTimeZone("UTC"));
         $this->dbUser["REGISTERED_DATE"] = $this->dbUser["REGISTERED_DATE"]->format("Y-m-d H:i:s");
         $this->dbUser["LAST_CONNECTION"] = $this->dbUser["REGISTERED_DATE"];
-        $this->tableUsers = $this->getMockBuilder(\src\DBPayer::class)->disableOriginalConstructor()->setMethods(['areCredentialsValid', 'getUserFromEmail'])->getMock();
+        $this->tableUsers = $this->getMockBuilder(\src\DBUser::class)->disableOriginalConstructor()->setMethods(['areCredentialsValid', 'getUserFromEmail'])->getMock();
         $this->tableAccounts = $this->getMockBuilder(\src\DBAccount::class)->disableOriginalConstructor()->setMethods(['getAccountsFromUserID'])->getMock();
     }
 

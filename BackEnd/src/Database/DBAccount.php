@@ -11,11 +11,11 @@ require_once ("DBTable.php");
 
 class DBAccount extends DBTable
 {
-    private $dbPayers;
-    public function __construct($database, $dbPayers)
+    private $usersTable;
+    public function __construct($database, $usersTable)
     {
         parent::__construct($database, "accounts");
-        $this->dbPayers = $dbPayers;
+        $this->usersTable = $usersTable;
     }
 
     public function getTableHeader()
@@ -29,7 +29,7 @@ class DBAccount extends DBTable
     }
 
     public function addAccount($name, $currentAmount, $payerID){
-        if($this->dbPayers->checkIfPayerIDExists($payerID) !== false){
+        if($this->usersTable->checkIfIDExists($payerID) !== false){
             throw new \Exception("Couldn't insert account ".$name.", ".$currentAmount.", ".$payerID." in ".$this->name.
                 ". Reason: Payer ID does not exist.");
         }
@@ -46,8 +46,8 @@ class DBAccount extends DBTable
         }
     }
 
-    public function getDBPayers(){
-        return $this->dbPayers;
+    public function getUsersTable(){
+        return $this->usersTable;
     }
 
     public function doesAccountExists($accountName, $payerID){
