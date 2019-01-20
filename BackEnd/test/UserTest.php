@@ -48,6 +48,7 @@ class UserTest extends TestCase
         $_POST["email"] = $this->dbUser["EMAIL"];
         $_POST["password"] = $this->password;
         $this->user = new \src\User();
+        $this->user->disconnect();
         $this->tableUsers->expects($this->exactly(1))
             ->method('connectUser')->with($this->dbUser["EMAIL"], $this->password)->will($this->returnValue(true));
         $this->tableUsers->expects($this->once())
@@ -118,7 +119,7 @@ class UserTest extends TestCase
         $this->assertEquals([null], $this->user->getAccounts());
     }
 
-    public function testGetUserAsDictionnary(){
+    public function testGetUserAsDictionary(){
         $this->initializeSession();
         $this->user = new \src\User();
         $this->assertEquals($this->dbUser, $this->user->asDict());
