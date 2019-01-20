@@ -43,7 +43,6 @@ class Expense
             }
         }
         $this->data = array_merge($this->data, $newArray);
-
     }
 
     public function asPrintableArray(){
