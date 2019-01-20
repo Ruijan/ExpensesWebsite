@@ -35,6 +35,9 @@ class User
         if(!$this->connected and $userTable->areCredentialsValid($_POST["email"], $_POST["password"])){
             $dbUser = $userTable->getUserFromEmail($_POST["email"]);
             $this->fillUserFromArray($dbUser);
+            $now = new \DateTime("now", new \DateTimeZone("UTC"));
+            $now = $now->format("Y-m-d H:i:s");
+            $userTable->updateLastConnection($this->id, $now);
             $this->initializeSession();
             $this->connected = true;
         }

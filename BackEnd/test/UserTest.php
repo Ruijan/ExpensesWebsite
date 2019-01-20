@@ -29,7 +29,7 @@ class UserTest extends TestCase
         $this->dbUser["REGISTERED_DATE"] = new \DateTime("now", new \DateTimeZone("UTC"));
         $this->dbUser["REGISTERED_DATE"] = $this->dbUser["REGISTERED_DATE"]->format("Y-m-d H:i:s");
         $this->dbUser["LAST_CONNECTION"] = $this->dbUser["REGISTERED_DATE"];
-        $this->tableUsers = $this->getMockBuilder(\src\DBUser::class)->disableOriginalConstructor()->setMethods(['areCredentialsValid', 'getUserFromEmail'])->getMock();
+        $this->tableUsers = $this->getMockBuilder(\src\DBUser::class)->disableOriginalConstructor()->setMethods(['areCredentialsValid', 'getUserFromEmail', 'updateLastConnection'])->getMock();
         $this->tableAccounts = $this->getMockBuilder(\src\DBAccount::class)->disableOriginalConstructor()->setMethods(['getAccountsFromUserID'])->getMock();
     }
 
@@ -53,6 +53,10 @@ class UserTest extends TestCase
             ->method('areCredentialsValid')->with($this->dbUser["EMAIL"], $this->password)->will($this->returnValue(true));
         $this->tableUsers->expects($this->once())
             ->method('getUserFromEmail')->with($this->dbUser["EMAIL"])->will($this->returnValue($this->dbUser));
+        $now = new \DateTime("now", new \DateTimeZone("UTC"));
+        $now = $now->format("Y-m-d H:i:s");
+        $this->tableUsers->expects($this->once())
+            ->method('updateLastConnection')->with($this->dbUser["ID"])->will($this->returnValue($now));
         $this->user->connect($this->tableUsers);
         $this->checkIfUserIsConnected();
     }
