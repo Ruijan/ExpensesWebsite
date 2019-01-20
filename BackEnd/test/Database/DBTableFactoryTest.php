@@ -14,8 +14,8 @@ class DBTableFactoryTest extends TestCase
 {
     protected $driver;
     protected $database;
-    private $tables = ["DBCategories", "DBCurrency", "DBExpenses", "DBPayee", "DBPayer", "DBSubCategories", "DBAccount"];
-    private $dbTables = ["categories", "sub_categories", "currencies", "expenses", "payees", "payers", "accounts"];
+    private $tables = ["DBCategories", "DBCurrency", "DBExpenses", "DBPayee", "DBUser", "DBSubCategories", "DBAccount"];
+    private $dbTables = ["categories", "sub_categories", "currencies", "expenses", "payees", "users", "accounts"];
     private $factory;
 
     public function setUp(){
@@ -26,7 +26,7 @@ class DBTableFactoryTest extends TestCase
         $this->database = $this->getMockBuilder(\src\Database::class)->disableOriginalConstructor()->setMethods(["getDriver", "getTableByName"])->getMock();
         $this->database->expects($this->exactly(4))
             ->method('getTableByName')
-            ->withConsecutive(["dbpayer"], ["dbpayer"], ["dbcategories"], ["dbpayer"]);
+            ->withConsecutive(["dbuser"], ["dbuser"], ["dbcategories"], ["dbuser"]);
         /*$this->database->expects($this->once())
             ->method('getTableByName')
             ->with("dbcategories");*/

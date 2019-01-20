@@ -8,33 +8,33 @@
 
 namespace src;
 require_once ("DBTable.php");
-require_once ("DBPayer.php");
+require_once("DBUser.php");
 
 class DBCategories extends DBTable
 {
-    private $dbPayers;
-    public function __construct($database, $dbPayers){
+    private $usersTable;
+    public function __construct($database, $usersTable){
         parent::__construct($database, "categories");
-        $this->dbPayers = $dbPayers;
+        $this->usersTable = $usersTable;
     }
 
     public function getTableHeader()
     {
         return "ID int(11) AUTO_INCREMENT UNIQUE,
                         NAME char(50) NOT NULL UNIQUE,
-                        PAYER_ID int(11) NOT NULL,
+                        USER_ID int(11) NOT NULL,
                         ADDED_DATE datetime DEFAULT '2018-01-01 00:00:00',
                         PRIMARY KEY (ID)";
     }
 
-    public function getDBPayers(){
-        return $this->dbPayers;
+    public function getUsersTable(){
+        return $this->usersTable;
     }
 
     public function addCategory($category){
-        if($this->dbPayers->checkIfPayerIDExists($category["PAYER_ID"]) !== $category["PAYER_ID"]){
+        if($this->usersTable->checkIfIDExists($category["USER_ID"]) == false){
             throw new \Exception("Couldn't insert category ".implode(" ,", $category)." in ".$this->name.
-                ". Reason: Payer ID does not exist.");
+                ". Reason: User ID does not exist.");
         }
         $values = [];
         $indexValue = 0;
@@ -44,7 +44,7 @@ class DBCategories extends DBTable
         }
         $values = implode(", ", $values);
         $query = 'INSERT INTO '.$this->driver->real_escape_string($this->name).
-            ' (NAME, PAYER_ID, ADDED_DATE) VALUES ('.$values.')';
+            ' (NAME, USER_ID, ADDED_DATE) VALUES ('.$values.')';
         if ($this->driver->query($query) === FALSE) {
             throw new \Exception("Couldn't insert category ".implode(" ,", $category)." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
         }

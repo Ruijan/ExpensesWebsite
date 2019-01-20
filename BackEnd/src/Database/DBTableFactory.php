@@ -14,7 +14,7 @@ require_once ("DBCurrency.php");
 require_once ("DBSubCategories.php");
 require_once ("DBExpenses.php");
 require_once ("DBPayee.php");
-require_once ("DBPayer.php");
+require_once("DBUser.php");
 require_once ("DBAccount.php");
 
 
@@ -24,19 +24,19 @@ class DBTableFactory
 
         switch ($tableName) {
             case "DBCategories":
-                return new DBCategories($database, $database->getTableByName("dbpayer"));
+                return new DBCategories($database, $database->getTableByName("dbuser"));
             case "DBSubCategories":
-                return new DBSubCategories($database, $database->getTableByName("dbpayer"), $database->getTableByName("dbcategories"));
+                return new DBSubCategories($database, $database->getTableByName("dbuser"), $database->getTableByName("dbcategories"));
             case "DBCurrency":
                 return new DBCurrency($database);
             case "DBExpenses":
                 return new DBExpenses($database);
             case "DBPayee":
                 return new DBPayee($database);
-            case "DBPayer":
-                return new DBPayer($database);
+            case "DBUser":
+                return new DBUser($database);
             case "DBAccount":
-                return new DBAccount($database, $database->getTableByName("dbpayer"));
+                return new DBAccount($database, $database->getTableByName("dbuser"));
         }
         throw new \Exception("Invalid table type: ". $tableName);
     }
