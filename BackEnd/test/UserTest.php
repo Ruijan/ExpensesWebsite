@@ -64,7 +64,7 @@ class UserTest extends TestCase
         $this->user->connect($this->databaseUsers);
     }
 
-    public function initializeSession(){
+    private function initializeSession(){
         $_SESSION["FIRST_NAME"] = $this->dbUser["FIRST_NAME"];
         $_SESSION["NAME"] = $this->dbUser["NAME"];
         $_SESSION["REGISTERED_DATE"] = $this->dbUser["REGISTERED_DATE"];
@@ -84,6 +84,27 @@ class UserTest extends TestCase
         $this->assertEquals($this->dbUser["EMAIL"], $this->user->getEmail());
         $this->assertEquals($this->dbUser, $_SESSION);
         $this->assertTrue($this->user->isConnected());
+    }
+
+    public function testDisconnectUser(){
+        $this->initializeSession();
+        $this->user = new \src\User();
+        $this->user->disconnect();
+        $this->assertFalse(isset($_SESSION["FIST_NAME"]));
+        $this->assertFalse(isset($_SESSION["NAME"]));
+        $this->assertFalse(isset($_SESSION["REGISTERED_DATE"]));
+        $this->assertFalse(isset($_SESSION["LAST_CONNECTION"]));
+        $this->assertFalse(isset($_SESSION["EMAIL_VALIDATED"]));
+        $this->assertFalse(isset($_SESSION["ID"]));
+        $this->assertFalse(isset($_SESSION["EMAIL"]));
+        $this->assertFalse($this->user->isConnected());
+        $this->assertEquals(null, $this->user->getFirstName());
+        $this->assertEquals(null, $this->user->getLastName());
+        $this->assertEquals(null, $this->user->getLastConnectionDate());
+        $this->assertEquals(null, $this->user->getRegistrationDate());
+        $this->assertEquals(null, $this->user->getRegistrationDate());
+        $this->assertEquals(null, $this->user->getEmail());
+        $this->assertEquals(null, $this->user->getID());
     }
 
     public function tearDown()

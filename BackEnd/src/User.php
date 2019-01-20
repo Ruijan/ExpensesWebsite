@@ -42,6 +42,24 @@ class User
         }
     }
 
+    public function disconnect(){
+        $this->connected = false;
+        $this->lastName = null;
+        $this->firstName = null;
+        $this->lastConnection = null;
+        $this->registrationDate = null;
+        $this->emailValidated = null;
+        $this->id = null;
+        $this->email = null;
+        unset($_SESSION["FIRST_NAME"]);
+        unset($_SESSION["NAME"]);
+        unset($_SESSION["REGISTERED_DATE"]);
+        unset($_SESSION["LAST_CONNECTION"]);
+        unset($_SESSION["EMAIL_VALIDATED"]);
+        unset($_SESSION["EMAIL"]);
+        unset($_SESSION["ID"]);
+    }
+
     private function fillUserFromArray($array){
         $this->lastName = $array["NAME"];
         $this->firstName = $array["FIRST_NAME"];
