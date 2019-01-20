@@ -19,6 +19,7 @@ class User
     private $registrationDate;
     private $emailValidated;
     private $connected = false;
+    private $accounts = [];
 
     public function __construct()
     {
@@ -58,6 +59,10 @@ class User
         unset($_SESSION["EMAIL_VALIDATED"]);
         unset($_SESSION["EMAIL"]);
         unset($_SESSION["ID"]);
+    }
+
+    public function loadAccounts($tableAccounts){
+        $this->accounts = $tableAccounts->getAccountsFromUserID($this->id);
     }
 
     private function fillUserFromArray($array){
@@ -108,5 +113,15 @@ class User
     }
     public function getID(){
         return $this->id;
+    }
+
+    public function getAccounts(){
+        return $this->accounts;
+    }
+
+    public function asDict(){
+        return ["FIRST_NAME" => $this->firstName, "NAME" => $this->lastName, "EMAIL" => $this->email, "ID" => $this->id,
+            "EMAIL_VALIDATED" => $this->emailValidated, "LAST_CONNECTION" => $this->lastConnection,
+            "REGISTERED_DATE" => $this->registrationDate];
     }
 }
