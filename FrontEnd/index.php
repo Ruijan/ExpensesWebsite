@@ -14,7 +14,7 @@ class IndexPage{
   private function createHead(){
     return "<head>
         <title>SignIn</title>
-        <link rel=\"stylesheet\" href=\"style.css\"
+        <link rel=\"stylesheet\" href=\"style.css\"/>
       </head>";
   }
 
@@ -24,7 +24,7 @@ class IndexPage{
 
   private function createHeader(){
     return "<div>
-      <h1 class=\"titleFont\">Expenses website</h1>
+      <h1 class=\"titleFont titleColor\">Expenses website</h1>
       <h3>A penny saved is a penny earned.</br>
        - <em>Benjamin Franklin</em></h3>
     </div>";

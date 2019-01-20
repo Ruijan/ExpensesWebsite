@@ -1,11 +1,19 @@
+/* Title */
 .titleFont {
   font-family: sans-serif;
 }
-.centeredButtons{
+
+.titleColor {
+  color: green;
+}
+
+/* Buttons */
+.centeredButtons {
   width: 250px;
   margin: 200px auto;
   text-align: center;
 }
+
 .btn {
   padding: 14px 28px;
   font-size: 16px;
@@ -14,11 +22,68 @@
 
 .btn:hover {background: #eee;}
 
-.success {color: green;}
-.info {color: dodgerblue;}
-.warning {color: orange;}
-.danger {color: red;}
-.default {color: black;}
+/* Form */
+
+.container {
+  padding: 100px;
+  width: 500px;
+  margin: 0 auto;
+}
+
+.frm {
+  margin: 50 auto;
+  background-color:#fff;
+  border : 1px solid ##F5ECCE;
+  padding : 30px;
+}
+
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  border: none;
+  background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+#message {
+  width: 360px;
+  display:none;
+  background: #f1f1f1;
+  color: #000;
+  position: relative;
+  left: 990px;
+  bottom: 500px;
+  padding: 20px;
+  margin-top: 10px;
+}
+
+#message p {
+  padding: 0px 35px;
+  font-size: 18px;
+}
+
+.valid {
+  color: green;
+}
+.valid:before {
+  position: relative;
+  left: -35px;
+  content: "✔";
+}
+.invalid {
+  color: red;
+}
+.invalid:before {
+  position: relative;
+  left: -35px;
+  content: "✖";
+}
 
 
 body:before {
