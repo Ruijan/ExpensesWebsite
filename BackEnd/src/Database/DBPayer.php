@@ -22,7 +22,6 @@ class DBPayer extends DBTable
                         FIRST_NAME char(50) NOT NULL,
                         NAME char(50) NOT NULL,
                         EMAIL char(50) NOT NULL UNIQUE,
-                        USERNAME char(50) NOT NULL UNIQUE,
                         PASSWORD char(50) NOT NULL,
                         REGISTERED_DATE datetime DEFAULT '2018-01-01 00:00:00',
                         LAST_CONNECTION datetime DEFAULT '2018-01-01 00:00:00',
@@ -40,7 +39,7 @@ class DBPayer extends DBTable
         }
         $values = implode(", ", $values);
         $query = 'INSERT INTO '.$this->name.
-            ' (FIRST_NAME, NAME, EMAIL, USERNAME, PASSWORD, REGISTERED_DATE, LAST_CONNECTION, VALIDATION_ID) VALUES ('.
+            ' (FIRST_NAME, NAME, EMAIL, PASSWORD, REGISTERED_DATE, LAST_CONNECTION, VALIDATION_ID) VALUES ('.
             $values.')';
         if ($this->driver->query($query) === FALSE) {
             throw new \Exception("Couldn't insert payer ".implode(" ,", $payer)." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
@@ -79,6 +78,34 @@ class DBPayer extends DBTable
         $query = "UPDATE ".$this->name." SET EMAIL_VALIDATED = 1 WHERE VALIDATION_ID = '".$this->driver->real_escape_string($validationID)."'";
         if ($this->driver->query($query) === FALSE) {
             throw new \Exception("Couldn't validate email address with id ".$this->driver->real_escape_string($validationID)." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
+        }
+    }
+
+    public function areCredentialsValid($email, $password){
+        $result = $this->driver->query("SELECT ID FROM ".$this->name." WHERE EMAIL='".$this->driver->real_escape_string($email).
+            "' AND PASSWORD='".$this->driver->real_escape_string($password)."'");
+        $row = $result->fetch_assoc();
+        if (!$row) {
+            return false;
+        }
+        return true;
+    }
+
+    public function updateLastConnection($userID, $lastConnection){
+        if(!$this->checkIfPayerIDExists($userID)){
+            throw new \Exception("Couldn't find payee with ID ".$userID." in ".$this->name);
+        }
+        $query = "UPDATE ".$this->name." SET LAST_CONNECTION = '".$this->driver->real_escape_string($lastConnection)."' WHERE ID = '".$this->driver->real_escape_string($userID)."'";
+        if ($this->driver->query($query) === FALSE) {
+            throw new \Exception("Couldn't update last connection for userid ".$this->driver->real_escape_string($userID)." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
+        }
+    }
+
+    public function getUserFromEmail($email){
+        if($this->checkIfPayerEmailExists($email)){
+            $result = $this->driver->query("SELECT ID, FIRST_NAME, NAME, REGISTERED_DATE, LAST_CONNECTION, EMAIL_VALIDATED, EMAIL  FROM ".
+                $this->name." WHERE EMAIL='".$this->driver->real_escape_string($email)."'");
+            return $result->fetch_assoc();
         }
     }
 }

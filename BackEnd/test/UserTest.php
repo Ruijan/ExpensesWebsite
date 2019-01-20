@@ -29,7 +29,7 @@ class UserTest extends TestCase
         $this->dbUser["REGISTERED_DATE"] = new \DateTime("now", new \DateTimeZone("UTC"));
         $this->dbUser["REGISTERED_DATE"] = $this->dbUser["REGISTERED_DATE"]->format("Y-m-d H:i:s");
         $this->dbUser["LAST_CONNECTION"] = $this->dbUser["REGISTERED_DATE"];
-        $this->tableUsers = $this->getMockBuilder(\src\DBPayer::class)->disableOriginalConstructor()->setMethods(['connectUser', 'getUserFromEmail'])->getMock();
+        $this->tableUsers = $this->getMockBuilder(\src\DBPayer::class)->disableOriginalConstructor()->setMethods(['areCredentialsValid', 'getUserFromEmail'])->getMock();
         $this->tableAccounts = $this->getMockBuilder(\src\DBAccount::class)->disableOriginalConstructor()->setMethods(['getAccountsFromUserID'])->getMock();
     }
 
@@ -50,7 +50,7 @@ class UserTest extends TestCase
         $this->user = new \src\User();
         $this->user->disconnect();
         $this->tableUsers->expects($this->exactly(1))
-            ->method('connectUser')->with($this->dbUser["EMAIL"], $this->password)->will($this->returnValue(true));
+            ->method('areCredentialsValid')->with($this->dbUser["EMAIL"], $this->password)->will($this->returnValue(true));
         $this->tableUsers->expects($this->once())
             ->method('getUserFromEmail')->with($this->dbUser["EMAIL"])->will($this->returnValue($this->dbUser));
         $this->user->connect($this->tableUsers);
@@ -59,7 +59,7 @@ class UserTest extends TestCase
 
     public function testConnectingUserWhileIsAlreadyConnected(){
         $this->tableUsers->expects($this->exactly(0))
-            ->method('connectUser');
+            ->method('areCredentialsValid');
         $this->tableUsers->expects($this->exactly(0))
             ->method('getUserFromEmail');
         $this->initializeSession();

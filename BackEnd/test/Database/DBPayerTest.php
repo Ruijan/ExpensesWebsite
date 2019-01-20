@@ -14,7 +14,6 @@ class DBPayerTest extends TableCreationTest
     private $payer = ["FIRST_NAME" => "Julien",
         "NAME" => "Rechenmann",
         "EMAIL" => "jujudavid321@hotmail.com",
-        "USERNAME" => "ruijan",
         "PASSWORD" => "admin",
         "REGISTERED_DATE" => "",
         "LAST_CONNECTION" => "",
@@ -25,7 +24,6 @@ class DBPayerTest extends TableCreationTest
             "FIRST_NAME" => "char(50)",
             "NAME" => "char(50)",
             "EMAIL" => "char(50)",
-            "USERNAME" => "char(50)",
             "PASSWORD" => "char(50)",
             "REGISTERED_DATE" => "datetime",
             "LAST_CONNECTION" => "datetime",
@@ -116,5 +114,40 @@ class DBPayerTest extends TableCreationTest
         $this->table->addPayer($this->payer);
         $this->expectException(\Exception::class);
         $this->table->validateEmail(123456);
+    }
+
+    public function testValidCredentials(){
+        $this->table->addPayer($this->payer);
+        $this->assertTrue($this->table->areCredentialsValid($this->payer["EMAIL"], $this->payer["PASSWORD"]));
+    }
+
+    public function testValidCredentialsWithWrongPassword(){
+        $this->table->addPayer($this->payer);
+        $this->assertFalse($this->table->areCredentialsValid($this->payer["EMAIL"], "wrongPassword"));
+    }
+
+    public function testUpdateLastConnectionForUserID(){
+        $this->table->addPayer($this->payer);
+        $this->payer["ID"] = 1;
+        $this->payer["LAST_CONNECTION"] = "2018-01-25 20:05:45";
+        $this->table->updateLastConnection($this->payer["ID"], $this->payer["LAST_CONNECTION"]);
+        $result = $this->driver->query("SELECT LAST_CONNECTION FROM ".$this->name." WHERE ID='".$this->payer["ID"]."'");
+        $row = $result->fetch_assoc();
+        $this->assertEquals($this->payer["LAST_CONNECTION"], $row["LAST_CONNECTION"]);
+    }
+
+    public function testUpdateLastConnectionForWrongUserIDShouldThrow(){
+        $this->table->addPayer($this->payer);
+        $this->payer["ID"] = 2;
+        $newConnectionDate = "2018-01-25 20:05:45";
+        $this->expectException(\Exception::class);
+        $this->table->updateLastConnection($this->payer["ID"], $newConnectionDate);
+    }
+
+    public function testGetUserFromEmail(){
+        $this->table->addPayer($this->payer);
+        $this->payer["ID"] = '1';
+        $this->payer["EMAIL_VALIDATED"] = '0';
+        $this->assertArraySubset($this->table->getUserFromEmail($this->payer["EMAIL"]), $this->payer, true);
     }
 }

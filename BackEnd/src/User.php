@@ -32,7 +32,7 @@ class User
     }
 
     public function connect($userTable){
-        if(!$this->connected and $userTable->connectUser($_POST["email"], $_POST["password"])){
+        if(!$this->connected and $userTable->areCredentialsValid($_POST["email"], $_POST["password"])){
             $dbUser = $userTable->getUserFromEmail($_POST["email"]);
             $this->fillUserFromArray($dbUser);
             $this->initializeSession();
