@@ -1,1 +1,18 @@
-Sign Up here!
+<html>
+    <head>
+
+
+    </head>
+
+</html>
+
+
+<?php
+
+class signUpPage{
+
+
+
+
+}
+?>
