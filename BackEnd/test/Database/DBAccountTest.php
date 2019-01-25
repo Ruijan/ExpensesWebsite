@@ -13,15 +13,15 @@ class DBAccountTest extends TableCreationTest
 {
     private $accountName = "Savings";
     private $currentAmount = 5431;
-    private $payerID = 11;
-    private $dbPayers;
+    private $userID = 11;
+    private $tableUsers;
 
     public function setUp(){
-        $this->dbPayers = $this->getMockBuilder(\src\DBUser::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
+        $this->tableUsers = $this->getMockBuilder(\src\DBUser::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "NAME" => "char(50)",
-            "PAYER_ID" => "int(11)",
+            "USER_ID" => "int(11)",
             "ADDED_DATE" => "datetime",
             "CURRENT_AMOUNT" => "int(11)"];
         $this->name = "accounts";
@@ -29,8 +29,8 @@ class DBAccountTest extends TableCreationTest
 
     public function createTable()
     {
-        $this->table = new \src\DBAccount($this->database, $this->dbPayers);
-        $this->assertEquals($this->table->getUsersTable(), $this->dbPayers);
+        $this->table = new \src\DBAccount($this->database, $this->tableUsers);
+        $this->assertEquals($this->table->getUsersTable(), $this->tableUsers);
     }
 
     public function initTable(){
@@ -38,21 +38,21 @@ class DBAccountTest extends TableCreationTest
     }
 
     public function testAddAccount(){
-        $this->dbPayers->expects($this->once())
-            ->method('checkIfIDExists')->with($this->payerID)->will($this->returnValue(false));
-        $this->table->addAccount($this->accountName, $this->currentAmount, $this->payerID);
+        $this->tableUsers->expects($this->once())
+            ->method('checkIfIDExists')->with($this->userID)->will($this->returnValue(true));
+        $this->table->addAccount($this->accountName, $this->currentAmount, $this->userID);
         $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();
         $this->assertEquals($this->accountName, $result["NAME"]);
         $this->assertEquals($this->currentAmount, $result["CURRENT_AMOUNT"]);
-        $this->assertEquals($this->payerID, $result["PAYER_ID"]);
+        $this->assertEquals($this->userID, $result["USER_ID"]);
     }
 
-    public function testAddAccountWithWrongPayerIDShouldThrow(){
+    public function testAddAccountWithWrongUserIDShouldThrow(){
         $success = false;
-        $this->dbPayers->expects($this->once())
-            ->method('checkIfIDExists')->with($this->payerID)->will($this->returnValue(true));
+        $this->tableUsers->expects($this->once())
+            ->method('checkIfIDExists')->with($this->userID)->will($this->returnValue(false));
         try{
-            $this->table->addAccount($this->accountName, $this->currentAmount, $this->payerID);
+            $this->table->addAccount($this->accountName, $this->currentAmount, $this->userID);
         }
         catch(\Exception $e){
             $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();
@@ -62,11 +62,11 @@ class DBAccountTest extends TableCreationTest
     }
 
     public function testAddAccountWithExistingName(){
-        $this->dbPayers->expects($this->exactly(2))
-            ->method('checkIfIDExists')->with($this->payerID)->will($this->returnValue(false));
-        $this->table->addAccount($this->accountName, $this->currentAmount, $this->payerID);
+        $this->tableUsers->expects($this->exactly(2))
+            ->method('checkIfIDExists')->with($this->userID)->will($this->returnValue(true));
+        $this->table->addAccount($this->accountName, $this->currentAmount, $this->userID);
         try{
-            $this->table->addAccount($this->accountName, $this->currentAmount, $this->payerID);
+            $this->table->addAccount($this->accountName, $this->currentAmount, $this->userID);
         }
         catch (Exception $e){
             $count = 0;
@@ -82,15 +82,26 @@ class DBAccountTest extends TableCreationTest
     }
 
     public function testIfAccountAlreadyExistsShouldReturnTrue(){
-        $this->dbPayers->expects($this->once())
-            ->method('checkIfIDExists')->with($this->payerID)->will($this->returnValue(false));
-        $this->table->addAccount($this->accountName, $this->currentAmount, $this->payerID);
-        $isAlreadyInDB = $this->table->doesAccountExists($this->accountName, $this->payerID);
+        $this->tableUsers->expects($this->once())
+            ->method('checkIfIDExists')->with($this->userID)->will($this->returnValue(true));
+        $this->table->addAccount($this->accountName, $this->currentAmount, $this->userID);
+        $isAlreadyInDB = $this->table->doesAccountExists($this->accountName, $this->userID);
         $this->assertTrue($isAlreadyInDB);
     }
 
     public function testIfAccountAlreadyExistsShouldReturnFalse(){
-        $isAlreadyInDB = $this->table->doesAccountExists($this->accountName, $this->payerID);
+        $isAlreadyInDB = $this->table->doesAccountExists($this->accountName, $this->userID);
         $this->assertFalse($isAlreadyInDB);
+    }
+    
+    public function testGetAccountsFromUserID(){
+        $this->tableUsers->expects($this->once())
+            ->method('checkIfIDExists')->with($this->userID)->will($this->returnValue(true));
+        $this->table->addAccount($this->accountName, $this->currentAmount, $this->userID);
+        $accounts = $this->table->getAccountsFromUserID($this->userID);
+        $this->assertEquals(1 , count($accounts));
+        $this->assertEquals($this->accountName, $accounts[0]["NAME"]);
+        $this->assertEquals($this->currentAmount, $accounts[0]["CURRENT_AMOUNT"]);
+        $this->assertEquals($this->userID, $accounts[0]["USER_ID"]);
     }
 }
