@@ -6,7 +6,7 @@
  * Time: 5:17 PM
  */
 
-namespace src;
+namespace BackEnd\Database;
 use mysql_xdevapi\Exception;
 
 require_once ("DBTable.php");

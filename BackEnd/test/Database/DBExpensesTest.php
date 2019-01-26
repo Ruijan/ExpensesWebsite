@@ -6,8 +6,12 @@
  * Time: 4:59 PM
  */
 
-require_once("TableCreationTest.php");
-require_once(str_replace("test", "src", __DIR__."/").'DBExpenses.php');
+namespace BackEnd\Tests\Database;
+use BackEnd\Tests\Database\TableCreationTest;
+use BackEnd\Database\DBExpenses;
+use BackEnd\Expense;
+use BackEnd\Database\WrongTypeKeyException;
+use BackEnd\Database\InsertionKeyException;
 
 class DBExpensesTest extends TableCreationTest
 {
@@ -44,12 +48,12 @@ class DBExpensesTest extends TableCreationTest
             "CURRENCY_ID" => "int(11)",
             "STATE_ID" => "int(11)"];
         $this->name = "expenses";
-        $this->expense = parent::getMockBuilder(\Expense::class)->setMethods(['asArray'])->getMock();
+        $this->expense = parent::getMockBuilder(Expense::class)->disableOriginalConstructor()->setMethods(['asArray'])->getMock();
     }
 
     public function createTable()
     {
-        $this->table = new \src\DBExpenses($this->database);
+        $this->table = new DBExpenses($this->database);
     }
 
     public function initTable(){
@@ -67,7 +71,7 @@ class DBExpensesTest extends TableCreationTest
             $this->table->addExpense($this->expense);
             $this->assertTrue(False);
         }
-        catch(\src\WrongTypeKeyException $e){
+        catch(WrongTypeKeyException $e){
             $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all();
             $this->assertEquals(0, $nbExpenses[0][0]);
         }
@@ -109,7 +113,7 @@ class DBExpensesTest extends TableCreationTest
             $this->table->addExpense($this->expense);
             $this->assertTrue(False);
         }
-        catch(\src\InsertionKeyException $e){
+        catch(InsertionKeyException $e){
             $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM '.$this->name)->fetch_all()[0][0];
             $this->assertEquals(0, $nbExpenses);
         }

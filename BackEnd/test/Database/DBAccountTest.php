@@ -5,9 +5,12 @@
  * Date: 1/16/2019
  * Time: 9:49 PM
  */
-
-require_once(str_replace("test", "src", __DIR__."/").'DBAccount.php');
-require_once("TableCreationTest.php");
+namespace BackEnd\Tests\Database\DBAccount;
+use BackEnd\Tests\Database\TableCreationTest;
+use BackEnd\Database\DBAccount\DBAccount;
+use BackEnd\Database\DBAccount\AccountDuplicationException;
+use BackEnd\Database\DBAccount\CurrencyIDException;
+use BackEnd\Database\DBAccount\UserIDException;
 
 class DBAccountTest extends TableCreationTest
 {
@@ -19,8 +22,8 @@ class DBAccountTest extends TableCreationTest
     private $currencyTable;
 
     public function setUp(){
-        $this->usersTable = $this->getMockBuilder(\src\DBUser::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
-        $this->currencyTable = $this->getMockBuilder(\src\DBCurrency::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
+        $this->usersTable = $this->getMockBuilder(\BackEnd\Database\DBUser::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
+        $this->currencyTable = $this->getMockBuilder(\BackEnd\Database\DBCurrency::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "NAME" => "char(50)",
@@ -33,7 +36,7 @@ class DBAccountTest extends TableCreationTest
 
     public function createTable()
     {
-        $this->table = new \src\DBAccount($this->database, $this->usersTable, $this->currencyTable);
+        $this->table = new DBAccount($this->database, $this->usersTable, $this->currencyTable);
         $this->assertEquals($this->table->getUsersTable(), $this->usersTable);
         $this->assertEquals($this->table->getCurrenciesTable(), $this->currencyTable);
     }
@@ -61,7 +64,7 @@ class DBAccountTest extends TableCreationTest
         try{
             $this->table->addAccount($this->accountName, $this->currentAmount, $this->userID, $this->currencyID);
         }
-        catch(\Exception $e){
+        catch(UserIDException $e){
             $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();
             $success = $result === NULL;
         }
@@ -77,7 +80,7 @@ class DBAccountTest extends TableCreationTest
         try{
             $this->table->addAccount($this->accountName, $this->currentAmount, $this->userID, $this->currencyID);
         }
-        catch(\Exception $e){
+        catch(CurrencyIDException $e){
             $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();
             $success = $result === NULL;
         }
@@ -93,7 +96,7 @@ class DBAccountTest extends TableCreationTest
         try{
             $this->table->addAccount($this->accountName, $this->currentAmount, $this->userID, $this->currencyID);
         }
-        catch (Exception $e){
+        catch (AccountDuplicationException $e){
             $count = 0;
             $result = $this->driver->query("SELECT * FROM ".$this->name);
             while($row = $result->fetch_assoc()){

@@ -5,8 +5,8 @@
  * Date: 12/4/2018
  * Time: 10:50 PM
  */
-require_once(str_replace("test", "src", __DIR__."/").'Database.php');
-
+namespace BackEnd\Tests\Database;
+use \BackEnd\Database\Database;
 use PHPUnit\Framework\TestCase;
 
 abstract class TableCreationTest extends TestCase
@@ -18,8 +18,8 @@ abstract class TableCreationTest extends TestCase
     protected $columns;
 
     public function setUp(){
-        $this->driver = new mysqli("127.0.0.1", "root", "");
-        $this->database = new \src\Database($this->driver, "expenses");
+        $this->driver = new \mysqli("127.0.0.1", "root", "");
+        $this->database = new Database($this->driver, "expenses");
         $this->createTable();
         $this->initTable();
     }
@@ -58,7 +58,7 @@ abstract class TableCreationTest extends TestCase
         try{
             $this->initTable();
         }
-        catch(Exception $e){
+        catch(\Exception $e){
             $query = $this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 ");
             $this->assertTrue($query !== FALSE);
             return;

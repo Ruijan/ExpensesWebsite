@@ -6,7 +6,7 @@
  * Time: 9:12 PM
  */
 
-namespace src;
+namespace BackEnd\Database;
 require_once ("DBTable.php");
 
 class DBUser extends DBTable

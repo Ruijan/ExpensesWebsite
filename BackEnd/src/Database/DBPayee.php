@@ -6,7 +6,7 @@
  * Time: 9:30 PM
  */
 
-namespace src;
+namespace BackEnd\Database;
 require_once ("DBTable.php");
 
 class DBPayee extends DBTable

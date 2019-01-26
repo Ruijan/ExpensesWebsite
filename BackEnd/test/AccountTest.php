@@ -16,14 +16,14 @@ class AccountTest extends TestCase
     private $tableID = 1;
     private $currentAmount = 4452;
     public function test__construct(){
-        $account = new \src\Account($this->accountName, $this->tableID, $this->currentAmount);
+        $account = new \BackEnd\Account($this->accountName, $this->tableID, $this->currentAmount);
         $this->assertEquals($this->accountName, $account->getName());
         $this->assertEquals($this->currentAmount, $account->getCurrentAmount());
         $this->assertEquals($this->tableID, $account->getTableID());
     }
 
     public function test__constructWithDefaultAccountValue(){
-        $account = new \src\Account($this->accountName, $this->tableID);
+        $account = new \BackEnd\Account($this->accountName, $this->tableID);
         $this->assertEquals(0, $account->getCurrentAmount());
     }
 }

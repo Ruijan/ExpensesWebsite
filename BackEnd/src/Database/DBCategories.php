@@ -6,7 +6,7 @@
  * Time: 11:34 PM
  */
 
-namespace src;
+namespace BackEnd\Database;
 require_once ("DBTable.php");
 require_once("DBUser.php");
 

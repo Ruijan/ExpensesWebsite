@@ -6,9 +6,9 @@
  * Time: 8:09 PM
  */
 
-require_once(str_replace("test", "src", __DIR__."/").'DBTable.php');
-
-require_once("TableCreationTest.php");
+namespace BackEnd\Tests\Database;
+use BackEnd\Tests\Database\TableCreationTest;
+use BackEnd\Database\DBTable;
 
 class DBTableTest extends TableCreationTest
 {
@@ -20,7 +20,7 @@ class DBTableTest extends TableCreationTest
     }
 
     public function createTable(){
-        $this->table = new \src\DBTable($this->database, $this->name);
+        $this->table = new DBTable($this->database, $this->name);
     }
 
     public function initTable(){
@@ -38,7 +38,7 @@ class DBTableTest extends TableCreationTest
             $this->table->dropTable();
             $this->assertTrue(false);
         }
-        catch(Exception $e){
+        catch(\Exception $e){
             $query = $this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 ");
             $this->assertFalse($query !== FALSE);
         }

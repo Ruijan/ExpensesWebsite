@@ -6,7 +6,7 @@
  * Time: 10:14 PM
  */
 
-namespace src;
+namespace BackEnd\Database;
 require_once ("DBTable.php");
 
 class DBSubCategories extends DBTable

@@ -40,12 +40,12 @@ class ExpenseTest extends TestCase
     );
 
     public function test__construct(){
-        $this->expense = new \src\Expense($this->expenseArray);
+        $this->expense = new \BackEnd\Expense($this->expenseArray);
         $this->assertEquals($this->expenseArray, $this->expense->asPrintableArray());
     }
 
     public function test__constructWithCapitalKeys(){
-        $this->expense = new \src\Expense($this->expenseArrayWithCapital);
+        $this->expense = new \BackEnd\Expense($this->expenseArrayWithCapital);
         $this->assertEquals($this->expenseArray, $this->expense->asPrintableArray());
     }
 
@@ -57,7 +57,7 @@ class ExpenseTest extends TestCase
         $fullArray["sub_category_id"] = random_int(1, 100);
         $fullArray["currency_id"] = random_int(1, 100);
         $fullArray["state_id"] = random_int(1, 100);
-        $this->expense = new \src\Expense($fullArray);
+        $this->expense = new \BackEnd\Expense($fullArray);
         $this->assertArraySubset($fullArray, $this->expense->asArray(), true);
     }
 
@@ -76,13 +76,13 @@ class ExpenseTest extends TestCase
         $timePre = microtime(true);
         for($x = 0; $x <= 1000; $x++)
         {
-            $this->expense = new \src\Expense($fullArray[$x]);
+            $this->expense = new \BackEnd\Expense($fullArray[$x]);
             $this->assertArraySubset($fullArray[$x], $this->expense->asArray(), true);
         }
         $timePost = microtime(true);
         $exec_time = ($timePost - $timePre);
 
         echo "Time to create and obtain 1000 Expenses in array: ".round($exec_time, 4)."s";
-        $this->assertTrue($exec_time < 0.3);
+        $this->assertTrue($exec_time < 1);
     }
 }

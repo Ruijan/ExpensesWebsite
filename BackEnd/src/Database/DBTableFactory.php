@@ -6,17 +6,16 @@
  * Time: 11:04 PM
  */
 
-namespace src;
+namespace BackEnd\Database;
 use mysql_xdevapi\Exception;
 
-require_once ("DBCategories.php");
-require_once ("DBCurrency.php");
-require_once ("DBSubCategories.php");
-require_once ("DBExpenses.php");
-require_once ("DBPayee.php");
-require_once("DBUser.php");
-require_once ("DBAccount.php");
-
+use BackEnd\Database\DBCategories;
+use BackEnd\Database\DBSubCategories;
+use BackEnd\Database\DBCurrency;
+use BackEnd\Database\DBExpenses;
+use BackEnd\Database\DBPayee;
+use BackEnd\Database\DBUser;
+use BackEnd\Database\DBAccount\DBAccount;
 
 class DBTableFactory
 {
@@ -36,7 +35,7 @@ class DBTableFactory
             case "DBUser":
                 return new DBUser($database);
             case "DBAccount":
-                return new DBAccount($database, $database->getTableByName("dbuser"));
+                return new DBAccount($database, $database->getTableByName("dbuser"), $database->getTableByName("dbcurrencies"));
         }
         throw new \Exception("Invalid table type: ". $tableName);
     }

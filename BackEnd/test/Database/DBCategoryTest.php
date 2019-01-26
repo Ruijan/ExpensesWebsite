@@ -6,15 +6,17 @@
  * Time: 11:35 PM
  */
 
-require_once(str_replace("test", "src", __DIR__."/").'DBCategories.php');
-require_once("TableCreationTest.php");
+namespace BackEnd\Tests\Database;
+use BackEnd\Tests\Database\TableCreationTest;
+use BackEnd\Database\DBUser;
+use BackEnd\Database\DBCategories;
 
 class DBCategoryTest extends TableCreationTest
 {
     private $usersTable;
     private $category = ["NAME" => "Food", "USER_ID" => "1", "ADDED_DATE" => ""];
     public function setUp(){
-        $this->usersTable = $this->getMockBuilder(\src\DBUser::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
+        $this->usersTable = $this->getMockBuilder(DBUser::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "NAME" => "char(50)",
@@ -27,7 +29,7 @@ class DBCategoryTest extends TableCreationTest
 
     public function createTable()
     {
-        $this->table = new \src\DBCategories($this->database, $this->usersTable);
+        $this->table = new DBCategories($this->database, $this->usersTable);
         $this->assertEquals($this->table->getUsersTable(), $this->usersTable);
     }
 
@@ -49,7 +51,7 @@ class DBCategoryTest extends TableCreationTest
         try{
             $this->table->addCategory($this->category);
         }
-        catch (Exception $e){
+        catch (\Exception $e){
             $this->checkNbRowHasBeenAdded(0);
             return;
         }
@@ -63,7 +65,7 @@ class DBCategoryTest extends TableCreationTest
         try{
             $this->table->addCategory($this->category);
         }
-        catch (Exception $e){
+        catch (\Exception $e){
             $this->checkNbRowHasBeenAdded(1);
             return;
         }

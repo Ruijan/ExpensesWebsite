@@ -5,9 +5,9 @@
  * Date: 12/4/2018
  * Time: 9:13 PM
  */
-
-require_once(str_replace("test", "src", __DIR__."/").'DBPayee.php');
-require_once("TableCreationTest.php");
+namespace BackEnd\Tests\Database;
+use BackEnd\Tests\Database\TableCreationTest;
+use BackEnd\Database\DBPayee;
 
 class DBPayeeTest extends TableCreationTest
 {
@@ -23,7 +23,7 @@ class DBPayeeTest extends TableCreationTest
 
     public function createTable()
     {
-        $this->table = new \src\DBPayee($this->database);
+        $this->table = new DBPayee($this->database);
     }
 
     public function initTable(){
@@ -41,7 +41,7 @@ class DBPayeeTest extends TableCreationTest
         try{
             $this->table->addPayee($this->payeeName);
         }
-        catch (Exception $e){
+        catch (\Exception $e){
             $count = 0;
             $result = $this->driver->query("SELECT * FROM ".$this->name);
             while($row = $result->fetch_assoc()){
