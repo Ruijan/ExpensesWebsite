@@ -14,6 +14,7 @@ class Account
     private $name;
     private $currentAmount;
     private $tableID;
+    private $expenses = [];
 
     public function __construct($name, $tableID, $currentAmount = 0)
     {
@@ -22,15 +23,32 @@ class Account
         $this->tableID = $tableID;
     }
 
-    public function getName(){
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getCurrentAmount(){
+    public function getCurrentAmount()
+    {
         return $this->currentAmount;
     }
 
-    public function getTableID(){
+    public function getTableID()
+    {
         return $this->tableID;
+    }
+
+    public function asDict()
+    {
+        return ["NAME" => $this->name, "ID" => $this->tableID,
+            "CURRENT_AMOUNT" => $this->currentAmount];
+    }
+
+    public function loadExpenses($expensesTable){
+        $this->expenses = $expensesTable->getExpensesForAccountID($this->tableID);
+    }
+
+    public function getExpenses(){
+        return $this->expenses;
     }
 }

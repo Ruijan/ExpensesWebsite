@@ -8,7 +8,7 @@
 
 namespace BackEnd\Database;
 require_once ("DBTable.php");
-require_once("DBUser.php");
+require_once("DBUsers.php");
 
 class DBCategories extends DBTable
 {

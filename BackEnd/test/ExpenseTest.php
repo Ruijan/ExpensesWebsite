@@ -5,17 +5,15 @@
  * Date: 12/2/2018
  * Time: 10:50 PM
  */
-
-require_once(str_replace("test", "src", __DIR__."/").'Expense.php');
-
+namespace BackEnd\Tests;
 use PHPUnit\Framework\TestCase;
+use BackEnd\Expense;
 
 class ExpenseTest extends TestCase
 {
     private $expense;
     private $expenseArray = array(
         "id" => 1,
-        "account" => "Savings",
         "expense_date" => "2018-01-01 00:00:00",
         "location" => "Lausanne",
         "payee" => "Migros",
@@ -28,7 +26,6 @@ class ExpenseTest extends TestCase
 
     private $expenseArrayWithCapital = array(
         "ID" => 1,
-        "Account" => "Savings",
         "Expense_Date" => "2018-01-01 00:00:00",
         "Location" => "Lausanne",
         "Payee" => "Migros",
@@ -40,12 +37,12 @@ class ExpenseTest extends TestCase
     );
 
     public function test__construct(){
-        $this->expense = new \BackEnd\Expense($this->expenseArray);
+        $this->expense = new Expense($this->expenseArray);
         $this->assertEquals($this->expenseArray, $this->expense->asPrintableArray());
     }
 
     public function test__constructWithCapitalKeys(){
-        $this->expense = new \BackEnd\Expense($this->expenseArrayWithCapital);
+        $this->expense = new Expense($this->expenseArrayWithCapital);
         $this->assertEquals($this->expenseArray, $this->expense->asPrintableArray());
     }
 
@@ -57,7 +54,7 @@ class ExpenseTest extends TestCase
         $fullArray["sub_category_id"] = random_int(1, 100);
         $fullArray["currency_id"] = random_int(1, 100);
         $fullArray["state_id"] = random_int(1, 100);
-        $this->expense = new \BackEnd\Expense($fullArray);
+        $this->expense = new Expense($fullArray);
         $this->assertArraySubset($fullArray, $this->expense->asArray(), true);
     }
 
@@ -76,7 +73,7 @@ class ExpenseTest extends TestCase
         $timePre = microtime(true);
         for($x = 0; $x <= 1000; $x++)
         {
-            $this->expense = new \BackEnd\Expense($fullArray[$x]);
+            $this->expense = new Expense($fullArray[$x]);
             $this->assertArraySubset($fullArray[$x], $this->expense->asArray(), true);
         }
         $timePost = microtime(true);

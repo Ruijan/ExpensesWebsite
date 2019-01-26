@@ -9,7 +9,7 @@
 namespace BackEnd\Tests\Database;
 use BackEnd\Tests\Database\TableCreationTest;
 use BackEnd\Database\DBSubCategories;
-use BackEnd\Database\DBUser;
+use BackEnd\Database\DBUsers;
 use BackEnd\Database\DBCategories;
 
 class DBSubCategoriesTest extends TableCreationTest
@@ -18,7 +18,7 @@ class DBSubCategoriesTest extends TableCreationTest
     private $dbPayers;
     private $dbCategories;
     public function setUp(){
-        $this->dbPayers = $this->getMockBuilder(DBUser::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
+        $this->dbPayers = $this->getMockBuilder(DBUsers::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
         $this->dbCategories = $this->getMockBuilder(DBCategories::class)->disableOriginalConstructor()->setMethods(['checkIfCategoryIDExists'])->getMock();
         parent::setUp();
         $this->columns = ["ID" => "int(11)",

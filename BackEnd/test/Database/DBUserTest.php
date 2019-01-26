@@ -8,7 +8,7 @@
 
 namespace BackEnd\Tests\Database;
 use BackEnd\Tests\Database\TableCreationTest;
-use BackEnd\Database\DBUser;
+use BackEnd\Database\DBUsers;
 
 class DBUserTest extends TableCreationTest
 {
@@ -38,7 +38,7 @@ class DBUserTest extends TableCreationTest
 
     public function createTable()
     {
-        $this->table = new DBUser($this->database);
+        $this->table = new DBUsers($this->database);
     }
 
     public function initTable(){

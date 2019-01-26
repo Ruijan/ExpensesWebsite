@@ -14,8 +14,8 @@ class DBTableFactoryTest extends TestCase
 {
     protected $driver;
     protected $database;
-    private $tables = ["DBCategories", "DBCurrency", "DBExpenses", "DBPayee", "DBUser", "DBSubCategories", "DBAccount"];
-    private $tableNameSpace = ["", "", "", "", "", "", "DBAccount"];
+    private $tables = ["DBCategories", "DBCurrencies", "DBExpenses", "DBPayees", "DBUsers", "DBSubCategories", "DBAccounts"];
+    private $tableNameSpace = ["", "", "", "", "", "", "DBAccounts"];
     private $factory;
 
     public function setUp(){

@@ -9,7 +9,7 @@
 namespace BackEnd\Database;
 require_once ("DBTable.php");
 
-class DBUser extends DBTable
+class DBUsers extends DBTable
 {
     public function __construct($database)
     {

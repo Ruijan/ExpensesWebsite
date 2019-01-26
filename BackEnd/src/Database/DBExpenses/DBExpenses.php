@@ -6,27 +6,14 @@
  * Time: 5:17 PM
  */
 
-namespace BackEnd\Database;
+namespace BackEnd\Database\DBExpenses;
 use mysql_xdevapi\Exception;
 
-require_once ("DBTable.php");
-
-class AddException extends \Exception{
-    public function __construct($message){
-        parent::__construct("Could not add expense in table expenses: ".$message);
-    }
-}
-
-class InsertionKeyException extends \Exception{
-    public function __construct($key){
-        parent::__construct($key." should not be empty.");
-    }
-}
-class WrongTypeKeyException extends \Exception{
-    public function __construct($key, $value, $type){
-        parent::__construct($key . " with value ".$value." has an invalid type: ".gettype($value)." instead of ".$type.".");
-    }
-}
+use BackEnd\Database\DBTable;
+use BackEnd\Expense;
+use BackEnd\Database\DBExpenses\WrongTypeKeyException;
+use BackEnd\Database\DBExpenses\InsertionKeyException;
+use BackEnd\Database\DBExpenses\InsertionException;
 
 class DBExpenses extends DBTable
 {
@@ -36,7 +23,6 @@ class DBExpenses extends DBTable
         "PAYEE_ID" => "integer",
         "CATEGORY_ID" => "integer",
         "SUB_CATEGORY_ID" => "integer",
-        "ADDED_DATE" => "string",
         "EXPENSE_DATE" => "string",
         "AMOUNT" => "double",
         "CURRENCY_ID" => "integer",
@@ -52,7 +38,6 @@ class DBExpenses extends DBTable
             PAYEE_ID int(11) NOT NULL,
             CATEGORY_ID int(11) NOT NULL,
             SUB_CATEGORY_ID int(11) NOT NULL,
-            ADDED_DATE datetime DEFAULT '2018-01-01 00:00:00',
             EXPENSE_DATE datetime DEFAULT '2018-01-01 00:00:00',
             AMOUNT double NULL,
             CURRENCY_ID int(11) NOT NULL,
@@ -79,7 +64,7 @@ class DBExpenses extends DBTable
     {
         $resultQuery = $this->driver->query($query);
         if ($resultQuery === FALSE) {
-            throw new AddException($this->driver->error);
+            throw new InsertionException($this->driver->error);
         }
     }
 
@@ -108,8 +93,18 @@ class DBExpenses extends DBTable
             if(strcmp(gettype($value),$type)){
                 throw new WrongTypeKeyException($key, $value, $type);
             }
-            return "'" . $value . "'";
+            return "'" . $this->driver->real_escape_string($value) . "'";
         }
         return "NOW()";
+    }
+
+    public function getExpensesForAccountID($accountID){
+        $expenses = [];
+        /*$results = $this->driver->query('SELECT * FROM '.$this->name.' INNER JOIN '..'WHERE ACCOUNT_ID = '.
+            $this->driver->real_escape_string($accountID));
+        while($row = $results->fetch_assoc ()){
+            $expenses[] = new Expense($row);
+        }*/
+        return $expenses;
     }
 }

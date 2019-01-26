@@ -8,7 +8,7 @@
 
 namespace BackEnd\Tests\Database;
 use BackEnd\Tests\Database\TableCreationTest;
-use BackEnd\Database\DBUser;
+use BackEnd\Database\DBUsers;
 use BackEnd\Database\DBCategories;
 
 class DBCategoryTest extends TableCreationTest
@@ -16,7 +16,7 @@ class DBCategoryTest extends TableCreationTest
     private $usersTable;
     private $category = ["NAME" => "Food", "USER_ID" => "1", "ADDED_DATE" => ""];
     public function setUp(){
-        $this->usersTable = $this->getMockBuilder(DBUser::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
+        $this->usersTable = $this->getMockBuilder(DBUsers::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "NAME" => "char(50)",

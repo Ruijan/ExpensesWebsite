@@ -6,14 +6,14 @@
  * Time: 4:46 PM
  */
 
-namespace BackEnd\Database\DBAccount;
+namespace BackEnd\Database\DBAccounts;
 use BackEnd\Database\DBTable;
-use BackEnd\Database\DBAccount\AccountDuplicationException;
-use BackEnd\Database\DBAccount\UserIDException;
-use BackEnd\Database\DBAccount\CurrencyIDException;
+use BackEnd\Database\DBAccounts\AccountDuplicationException;
+use BackEnd\Database\DBAccounts\UserIDException;
+use BackEnd\Database\DBAccounts\CurrencyIDException;
 
 
-class DBAccount extends DBTable
+class DBAccounts extends DBTable
 {
     private $usersTable;
     private $currenciesTable;

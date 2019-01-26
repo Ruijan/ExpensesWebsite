@@ -9,7 +9,7 @@
 namespace BackEnd\Database;
 require_once ("DBTable.php");
 
-class DBCurrency extends DBTable
+class DBCurrencies extends DBTable
 {
     public function __construct($database)
     {

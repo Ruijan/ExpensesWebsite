@@ -7,7 +7,7 @@
  */
 namespace BackEnd\Tests\Database;
 use BackEnd\Tests\Database\TableCreationTest;
-use BackEnd\Database\DBPayee;
+use BackEnd\Database\DBPayees;
 
 class DBPayeeTest extends TableCreationTest
 {
@@ -23,7 +23,7 @@ class DBPayeeTest extends TableCreationTest
 
     public function createTable()
     {
-        $this->table = new DBPayee($this->database);
+        $this->table = new DBPayees($this->database);
     }
 
     public function initTable(){

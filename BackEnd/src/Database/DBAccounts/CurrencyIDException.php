@@ -6,8 +6,8 @@
  * Time: 11:38 AM
  */
 
-namespace BackEnd\Database\DBAccount;
-use BackEnd\Database\DBAccount\InsertionException;
+namespace BackEnd\Database\DBAccounts;
+use BackEnd\Database\DBAccounts\InsertionException;
 
 class CurrencyIDException extends InsertionException
 {

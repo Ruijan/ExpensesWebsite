@@ -8,7 +8,7 @@
 
 namespace BackEnd\Tests\Database;
 use BackEnd\Tests\Database\TableCreationTest;
-use BackEnd\Database\DBCurrency;
+use BackEnd\Database\DBCurrencies;
 
 class DBCurrencyTest extends TableCreationTest
 {
@@ -28,7 +28,7 @@ class DBCurrencyTest extends TableCreationTest
 
     public function createTable()
     {
-        $this->table = new DBCurrency($this->database);
+        $this->table = new DBCurrencies($this->database);
     }
 
     public function initTable(){

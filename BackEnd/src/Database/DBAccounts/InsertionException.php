@@ -6,7 +6,7 @@
  * Time: 11:36 AM
  */
 
-namespace BackEnd\Database\DBAccount;
+namespace BackEnd\Database\DBAccounts;
 
 class InsertionException extends \Exception
 {

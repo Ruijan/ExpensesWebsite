@@ -7,10 +7,10 @@
  */
 namespace BackEnd\Tests\Database\DBAccount;
 use BackEnd\Tests\Database\TableCreationTest;
-use BackEnd\Database\DBAccount\DBAccount;
-use BackEnd\Database\DBAccount\AccountDuplicationException;
-use BackEnd\Database\DBAccount\CurrencyIDException;
-use BackEnd\Database\DBAccount\UserIDException;
+use BackEnd\Database\DBAccounts\DBAccounts;
+use BackEnd\Database\DBAccounts\AccountDuplicationException;
+use BackEnd\Database\DBAccounts\CurrencyIDException;
+use BackEnd\Database\DBAccounts\UserIDException;
 
 class DBAccountTest extends TableCreationTest
 {
@@ -22,8 +22,8 @@ class DBAccountTest extends TableCreationTest
     private $currencyTable;
 
     public function setUp(){
-        $this->usersTable = $this->getMockBuilder(\BackEnd\Database\DBUser::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
-        $this->currencyTable = $this->getMockBuilder(\BackEnd\Database\DBCurrency::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
+        $this->usersTable = $this->getMockBuilder(\BackEnd\Database\DBUsers::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
+        $this->currencyTable = $this->getMockBuilder(\BackEnd\Database\DBCurrencies::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "NAME" => "char(50)",
@@ -36,7 +36,7 @@ class DBAccountTest extends TableCreationTest
 
     public function createTable()
     {
-        $this->table = new DBAccount($this->database, $this->usersTable, $this->currencyTable);
+        $this->table = new DBAccounts($this->database, $this->usersTable, $this->currencyTable);
         $this->assertEquals($this->table->getUsersTable(), $this->usersTable);
         $this->assertEquals($this->table->getCurrenciesTable(), $this->currencyTable);
     }

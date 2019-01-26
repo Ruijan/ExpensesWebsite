@@ -11,11 +11,11 @@ use mysql_xdevapi\Exception;
 
 use BackEnd\Database\DBCategories;
 use BackEnd\Database\DBSubCategories;
-use BackEnd\Database\DBCurrency;
+use BackEnd\Database\DBCurrencies;
 use BackEnd\Database\DBExpenses;
-use BackEnd\Database\DBPayee;
-use BackEnd\Database\DBUser;
-use BackEnd\Database\DBAccount\DBAccount;
+use BackEnd\Database\DBPayees;
+use BackEnd\Database\DBUsers;
+use BackEnd\Database\DBAccounts\DBAccounts;
 
 class DBTableFactory
 {
@@ -26,16 +26,16 @@ class DBTableFactory
                 return new DBCategories($database, $database->getTableByName("dbuser"));
             case "DBSubCategories":
                 return new DBSubCategories($database, $database->getTableByName("dbuser"), $database->getTableByName("dbcategories"));
-            case "DBCurrency":
-                return new DBCurrency($database);
+            case "DBCurrencies":
+                return new DBCurrencies($database);
             case "DBExpenses":
                 return new DBExpenses($database);
-            case "DBPayee":
-                return new DBPayee($database);
-            case "DBUser":
-                return new DBUser($database);
-            case "DBAccount":
-                return new DBAccount($database, $database->getTableByName("dbuser"), $database->getTableByName("dbcurrencies"));
+            case "DBPayees":
+                return new DBPayees($database);
+            case "DBUsers":
+                return new DBUsers($database);
+            case "DBAccounts":
+                return new DBAccounts($database, $database->getTableByName("dbuser"), $database->getTableByName("dbcurrencies"));
         }
         throw new \Exception("Invalid table type: ". $tableName);
     }
