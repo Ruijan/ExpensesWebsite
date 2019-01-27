@@ -5,3 +5,77 @@
 [![Build Status](https://travis-ci.org/Ruijan/ExpensesWebsite.svg?branch=master)](https://travis-ci.org/Ruijan/ExpensesWebsite)
 [![CodeFactor](https://www.codefactor.io/repository/github/ruijan/expenseswebsite/badge)](https://www.codefactor.io/repository/github/ruijan/expenseswebsite)
 [![BCH compliance](https://bettercodehub.com/edge/badge/Ruijan/ExpensesWebsite?branch=master)](https://bettercodehub.com/results/Ruijan/ExpensesWebsite)
+## Install
+### Prerequisites
+
+#### WampServer or equivalent webserver
+If you don't have any webserver install on your computer, please install one among the following list:
+* WampServer: http://www.wampserver.com/en/
+* Mamp: https://www.mamp.info/en/
+
+#### XDebug for code coverage
+Once installed, check your php version with:
+```
+php -i
+```
+and paste the result in https://xdebug.org/wizard.php. Follow the instructions on the page.
+
+#### Composer
+You need **Composer** in order to setup the project. If you don't have it installed, please follow this link to set it up:
+* **Windows**: https://getcomposer.org/doc/00-intro.md#installation-windows
+* **MacOS & Linux**: https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos
+For a complete description of **Composer** usage, please refer to https://getcomposer.org/doc/01-basic-usage.md
+
+### Download and install
+First, download the archive from Github: https://github.com/Ruijan/ExpensesWebsite.git. Click on the green icon in the top right corner. You can also clone the folder with:
+```
+git clone https://github.com/Ruijan/ExpensesWebsite.git
+cd ExpensesWebsite
+php composer.phar install
+```
+## Debug and enchance
+
+### Setup PHPStorm
+Please follow instructions to download and install PHPStorm here: https://www.jetbrains.com/phpstorm/
+Once done, launch PHPStorm.
+
+#### Setup PHP
+Once started, go to **File->Settings->Languages & Frameworks->PHP**
+In **PHP language level** select 7.2 (object type hint, abstract function override)
+Then in CLI Interpreter, click on `...` to open a new window.
+Create a new Interpreter by clicking on the `+` on the top left corner.
+* Name: `PHP`
+* General
+  * PHP executable: `C:\wamp64\bin\php\php7.2.10\php.exe` or your webserver php.exe file
+* Additional
+  * Debugger extention: `C:\wamp64\bin\php\php7.2.10\zend_ext\php_xdebug-2.6.1-7.2-vc15-x86_64.dll` or the path to your webserver debugger dll.
+Apply changes.
+
+#### Setup Coverage
+Then go to **File->Settings->Build, Execution, Deployment->Coverage**. Select `Replace active suites with the new one` if you are low on memory. If not checked, check the option `Activate Coverage View`. 
+
+#### Run and debug unit tests
+To run the unit tests, go to **Run->Edit Configurations**. Add a new configuration by clicking on `+` on the top left corner of the window. Then select PHPUnit. Define the configuration as follow:
+* Directory: `C:\wamp64\www\Expenses\Website\`
+* Check box **Use alternative configuration file** with `C:\wamp64\www\Expenses\Website\phpunit.xml`
+Apply changes and click on ok.
+
+To run the unit tests, right click on the folder **BackEnd** in the project's directory tree and then on **Run BackEnd (PHPUnit)**
+
+### Adding new features
+There are many features to implement in this project. There is a list available for each project (BackEnd and FrontEnd). Have a look at it before implementing your own, there might already be a complete descritpion
+Please check that your implementation does not break previous code by running unit tests and code coverage during its implementation. Always check your own code.
+
+#### Git
+Before adding new features to the project, create a new git branch locally
+```
+git branch nameOfTheFeature
+git checkout nameOfTheFeature
+```
+Regularly commit and push your code online to avoid losing code:
+```
+git add fileToAdd
+git commit -m "description of the modifications"
+git push
+```
+Once you think that everything has been implemented, go to https://github.com/Ruijan/ExpensesWebsite/pulls and create a new pull request with your branch. In the name of the pull request, precise if you are solving a issue by adding **Closes #NumberOfTheIssue**. Validate and wait for all the automatic quality tools to run. Ideally wait for someone else to check your code.
