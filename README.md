@@ -35,7 +35,7 @@ cd ExpensesWebsite
 php composer.phar install
 ```
 
-## Debug and enchance
+## Debug
 ### Setup PHPStorm
 Please follow instructions to download and install PHPStorm here: https://www.jetbrains.com/phpstorm/
 Once done, launch PHPStorm.
@@ -63,7 +63,7 @@ Apply changes and click on ok.
 
 To run the unit tests, right click on the folder **BackEnd** in the project's directory tree and then on **Run BackEnd (PHPUnit)**
 
-### Adding new features
+## Adding new features
 There are many features to implement in this project. There is a list available for each project (BackEnd and FrontEnd). Have a look at it before implementing your own, there might already be a complete descritpion
 Please check that your implementation does not break previous code by running unit tests and code coverage during its implementation. Always check your own code.
 
