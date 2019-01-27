@@ -91,21 +91,18 @@ class DBExpenses extends DBTable
 
     protected function tryGettingValueFromKey($key, $expenseProperties, $type)
     {
-        if ($key !== "ADDED_DATE") {
-            if (isset($expenseProperties[strtolower($key)]) !== TRUE) {
-                if (strpos(strtolower($key), 'id') === FALSE) {
-                    throw new InsertionKeyException($key);
-                }
-                $equivalentID = 1;
-                return $equivalentID;
+        if (isset($expenseProperties[strtolower($key)]) !== TRUE) {
+            if (strpos(strtolower($key), 'id') === FALSE) {
+                throw new InsertionKeyException($key);
             }
-            $value = $expenseProperties[strtolower($key)];
-            if(strcmp(gettype($value),$type)){
-                throw new WrongTypeKeyException($key, $value, $type);
-            }
-            return "'" . $this->driver->real_escape_string($value) . "'";
+            $equivalentID = 1;
+            return $equivalentID;
         }
-        return "NOW()";
+        $value = $expenseProperties[strtolower($key)];
+        if(strcmp(gettype($value),$type)){
+            throw new WrongTypeKeyException($key, $value, $type);
+        }
+        return "'" . $this->driver->real_escape_string($value) . "'";
     }
 
     public function getExpensesForAccountID($accountID){

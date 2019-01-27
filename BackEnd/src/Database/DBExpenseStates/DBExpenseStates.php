@@ -36,10 +36,10 @@ class DBExpenseStates extends DBTable
 
     protected function checkParameters($name)
     {
-        $query = 'SELECT COUNT(1) FROM ' . $this->name . ' WHERE NAME = "' .
+        $query = 'SELECT * FROM ' . $this->name . ' WHERE NAME = "' .
             $this->driver->real_escape_string($name) . '"';
         $results = $this->driver->query($query);
-        if ($results->num_rows == 0) {
+        if ($results->num_rows == 1) {
             throw new InsertionException($name, $this->name, "State name already exists.");
         }
     }
