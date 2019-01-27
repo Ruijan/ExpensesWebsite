@@ -6,8 +6,11 @@
  * Time: 11:35 PM
  */
 
-require_once(str_replace("test", "src", __DIR__."/").'DBSubCategories.php');
-require_once("TableCreationTest.php");
+namespace BackEnd\Tests\Database;
+use BackEnd\Tests\Database\TableCreationTest;
+use BackEnd\Database\DBSubCategories;
+use BackEnd\Database\DBUsers;
+use BackEnd\Database\DBCategories;
 
 class DBSubCategoriesTest extends TableCreationTest
 {
@@ -15,8 +18,8 @@ class DBSubCategoriesTest extends TableCreationTest
     private $dbPayers;
     private $dbCategories;
     public function setUp(){
-        $this->dbPayers = $this->getMockBuilder(\src\DBUser::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
-        $this->dbCategories = $this->getMockBuilder(\src\DBUser::class)->disableOriginalConstructor()->setMethods(['checkIfCategoryIDExists'])->getMock();
+        $this->dbPayers = $this->getMockBuilder(DBUsers::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
+        $this->dbCategories = $this->getMockBuilder(DBCategories::class)->disableOriginalConstructor()->setMethods(['checkIfCategoryIDExists'])->getMock();
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "PARENT_ID" => "int(11)",
@@ -30,7 +33,7 @@ class DBSubCategoriesTest extends TableCreationTest
 
     public function createTable()
     {
-        $this->table = new \src\DBSubCategories($this->database, $this->dbPayers, $this->dbCategories);
+        $this->table = new DBSubCategories($this->database, $this->dbPayers, $this->dbCategories);
         $this->assertEquals($this->table->getDBPayers(), $this->dbPayers);
         $this->assertEquals($this->table->getDBCategories(), $this->dbCategories);
     }
@@ -55,7 +58,7 @@ class DBSubCategoriesTest extends TableCreationTest
         try{
             $this->table->addSubCategory($this->subCategory);
         }
-        catch (Exception $e){
+        catch (\Exception $e){
             $this->checkNbRowHasBeenAdded(0);
             return;
         }
@@ -72,7 +75,7 @@ class DBSubCategoriesTest extends TableCreationTest
         try{
             $this->table->addSubCategory($this->subCategory);
         }
-        catch (Exception $e){
+        catch (\Exception $e){
             $this->checkNbRowHasBeenAdded($expectedRows);
             $currentRows = 0;
             return;
@@ -89,7 +92,7 @@ class DBSubCategoriesTest extends TableCreationTest
         try{
             $this->table->addSubCategory($this->subCategory);
         }
-        catch (Exception $e){
+        catch (\Exception $e){
             $this->checkNbRowHasBeenAdded(1);
             return;
         }
@@ -105,5 +108,15 @@ class DBSubCategoriesTest extends TableCreationTest
             $count += 1;
         }
         $this->assertEquals($expectedNbRow, $count);
+    }
+
+    public function testGetSubCategoryFromID(){
+        $this->dbPayers->expects($this->exactly(1))
+            ->method('checkIfIDExists')->with($this->subCategory["USER_ID"])->will($this->returnValue(true));
+        $this->dbCategories->expects($this->exactly(1))
+            ->method('checkIfCategoryIDExists')->with($this->subCategory["USER_ID"])->will($this->returnValue(true));
+        $this->table->addSubCategory($this->subCategory);
+        $subCategory = $this->table->getSubCategoryFromID(1);
+        $this->assertEquals($this->subCategory["NAME"], $subCategory["NAME"]);
     }
 }

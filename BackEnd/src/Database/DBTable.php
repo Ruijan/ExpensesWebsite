@@ -6,7 +6,7 @@
  * Time: 8:05 PM
  */
 
-namespace src;
+namespace BackEnd\Database;
 
 
 class DBTable

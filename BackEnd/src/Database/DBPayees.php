@@ -6,10 +6,10 @@
  * Time: 9:30 PM
  */
 
-namespace src;
+namespace BackEnd\Database;
 require_once ("DBTable.php");
 
-class DBPayee extends DBTable
+class DBPayees extends DBTable
 {
     public function __construct($database)
     {
@@ -34,7 +34,7 @@ class DBPayee extends DBTable
     }
 
     public function checkIfPayeeExists($expectedPayeeID){
-        $query = "SELECT ID FROM ".$this->name." WHERE ID = ".$expectedPayeeID;
+        $query = "SELECT ID FROM ".$this->name." WHERE ID = ".$this->driver->real_escape_string($expectedPayeeID);
         $result = $this->driver->query($query);
         if ($result === FALSE ) {
             throw new \Exception("Couldn't find payee with ID ".$expectedPayeeID." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
@@ -43,5 +43,11 @@ class DBPayee extends DBTable
             return false;
         }
         return $result->fetch_assoc()["ID"];
+    }
+
+    public function getPayeeFromID($payeeID){
+        $query = "SELECT * FROM ".$this->name." WHERE ID = ".$this->driver->real_escape_string($payeeID);
+        $row = $this->driver->query($query)->fetch_assoc();
+        return $row;
     }
 }

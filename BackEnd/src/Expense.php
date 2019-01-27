@@ -6,7 +6,7 @@
  * Time: 10:49 PM
  */
 
-namespace src;
+namespace BackEnd;
 
 
 use mysql_xdevapi\Exception;
@@ -16,7 +16,6 @@ class Expense
     protected $data = ["id" => NULL,
         "expense_date" => NULL,
         "location" => NULL,
-        "account" => NULL,
         "account_id" => NULL,
         "payee" => NULL,
         "payee_id" => NULL,
@@ -30,6 +29,21 @@ class Expense
         "state" => NULL,
         "state_id" => NULL
         ];
+    protected $format = ["id" => "integer",
+        "expense_date" => NULL,
+        "location" => NULL,
+        "account_id" => "integer",
+        "payee" => NULL,
+        "payee_id" => "integer",
+        "category" => NULL,
+        "category_id" => "integer",
+        "sub_category" => NULL,
+        "sub_category_id" => "integer",
+        "amount" => "float",
+        "currency" => NULL,
+        "currency_id" => "integer",
+        "state" => NULL,
+        "state_id" => "integer"];
 
     public function __construct($array)
     {
@@ -43,26 +57,27 @@ class Expense
             }
         }
         $this->data = array_merge($this->data, $newArray);
+        $this->formatData();
     }
 
     public function asPrintableArray(){
         $keys = array("id", "expense_date", "location", "account", "payee",
             "category", "sub_category", "amount", "currency", "state");
-        return array_intersect_key($this->data, array_flip($keys));/*array(
-            "id" => $this->id,
-            "expense_date" => $this->date,
-            "location" => $this->location,
-            "payer" => $this->payer,
-            "payee" => $this->payee,
-            "category" => $this->category,
-            "sub_category" => $this->subCategory,
-            "amount" => $this->amount,
-            "currency" => $this->currency,
-            "state" => $this->state
-        );*/
+        return array_intersect_key($this->data, array_flip($keys));
     }
 
     public function asArray(){
         return $this->data;
+    }
+
+    protected function formatData(): void
+    {
+        foreach ($this->data as $key => $value) {
+            if ($this->format[$key] == "integer") {
+                $this->data[$key] = (int)$value;
+            } elseif ($this->format[$key] == "float") {
+                $this->data[$key] = (float)$value;
+            }
+        }
     }
 }

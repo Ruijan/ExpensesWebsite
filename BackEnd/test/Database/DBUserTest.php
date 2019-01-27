@@ -6,8 +6,9 @@
  * Time: 9:13 PM
  */
 
-require_once(str_replace("test", "src", __DIR__."/").'DBUser.php');
-require_once("TableCreationTest.php");
+namespace BackEnd\Tests\Database;
+use BackEnd\Tests\Database\TableCreationTest;
+use BackEnd\Database\DBUsers;
 
 class DBUserTest extends TableCreationTest
 {
@@ -37,7 +38,7 @@ class DBUserTest extends TableCreationTest
 
     public function createTable()
     {
-        $this->table = new \src\DBUser($this->database);
+        $this->table = new DBUsers($this->database);
     }
 
     public function initTable(){
@@ -55,7 +56,7 @@ class DBUserTest extends TableCreationTest
         try{
             $this->table->addUser($this->payer);
         }
-        catch (Exception $e){
+        catch (\Exception $e){
             $count = 0;
             $result = $this->driver->query("SELECT * FROM ".$this->name);
             while($row = $result->fetch_assoc()){

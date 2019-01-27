@@ -6,8 +6,9 @@
  * Time: 10:08 PM
  */
 
-require_once(str_replace("test", "src", __DIR__."/").'DBCurrency.php');
-require_once("TableCreationTest.php");
+namespace BackEnd\Tests\Database;
+use BackEnd\Tests\Database\TableCreationTest;
+use BackEnd\Database\DBCurrencies;
 
 class DBCurrencyTest extends TableCreationTest
 {
@@ -27,7 +28,7 @@ class DBCurrencyTest extends TableCreationTest
 
     public function createTable()
     {
-        $this->table = new \src\DBCurrency($this->database);
+        $this->table = new DBCurrencies($this->database);
     }
 
     public function initTable(){
@@ -47,7 +48,7 @@ class DBCurrencyTest extends TableCreationTest
         try{
             $this->table->addCurrency($this->currencyName, $this->shortCurrencyName);
         }
-        catch (Exception $e){
+        catch (\Exception $e){
             $result = $this->driver->query("SELECT * FROM ".$this->name);
             while($row = $result->fetch_assoc()){
                 $this->assertEquals($this->currencyName, $row["NAME"]);
@@ -58,5 +59,11 @@ class DBCurrencyTest extends TableCreationTest
             return;
         }
         $this->assertEquals(1, $count);
+    }
+
+    public function testGetCurrencyFromID(){
+        $this->table->addCurrency($this->currencyName, $this->shortCurrencyName);
+        $currency = $this->table->getCurrencyFromID(1);
+        $this->assertEquals($this->currencyName, $currency["NAME"]);
     }
 }

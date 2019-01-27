@@ -6,9 +6,9 @@
  * Time: 11:34 PM
  */
 
-namespace src;
+namespace BackEnd\Database;
 require_once ("DBTable.php");
-require_once("DBUser.php");
+require_once("DBUsers.php");
 
 class DBCategories extends DBTable
 {
@@ -48,5 +48,11 @@ class DBCategories extends DBTable
         if ($this->driver->query($query) === FALSE) {
             throw new \Exception("Couldn't insert category ".implode(" ,", $category)." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
         }
+    }
+
+    public function getCategoryFromID($categoryID){
+        $query = "SELECT * FROM ".$this->getName()." WHERE ID = '".$this->driver->real_escape_string($categoryID)."'";
+        $row = $this->driver->query($query)->fetch_assoc();
+        return $row;
     }
 }

@@ -5,8 +5,11 @@
  * Date: 12/2/2018
  * Time: 11:04 AM
  */
+
+namespace BackEnd\Tests\Database;
+
 use PHPUnit\Framework\TestCase;
-require_once(str_replace("test", "src", __DIR__."/").'Database.php');
+use BackEnd\Database\Database;
 
 class DatabaseTest extends TestCase
 {
@@ -14,14 +17,17 @@ class DatabaseTest extends TestCase
     private $dBHandler;
     private $driver;
     private $dbName;
-    public function __construct(){
+
+    public function __construct()
+    {
         parent::__construct();
-        $this->driver = new mysqli("127.0.0.1", "root", "");
+        $this->driver = new \mysqli("127.0.0.1", "root", "");
         $this->dbName = "Expenses";
     }
 
-    public function setUp(){
-        $this->dBHandler = new \src\Database($this->driver, $this->dbName);
+    public function setUp()
+    {
+        $this->dBHandler = new Database($this->driver, $this->dbName);
     }
 
     public function test__construct()
@@ -32,13 +38,13 @@ class DatabaseTest extends TestCase
 
     public function test__constructWithDriverFailureShouldThrow()
     {
-        $observer = $this->getMockBuilder(mysqli::class)->setMethods(['query', 'real_escape_string'])->getMock();
+        $observer = $this->getMockBuilder(\mysqli::class)->setMethods(['query', 'real_escape_string'])->getMock();
         $observer->expects($this->once())
             ->method('query')->will($this->returnValue(false));
         $observer->expects($this->once())
             ->method('real_escape_string')->will($this->returnValue(false));
-        $this->expectException(Exception::class);
-        $this->dBHandler = new \src\Database($observer, $this->dbName);
+        $this->expectException(\Exception::class);
+        $this->dBHandler = new Database($observer, $this->dbName);
     }
 
     public function testDropDatabase()
@@ -49,7 +55,7 @@ class DatabaseTest extends TestCase
 
     public function testDropDatabaseTwiceShouldThrow()
     {
-        $this->expectException(Exception::class);
+        $this->expectException(\Exception::class);
         $this->dBHandler->dropDatabase();
         $this->dBHandler->dropDatabase();
 
@@ -67,13 +73,14 @@ class DatabaseTest extends TestCase
 
     public function testAddTable()
     {
-        $tableMock = $this->getMockBuilder(\src\DBTable::class)->disableOriginalConstructor()->getMock();
+        $tableMock = $this->getMockBuilder(DBTable::class)->disableOriginalConstructor()->getMock();
         $this->dBHandler->addTable($tableMock, "test");
         $this->assertEquals($this->dBHandler->getTableByName("test"), $tableMock);
     }
 
-    public function test__destruct(){
-        $observer = $this->getMockBuilder(mysqli::class)->setMethods(['close', 'select_db', 'query', 'real_escape_string'])->getMock();
+    public function test__destruct()
+    {
+        $observer = $this->getMockBuilder(\mysqli::class)->setMethods(['close', 'select_db', 'query', 'real_escape_string'])->getMock();
         $observer->expects($this->once())
             ->method('query')->will($this->returnValue(true));
         $observer->expects($this->once())
@@ -82,11 +89,12 @@ class DatabaseTest extends TestCase
             ->method('select_db');
         $observer->expects($this->once())
             ->method('close');
-        $this->dBHandler = new \src\Database($observer, $this->dbName);
+        $this->dBHandler = new Database($observer, $this->dbName);
         unset($this->dBHandler);
     }
 
-    public function tearDown(){
+    public function tearDown()
+    {
         unset($this->dBHandler);
     }
 
