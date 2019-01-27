@@ -46,6 +46,7 @@ class DBExpensesTest extends TableCreationTest
 
     public function setUp()
     {
+        $this->initMocks();
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "LOCATION" => "char(50)",
@@ -58,27 +59,32 @@ class DBExpensesTest extends TableCreationTest
             "CURRENCY_ID" => "int(11)",
             "STATE_ID" => "int(11)"];
         $this->name = "expenses";
-        $this->initMocks();
+
     }
 
     protected function initMocks(): void
     {
         $this->expense = parent::getMockBuilder(Expense::class)->disableOriginalConstructor()->setMethods(['asArray'])->getMock();
-        $this->categoriesTable = parent::getMockBuilder(DBCategories::class)->disableOriginalConstructor()->setMethods(['getName'])->getMock();
-        $this->subCategoriesTable = parent::getMockBuilder(DBSubCategories::class)->disableOriginalConstructor()->setMethods(['getName'])->getMock();
-        $this->payeesTable = parent::getMockBuilder(DBPayees::class)->disableOriginalConstructor()->setMethods(['getName'])->getMock();
-        $this->currenciesTable = parent::getMockBuilder(DBCurrencies::class)->disableOriginalConstructor()->setMethods(['getName'])->getMock();
-        $this->statesTable = parent::getMockBuilder(DBStates::class)->disableOriginalConstructor()->setMethods(['getName'])->getMock();
+        $this->categoriesTable = parent::getMockBuilder(DBCategories::class)->disableOriginalConstructor()->setMethods(['getCategoryFromID'])->getMock();
+        $this->subCategoriesTable = parent::getMockBuilder(DBSubCategories::class)->disableOriginalConstructor()->setMethods(['getSubCategoryFromID'])->getMock();
+        $this->payeesTable = parent::getMockBuilder(DBPayees::class)->disableOriginalConstructor()->setMethods(['getPayeeFromID'])->getMock();
+        $this->currenciesTable = parent::getMockBuilder(DBCurrencies::class)->disableOriginalConstructor()->setMethods(['getCurrencyFromID'])->getMock();
+        $this->statesTable = parent::getMockBuilder(DBStates::class)->disableOriginalConstructor()->setMethods(['getStateFromID'])->getMock();
+    }
+
+    public function createTable()
+    {
         $this->database->addTable($this->categoriesTable, "dbcategories");
         $this->database->addTable($this->subCategoriesTable, "dbsubcategories");
         $this->database->addTable($this->payeesTable, "dbpayees");
         $this->database->addTable($this->currenciesTable, "dbcurrencies");
         $this->database->addTable($this->statesTable, "dbstates");
-    }
-
-    public function createTable()
-    {
         $this->table = new DBExpenses($this->database);
+        $this->assertEquals($this->categoriesTable, $this->table->getCategoriesTable());
+        $this->assertEquals($this->subCategoriesTable, $this->table->getSubCategoriesTable());
+        $this->assertEquals($this->payeesTable, $this->table->getPayeesTable());
+        $this->assertEquals($this->currenciesTable, $this->table->getCurrenciesTable());
+        $this->assertEquals($this->statesTable, $this->table->getStatesTable());
     }
 
     public function initTable()
@@ -152,12 +158,30 @@ class DBExpensesTest extends TableCreationTest
         $this->expense->expects($this->exactly(2))
             ->method('asArray')
             ->with()->will($this->returnValue($this->expenseArray));
+        $this->categoriesTable->expects($this->exactly(2))
+            ->method('getCategoryFromID')
+            ->with($this->expenseArray["category_id"])->will($this->returnValue("Food"));
+        $this->subCategoriesTable->expects($this->exactly(2))
+            ->method('getSubCategoryFromID')
+            ->with($this->expenseArray["sub_category_id"])->will($this->returnValue("Groceries"));
+        $this->payeesTable->expects($this->exactly(2))
+            ->method('getPayeeFromID')
+            ->with($this->expenseArray["payee_id"])->will($this->returnValue("Migros"));
+        $this->currenciesTable->expects($this->exactly(2))
+            ->method('getCurrencyFromID')
+            ->with($this->expenseArray["currency_id"])->will($this->returnValue("CHF"));
+        $this->statesTable->expects($this->exactly(2))
+            ->method('getStateFromID')
+            ->with($this->expenseArray["state_id"])->will($this->returnValue("Paid"));
         $this->table->addExpense($this->expense);
         $this->table->addExpense($this->expense);
         $expenses = $this->table->getExpensesForAccountID($this->expenseArray["account_id"]);
         $this->assertEquals(2, count($expenses));
+        $count = 1;
         foreach ($expenses as $expense) {
+            $this->expenseArray["id"] = $count;
             $this->assertEquals($this->expenseArray, $expense->asArray());
+            $count += 1;
         }
     }
 }

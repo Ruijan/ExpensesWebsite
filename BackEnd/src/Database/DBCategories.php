@@ -49,4 +49,11 @@ class DBCategories extends DBTable
             throw new \Exception("Couldn't insert category ".implode(" ,", $category)." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
         }
     }
+
+    public function getCategoryFromID($id){
+        $query = "SELECT * FROM ".$this->getName()." WHERE ID = '".$this->driver->real_escape_string($id)."'";
+        if ($row = $this->driver->query($query)->fetch_assoc()) {
+            return $row;
+        }
+    }
 }

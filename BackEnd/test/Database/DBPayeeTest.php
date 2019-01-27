@@ -74,4 +74,10 @@ class DBPayeeTest extends TableCreationTest
         $this->expectException(\Exception::class);
         $this->table->checkIfPayeeExists($expectedPayeeID);
     }
+
+    public function testGetPayeeFromID(){
+        $this->table->addPayee($this->payeeName);
+        $payee = $this->table->getPayeeFromID(1);
+        $this->assertEquals($this->payeeName, $payee["NAME"]);
+    }
 }

@@ -13,13 +13,21 @@ abstract class TableCreationTest extends TestCase
 {
     protected $table;
     protected $driver;
+    protected $mockDriver;
     protected $database;
+    protected $mockDatabase;
     protected $name;
     protected $columns;
+
+
 
     public function setUp(){
         $this->driver = new \mysqli("127.0.0.1", "root", "");
         $this->database = new Database($this->driver, "expenses");
+        $this->mockDriver = $this->getMockBuilder(\mysqli::class)->disableOriginalConstructor()
+            ->setMethods(['query', 'real_escape_string', 'fetch_assoc'])->getMock();
+        $this->mockDatabase = $this->getMockBuilder(\BackEnd\Database::class)->disableOriginalConstructor()
+            ->setMethods(['getDriver', 'addTable', 'getTableByName', 'getDBName', 'dropDatabase'])->getMock();
         $this->createTable();
         $this->initTable();
     }

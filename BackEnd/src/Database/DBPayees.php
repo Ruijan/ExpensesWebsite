@@ -34,7 +34,7 @@ class DBPayees extends DBTable
     }
 
     public function checkIfPayeeExists($expectedPayeeID){
-        $query = "SELECT ID FROM ".$this->name." WHERE ID = ".$expectedPayeeID;
+        $query = "SELECT ID FROM ".$this->name." WHERE ID = ".$this->driver->real_escape_string($expectedPayeeID);
         $result = $this->driver->query($query);
         if ($result === FALSE ) {
             throw new \Exception("Couldn't find payee with ID ".$expectedPayeeID." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
@@ -43,5 +43,13 @@ class DBPayees extends DBTable
             return false;
         }
         return $result->fetch_assoc()["ID"];
+    }
+
+    public function getPayeeFromID($id){
+        $query = "SELECT * FROM ".$this->name." WHERE ID = ".$this->driver->real_escape_string($id);
+        $result = $this->driver->query($query);
+        if($row = $result->fetch_assoc()){
+            return $row;
+        }
     }
 }

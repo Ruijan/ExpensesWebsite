@@ -60,4 +60,10 @@ class DBCurrencyTest extends TableCreationTest
         }
         $this->assertEquals(1, $count);
     }
+
+    public function testGetCurrencyFromID(){
+        $this->table->addCurrency($this->currencyName, $this->shortCurrencyName);
+        $currency = $this->table->getCurrencyFromID(1);
+        $this->assertEquals($this->currencyName, $currency["NAME"]);
+    }
 }

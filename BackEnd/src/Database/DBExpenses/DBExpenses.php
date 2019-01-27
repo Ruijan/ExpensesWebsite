@@ -27,8 +27,18 @@ class DBExpenses extends DBTable
         "AMOUNT" => "double",
         "CURRENCY_ID" => "integer",
         "STATE_ID" => "integer"];
+    private $categoriesTable;
+    private $subCategoriesTable;
+    private $payeesTable;
+    private $currenciesTable;
+    private $statesTable;
     public function __construct($database){
         parent::__construct($database, "expenses");
+        $this->categoriesTable = $database->getTableByName("dbcategories");
+        $this->subCategoriesTable = $database->getTableByName("dbsubcategories");
+        $this->payeesTable = $database->getTableByName("dbpayees");
+        $this->currenciesTable = $database->getTableByName("dbcurrencies");
+        $this->statesTable = $database->getTableByName("dbstates");
     }
 
     public function getTableHeader(){
@@ -100,11 +110,37 @@ class DBExpenses extends DBTable
 
     public function getExpensesForAccountID($accountID){
         $expenses = [];
-        /*$results = $this->driver->query('SELECT * FROM '.$this->name.' INNER JOIN '..'WHERE ACCOUNT_ID = '.
-            $this->driver->real_escape_string($accountID));
+        $query = 'SELECT * FROM '.$this->name.' WHERE ACCOUNT_ID = '.
+            $this->driver->real_escape_string($accountID);
+        $results = $this->driver->query($query);
         while($row = $results->fetch_assoc ()){
+            $row["CATEGORY"] = $this->categoriesTable->getCategoryFromID($row["CATEGORY_ID"]);
+            $row["SUB_CATEGORY"] = $this->subCategoriesTable->getSubCategoryFromID($row["SUB_CATEGORY_ID"]);
+            $row["PAYEE"] = $this->payeesTable->getPayeeFromID($row["PAYEE_ID"]);
+            $row["CURRENCY"] = $this->currenciesTable->getCurrencyFromID($row["CURRENCY_ID"]);
+            $row["STATE"] = $this->statesTable->getStateFromID($row["STATE_ID"]);
             $expenses[] = new Expense($row);
-        }*/
+        }
         return $expenses;
+    }
+
+    public function getCategoriesTable(){
+        return $this->categoriesTable;
+    }
+
+    public function getSubCategoriesTable(){
+        return $this->subCategoriesTable;
+    }
+
+    public function getPayeesTable(){
+        return $this->payeesTable;
+    }
+
+    public function getCurrenciesTable(){
+        return $this->currenciesTable;
+    }
+
+    public function getStatesTable(){
+        return $this->statesTable;
     }
 }

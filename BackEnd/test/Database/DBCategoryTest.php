@@ -82,4 +82,12 @@ class DBCategoryTest extends TableCreationTest
         }
         $this->assertEquals($expectedNbRow, $count);
     }
+
+    public function testGetCategoryFromID(){
+        $this->usersTable->expects($this->once())
+            ->method('checkIfIDExists')->with($this->category["USER_ID"])->will($this->returnValue(true));
+        $this->table->addCategory($this->category);
+        $category = $this->table->getCategoryFromID(1);
+        $this->assertEquals($this->category["NAME"] , $category["NAME"]);
+    }
 }
