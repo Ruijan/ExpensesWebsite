@@ -7,6 +7,7 @@
  */
 
 namespace BackEnd\Tests\Database;
+
 use BackEnd\Tests\Database\TableCreationTest;
 use BackEnd\Database\DBUsers;
 
@@ -19,7 +20,9 @@ class DBUserTest extends TableCreationTest
         "REGISTERED_DATE" => "",
         "LAST_CONNECTION" => "",
         "VALIDATION_ID" => '26457894'];
-    public function setUp(){
+
+    public function setUp()
+    {
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "FIRST_NAME" => "char(50)",
@@ -41,25 +44,27 @@ class DBUserTest extends TableCreationTest
         $this->table = new DBUsers($this->database);
     }
 
-    public function initTable(){
+    public function initTable()
+    {
         $this->table->init();
     }
 
-    public function testAddUser(){
+    public function testAddUser()
+    {
         $this->table->addUser($this->payer);
-        $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();
+        $result = $this->driver->query("SELECT * FROM " . $this->name)->fetch_assoc();
         $this->assertArraySubset($this->payer, $result, true);
     }
 
-    public function testAddUserTwiceShouldThrow(){
+    public function testAddUserTwiceShouldThrow()
+    {
         $this->table->addUser($this->payer);
-        try{
+        try {
             $this->table->addUser($this->payer);
-        }
-        catch (\Exception $e){
+        } catch (\Exception $e) {
             $count = 0;
-            $result = $this->driver->query("SELECT * FROM ".$this->name);
-            while($row = $result->fetch_assoc()){
+            $result = $this->driver->query("SELECT * FROM " . $this->name);
+            while ($row = $result->fetch_assoc()) {
                 $this->assertArraySubset($this->payer, $row, true);
                 $count += 1;
             }
@@ -69,75 +74,86 @@ class DBUserTest extends TableCreationTest
         $this->assertTrue(false);
     }
 
-    public function testCheckIfPayerIDExist(){
+    public function testCheckIfPayerIDExist()
+    {
         $this->table->addUser($this->payer);
         $expectedPayerID = 1;
         $payerID = $this->table->checkIfIDExists($expectedPayerID);
         $this->assertTrue($payerID);
     }
 
-    public function testCheckIfPayerIDExistReturnFalse(){
+    public function testCheckIfPayerIDExistReturnFalse()
+    {
         $this->table->addUser($this->payer);
         $expectedPayerID = 2;
         $payerID = $this->table->checkIfIDExists($expectedPayerID);
         $this->assertFalse($payerID);
     }
 
-    public function testCheckIfPayerIDExistWithStringShouldThrow(){
+    public function testCheckIfPayerIDExistWithStringShouldThrow()
+    {
         $this->table->addUser($this->payer);
         $expectedPayerID = "Palalal";
         $this->expectException(\Exception::class);
         $this->table->checkIfIDExists($expectedPayerID);
     }
 
-    public function testCheckIfPayerEmailExist(){
+    public function testCheckIfPayerEmailExist()
+    {
         $this->table->addUser($this->payer);
         $expectedPayerID = 1;
         $payerID = $this->table->checkIfEmailExists($this->payer["EMAIL"]);
         $this->assertEquals($expectedPayerID, $payerID);
     }
 
-    public function testCheckIfPayerEmailExistReturnFalse(){
+    public function testCheckIfPayerEmailExistReturnFalse()
+    {
         $this->table->addUser($this->payer);
         $payerID = $this->table->checkIfEmailExists("test@hotmail.com");
         $this->assertFalse($payerID);
     }
 
-    public function testValidateEmailForPayer(){
+    public function testValidateEmailForPayer()
+    {
         $this->table->addUser($this->payer);
         $this->table->validateEmail($this->payer["VALIDATION_ID"]);
-        $result = $this->driver->query("SELECT EMAIL_VALIDATED FROM ".$this->name." WHERE VALIDATION_ID='".$this->payer["VALIDATION_ID"]."'");
+        $result = $this->driver->query("SELECT EMAIL_VALIDATED FROM " . $this->name . " WHERE VALIDATION_ID='" . $this->payer["VALIDATION_ID"] . "'");
         $row = $result->fetch_assoc();
         $this->assertEquals("1", $row["EMAIL_VALIDATED"]);
     }
 
-    public function testValidateEmailWithWrongValidationIDShouldThrow(){
+    public function testValidateEmailWithWrongValidationIDShouldThrow()
+    {
         $this->table->addUser($this->payer);
         $this->expectException(\Exception::class);
         $this->table->validateEmail(123456);
     }
 
-    public function testValidCredentials(){
+    public function testValidCredentials()
+    {
         $this->table->addUser($this->payer);
         $this->assertTrue($this->table->areCredentialsValid($this->payer["EMAIL"], $this->payer["PASSWORD"]));
     }
 
-    public function testValidCredentialsWithWrongPassword(){
+    public function testValidCredentialsWithWrongPassword()
+    {
         $this->table->addUser($this->payer);
         $this->assertFalse($this->table->areCredentialsValid($this->payer["EMAIL"], "wrongPassword"));
     }
 
-    public function testUpdateLastConnectionForUserID(){
+    public function testUpdateLastConnectionForUserID()
+    {
         $this->table->addUser($this->payer);
         $this->payer["ID"] = 1;
         $this->payer["LAST_CONNECTION"] = "2018-01-25 20:05:45";
         $this->table->updateLastConnection($this->payer["ID"], $this->payer["LAST_CONNECTION"]);
-        $result = $this->driver->query("SELECT LAST_CONNECTION FROM ".$this->name." WHERE ID='".$this->payer["ID"]."'");
+        $result = $this->driver->query("SELECT LAST_CONNECTION FROM " . $this->name . " WHERE ID='" . $this->payer["ID"] . "'");
         $row = $result->fetch_assoc();
         $this->assertEquals($this->payer["LAST_CONNECTION"], $row["LAST_CONNECTION"]);
     }
 
-    public function testUpdateLastConnectionForWrongUserIDShouldThrow(){
+    public function testUpdateLastConnectionForWrongUserIDShouldThrow()
+    {
         $this->table->addUser($this->payer);
         $this->payer["ID"] = 2;
         $newConnectionDate = "2018-01-25 20:05:45";
@@ -145,10 +161,19 @@ class DBUserTest extends TableCreationTest
         $this->table->updateLastConnection($this->payer["ID"], $newConnectionDate);
     }
 
-    public function testGetUserFromEmail(){
+    public function testGetUserFromEmail()
+    {
         $this->table->addUser($this->payer);
         $this->payer["ID"] = '1';
         $this->payer["EMAIL_VALIDATED"] = '0';
         $this->assertArraySubset($this->table->getUserFromEmail($this->payer["EMAIL"]), $this->payer, true);
+    }
+
+    public function testGetUserFromID()
+    {
+        $this->table->addUser($this->payer);
+        $this->payer["ID"] = '1';
+        $this->payer["EMAIL_VALIDATED"] = '0';
+        $this->assertArraySubset($this->table->getUserFromID($this->payer["ID"]), $this->payer, true);
     }
 }

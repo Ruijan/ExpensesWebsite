@@ -10,10 +10,10 @@ namespace BackEnd\Database\DBAccounts;
 
 class InsertionException extends \Exception
 {
-    public function __construct($name, $currentAmount, $userID, $tableName, $reason)
+    public function __construct($account, $tableName, $reason)
     {
-        parent::__construct("Couldn't insert account " . $name . ", with current amount " .
-            $currentAmount . " and user id " . $userID . " in " . $tableName . ". Reason: " . $reason);
+        parent::__construct("Couldn't insert account " . implode(" ,", $account->asDict()) .
+            ", in " . $tableName . ". Reason: " . $reason);
     }
 }
 

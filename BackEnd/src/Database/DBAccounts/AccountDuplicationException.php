@@ -11,8 +11,8 @@ use BackEnd\Database\DBAccounts\InsertionException;
 
 class AccountDuplicationException extends InsertionException
 {
-    public function __construct($name, $currentAmount, $userID, $tableName)
+    public function __construct($account, $tableName)
     {
-        parent::__construct($name, $currentAmount, $userID, $tableName, "This account name already exists for this payer.");
+        parent::__construct($account, $tableName, "This account name already exists for this payer.");
     }
 }

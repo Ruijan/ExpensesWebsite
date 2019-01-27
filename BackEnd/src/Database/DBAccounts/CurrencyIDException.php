@@ -11,8 +11,8 @@ use BackEnd\Database\DBAccounts\InsertionException;
 
 class CurrencyIDException extends InsertionException
 {
-    public function __construct($name, $currentAmount, $userID, $tableName)
+    public function __construct($account, $tableName)
     {
-        parent::__construct($name, $currentAmount, $userID, $tableName, "Currency ID does not exist.");
+        parent::__construct($account, $tableName, "Currency ID does not exist.");
     }
 }
