@@ -33,8 +33,8 @@ class DBCurrencies extends DBTable
         }
     }
 
-    public function getCurrencyFromID($id){
-        $query = "SELECT * FROM ".$this->getName()." WHERE ID = '".$this->driver->real_escape_string($id)."'";
+    public function getCurrencyFromID($currencyID){
+        $query = "SELECT * FROM ".$this->getName()." WHERE ID = '".$this->driver->real_escape_string($currencyID)."'";
         $row = $this->driver->query($query)->fetch_assoc();
         return $row;
     }

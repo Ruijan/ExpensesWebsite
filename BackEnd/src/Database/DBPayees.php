@@ -45,8 +45,8 @@ class DBPayees extends DBTable
         return $result->fetch_assoc()["ID"];
     }
 
-    public function getPayeeFromID($id){
-        $query = "SELECT * FROM ".$this->name." WHERE ID = ".$this->driver->real_escape_string($id);
+    public function getPayeeFromID($payeeID){
+        $query = "SELECT * FROM ".$this->name." WHERE ID = ".$this->driver->real_escape_string($payeeID);
         $row = $this->driver->query($query)->fetch_assoc();
         return $row;
     }

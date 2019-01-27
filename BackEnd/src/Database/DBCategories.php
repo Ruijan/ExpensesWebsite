@@ -50,8 +50,8 @@ class DBCategories extends DBTable
         }
     }
 
-    public function getCategoryFromID($id){
-        $query = "SELECT * FROM ".$this->getName()." WHERE ID = '".$this->driver->real_escape_string($id)."'";
+    public function getCategoryFromID($categoryID){
+        $query = "SELECT * FROM ".$this->getName()." WHERE ID = '".$this->driver->real_escape_string($categoryID)."'";
         $row = $this->driver->query($query)->fetch_assoc();
         return $row;
     }

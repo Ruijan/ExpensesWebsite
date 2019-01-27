@@ -59,4 +59,10 @@ class DBSubCategories extends DBTable
             throw new \Exception("Couldn't insert sub category ".implode(", ", $subCategory)."in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
         }
     }
+
+    public function getSubCategoryFromID($subCategoryID){
+        $query = "SELECT * FROM ".$this->getName()." WHERE ID = '".$this->driver->real_escape_string($subCategoryID)."'";
+        $row = $this->driver->query($query)->fetch_assoc();
+        return $row;
+    }
 }

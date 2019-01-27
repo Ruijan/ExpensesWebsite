@@ -65,7 +65,7 @@ class DBAccounts extends DBTable
     {
         $result = $this->driver->query("SELECT ID FROM " . $this->name . " WHERE NAME='" . $this->driver->real_escape_string($accountName) .
             "' AND USER_ID='" . $this->driver->real_escape_string($userID) . "'");
-        while ($result and $row = $result->fetch_assoc()) {
+        while ($result and $result->fetch_assoc()) {
             return true;
         }
         return false;

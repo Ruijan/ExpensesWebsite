@@ -109,4 +109,14 @@ class DBSubCategoriesTest extends TableCreationTest
         }
         $this->assertEquals($expectedNbRow, $count);
     }
+
+    public function testGetSubCategoryFromID(){
+        $this->dbPayers->expects($this->exactly(1))
+            ->method('checkIfIDExists')->with($this->subCategory["USER_ID"])->will($this->returnValue(true));
+        $this->dbCategories->expects($this->exactly(1))
+            ->method('checkIfCategoryIDExists')->with($this->subCategory["USER_ID"])->will($this->returnValue(true));
+        $this->table->addSubCategory($this->subCategory);
+        $subCategory = $this->table->getSubCategoryFromID(1);
+        $this->assertEquals($this->subCategory["NAME"], $subCategory["NAME"]);
+    }
 }
