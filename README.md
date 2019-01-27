@@ -6,6 +6,7 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/ruijan/expenseswebsite/badge)](https://www.codefactor.io/repository/github/ruijan/expenseswebsite)
 [![BCH compliance](https://bettercodehub.com/edge/badge/Ruijan/ExpensesWebsite?branch=master)](https://bettercodehub.com/results/Ruijan/ExpensesWebsite)
 ## Install
+
 ### Prerequisites
 
 #### WampServer or equivalent webserver
@@ -33,8 +34,8 @@ git clone https://github.com/Ruijan/ExpensesWebsite.git
 cd ExpensesWebsite
 php composer.phar install
 ```
-## Debug and enchance
 
+## Debug and enchance
 ### Setup PHPStorm
 Please follow instructions to download and install PHPStorm here: https://www.jetbrains.com/phpstorm/
 Once done, launch PHPStorm.
