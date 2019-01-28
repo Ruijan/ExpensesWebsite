@@ -6,8 +6,9 @@
  * Time: 9:12 PM
  */
 
-namespace BackEnd\Database;
-require_once("DBTable.php");
+namespace BackEnd\Database\DBUsers;
+use BackEnd\Database\DBUsers\UndefinedUserID;
+use BackEnd\Database\DBTable;
 
 class DBUsers extends DBTable
 {
@@ -73,54 +74,49 @@ class DBUsers extends DBTable
 
     public function updateLastConnection($userID, $lastConnection)
     {
-        if (!$this->checkIfIDExists($userID)) {
-            throw new \Exception("Couldn't find payee with ID " . $userID . " in " . $this->name);
-        }
+        $this->checkIfIDExists($userID);
         $query = "UPDATE " . $this->name . " SET LAST_CONNECTION = '" . $this->driver->real_escape_string($lastConnection) . "' WHERE ID = '" . $this->driver->real_escape_string($userID) . "'";
         if ($this->driver->query($query) === FALSE) {
             throw new \Exception("Couldn't update last connection for userid " . $this->driver->real_escape_string($userID) . " in " . $this->name . ". Reason: " . $this->driver->error_list[0]["error"]);
         }
     }
 
-    public function checkIfIDExists($expectedPayerID)
+    protected function checkIfIDExists($expectedPayerID)
     {
         $query = "SELECT ID FROM " . $this->name . " WHERE ID = " . $this->driver->real_escape_string($expectedPayerID);
         $result = $this->driver->query($query);
         if ($result === FALSE) {
             throw new \Exception("Couldn't find payee with ID " . $expectedPayerID . " in " . $this->name . ". Reason: " . $this->driver->error_list[0]["error"]);
         } else if ($result->num_rows == 0) {
-            return false;
+            throw new UndefinedUserID($expectedPayerID);
         }
-        return true;
     }
 
     public function getUserFromEmail($email)
     {
-        if ($this->checkIfEmailExists($email)) {
-            $result = $this->driver->query("SELECT ID, FIRST_NAME, NAME, REGISTERED_DATE, LAST_CONNECTION, EMAIL_VALIDATED, EMAIL  FROM " .
-                $this->name . " WHERE EMAIL='" . $this->driver->real_escape_string($email) . "'");
-            return $result->fetch_assoc();
-        }
+        $this->checkIfEmailExists($email);
+        $result = $this->driver->query("SELECT ID, FIRST_NAME, NAME, REGISTERED_DATE, LAST_CONNECTION, EMAIL_VALIDATED, EMAIL  FROM " .
+            $this->name . " WHERE EMAIL='" . $this->driver->real_escape_string($email) . "'");
+        return $result->fetch_assoc();
     }
 
-    public function getUserFromID($userID)
-    {
-        if ($this->checkIfIDExists($userID)) {
-            $result = $this->driver->query("SELECT ID, FIRST_NAME, NAME, REGISTERED_DATE, LAST_CONNECTION, EMAIL_VALIDATED, EMAIL  FROM " .
-                $this->name . " WHERE ID='" . $this->driver->real_escape_string($userID) . "'");
-            return $result->fetch_assoc();
-        }
-    }
-
-    public function checkIfEmailExists($email)
+    protected function checkIfEmailExists($email)
     {
         $query = "SELECT ID FROM " . $this->name . " WHERE EMAIL = '" . $this->driver->real_escape_string($email) . "'";
         $result = $this->driver->query($query);
         if ($result === FALSE) {
             throw new \Exception("Couldn't find payee with ID " . $email . " in " . $this->name . ". Reason: " . $this->driver->error_list[0]["error"]);
         } else if ($result->num_rows == 0) {
-            return false;
+            throw new UndefinedUserEmail($email);
         }
         return $result->fetch_assoc()["ID"];
+    }
+
+    public function getUserFromID($userID)
+    {
+        $this->checkIfIDExists($userID);
+        $result = $this->driver->query("SELECT ID, FIRST_NAME, NAME, REGISTERED_DATE, LAST_CONNECTION, EMAIL_VALIDATED, EMAIL  FROM " .
+            $this->name . " WHERE ID='" . $this->driver->real_escape_string($userID) . "'");
+        return $result->fetch_assoc();
     }
 }

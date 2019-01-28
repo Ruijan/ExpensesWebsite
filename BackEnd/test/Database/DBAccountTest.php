@@ -67,6 +67,7 @@ class DBAccountTest extends TableCreationTest
         $this->assertEquals($this->accountName, $result["NAME"]);
         $this->assertEquals($this->currentAmount, $result["CURRENT_AMOUNT"]);
         $this->assertEquals($this->userID, $result["USER_ID"]);
+        $this->assertEquals(1, $this->account->getTableID());
     }
 
     public function testAddAccountWithWrongUserIDShouldThrow()

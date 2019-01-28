@@ -6,10 +6,12 @@
  * Time: 9:13 PM
  */
 
-namespace BackEnd\Tests\Database;
+namespace BackEnd\Tests\Database\DBUsers;
 
+use BackEnd\Database\DBUsers\UndefinedUserEmail;
 use BackEnd\Tests\Database\TableCreationTest;
-use BackEnd\Database\DBUsers;
+use BackEnd\Database\DBUsers\DBUsers;
+use BackEnd\Database\DBUsers\UndefinedUserID;
 
 class DBUserTest extends TableCreationTest
 {
@@ -74,45 +76,6 @@ class DBUserTest extends TableCreationTest
         $this->assertTrue(false);
     }
 
-    public function testCheckIfPayerIDExist()
-    {
-        $this->table->addUser($this->payer);
-        $expectedPayerID = 1;
-        $payerID = $this->table->checkIfIDExists($expectedPayerID);
-        $this->assertTrue($payerID);
-    }
-
-    public function testCheckIfPayerIDExistReturnFalse()
-    {
-        $this->table->addUser($this->payer);
-        $expectedPayerID = 2;
-        $payerID = $this->table->checkIfIDExists($expectedPayerID);
-        $this->assertFalse($payerID);
-    }
-
-    public function testCheckIfPayerIDExistWithStringShouldThrow()
-    {
-        $this->table->addUser($this->payer);
-        $expectedPayerID = "Palalal";
-        $this->expectException(\Exception::class);
-        $this->table->checkIfIDExists($expectedPayerID);
-    }
-
-    public function testCheckIfPayerEmailExist()
-    {
-        $this->table->addUser($this->payer);
-        $expectedPayerID = 1;
-        $payerID = $this->table->checkIfEmailExists($this->payer["EMAIL"]);
-        $this->assertEquals($expectedPayerID, $payerID);
-    }
-
-    public function testCheckIfPayerEmailExistReturnFalse()
-    {
-        $this->table->addUser($this->payer);
-        $payerID = $this->table->checkIfEmailExists("test@hotmail.com");
-        $this->assertFalse($payerID);
-    }
-
     public function testValidateEmailForPayer()
     {
         $this->table->addUser($this->payer);
@@ -152,6 +115,15 @@ class DBUserTest extends TableCreationTest
         $this->assertEquals($this->payer["LAST_CONNECTION"], $row["LAST_CONNECTION"]);
     }
 
+    public function testUpdateLastConnectionWithWrongDataShouldThrow()
+    {
+        $this->table->addUser($this->payer);
+        $this->payer["ID"] = 1;
+        $this->payer["LAST_CONNECTION"] = "1";
+        $this->expectException(\Exception::class);
+        $this->table->updateLastConnection($this->payer["ID"], $this->payer["LAST_CONNECTION"]);
+    }
+
     public function testUpdateLastConnectionForWrongUserIDShouldThrow()
     {
         $this->table->addUser($this->payer);
@@ -159,6 +131,30 @@ class DBUserTest extends TableCreationTest
         $newConnectionDate = "2018-01-25 20:05:45";
         $this->expectException(\Exception::class);
         $this->table->updateLastConnection($this->payer["ID"], $newConnectionDate);
+    }
+
+    public function testGetUserFromID()
+    {
+        $this->table->addUser($this->payer);
+        $this->payer["ID"] = '1';
+        $this->payer["EMAIL_VALIDATED"] = '0';
+        $this->assertArraySubset($this->table->getUserFromID($this->payer["ID"]), $this->payer, true);
+    }
+
+    public function testGetUserFromWrongIDShouldThrow()
+    {
+        $this->table->addUser($this->payer);
+        $expectedPayerID = 2;
+        $this->expectException(UndefinedUserID::class);
+        $this->table->getUserFromID($expectedPayerID);
+    }
+
+    public function testCheckIfPayerIDExistWithStringShouldThrow()
+    {
+        $this->table->addUser($this->payer);
+        $expectedPayerID = "Palalal";
+        $this->expectException(\Exception::class);
+        $this->table->getUserFromID($expectedPayerID);
     }
 
     public function testGetUserFromEmail()
@@ -169,11 +165,11 @@ class DBUserTest extends TableCreationTest
         $this->assertArraySubset($this->table->getUserFromEmail($this->payer["EMAIL"]), $this->payer, true);
     }
 
-    public function testGetUserFromID()
+    public function testCheckIfWrongPayerEmailExistShouldThrow()
     {
         $this->table->addUser($this->payer);
-        $this->payer["ID"] = '1';
-        $this->payer["EMAIL_VALIDATED"] = '0';
-        $this->assertArraySubset($this->table->getUserFromID($this->payer["ID"]), $this->payer, true);
+        $this->expectException(UndefinedUserEmail::class);
+        $this->table->getUserFromEmail("coucou@gmail.com");
     }
+
 }

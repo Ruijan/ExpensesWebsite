@@ -5,7 +5,9 @@
  * Date: 1/25/2019
  * Time: 9:25 PM
  */
+
 namespace BackEnd\Tests;
+
 use Backend\Account\MissingParametersException;
 use PHPUnit\Framework\TestCase;
 use BackEnd\Account\Account;
@@ -62,5 +64,15 @@ class AccountTest extends TestCase
         $account = new Account($this->accountArray);
         $account->loadExpenses($expensesTable);
         $this->assertArraySubset([$expense], $account->getExpenses());
+    }
+
+    public function testAsPrintableArray()
+    {
+        $expense = new Account($this->accountArray);
+        $array = $expense->asPrintableArray();
+        $keys = array_keys($array);
+        foreach ($keys as $key) {
+            $this->assertTrue(strpos($key, "id") === FALSE);
+        }
     }
 }

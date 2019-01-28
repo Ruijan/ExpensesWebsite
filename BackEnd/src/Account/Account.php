@@ -126,7 +126,7 @@ class Account
 
     public function asPrintableArray()
     {
-        $keys = array("id", "name", "currency", "current_amount", "user");
+        $keys = array("name", "currency", "current_amount", "user");
         return array_intersect_key($this->data, array_flip($keys));
     }
 
