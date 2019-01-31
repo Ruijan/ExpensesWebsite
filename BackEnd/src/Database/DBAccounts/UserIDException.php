@@ -11,8 +11,8 @@ use BackEnd\Database\DBAccounts\InsertionException;
 
 class UserIDException extends InsertionException
 {
-    public function __construct($name, $currentAmount, $userID, $tableName)
+    public function __construct($account, $tableName)
     {
-        parent::__construct($name, $currentAmount, $userID, $tableName, "User ID does not exist.");
+        parent::__construct($account, $tableName, "User ID does not exist.");
     }
 }

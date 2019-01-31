@@ -14,7 +14,8 @@ class DBTableFactoryTest extends TestCase
 {
     protected $driver;
     protected $database;
-    private $tables = ["DBCategories", "DBCurrencies", "DBExpenses", "DBPayees", "DBUsers", "DBSubCategories", "DBAccounts"];
+    private $tables = ["DBCategories", "DBCurrencies", "DBExpenses", "DBPayees", "DBUsers",
+        "DBSubCategories", "DBAccounts", "DBExpenseStates"];
     private $tableNameSpace = ["", "", "", "", "", "", "DBAccounts"];
     private $factory;
 
@@ -24,9 +25,12 @@ class DBTableFactoryTest extends TestCase
 
     public function testCreateTable(){
         $this->database = $this->getMockBuilder(Database::class)->disableOriginalConstructor()->setMethods(["getDriver", "getTableByName"])->getMock();
-        $this->database->expects($this->exactly(5))
+        $this->database->expects($this->exactly(10))
             ->method('getTableByName')
-            ->withConsecutive(["dbuser"], ["dbuser"], ["dbcategories"], ["dbuser"], ["dbcurrencies"]);
+            ->withConsecutive(["dbuser"],
+                ["dbcategories"], ["dbsubcategories"], ["dbpayees"], ["dbcurrencies"], ["dbstates"],
+                ["dbuser"], ["dbcategories"],
+                ["dbuser"], ["dbcurrencies"]);
         foreach($this->tables as $tableName){
             $table = $this->factory->createTable($tableName, $this->database);
             $expectedClass = explode('\\',$tableName);

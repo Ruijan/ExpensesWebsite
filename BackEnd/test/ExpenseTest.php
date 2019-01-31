@@ -46,6 +46,12 @@ class ExpenseTest extends TestCase
         $this->assertEquals($this->expenseArray, $this->expense->asPrintableArray());
     }
 
+    public function test__constructWithAnotherField(){
+        $this->expenseArray["Added_Date"] = "";
+        $this->expectException(\Exception::class);
+        $this->expense = new Expense($this->expenseArray);
+    }
+
     public function testAsArray(){
         $fullArray = $this->expenseArray;
         $fullArray["account_id"] = random_int(1, 100);

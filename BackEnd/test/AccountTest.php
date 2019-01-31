@@ -5,48 +5,74 @@
  * Date: 1/25/2019
  * Time: 9:25 PM
  */
+
 namespace BackEnd\Tests;
+
+use Backend\Account\MissingParametersException;
 use PHPUnit\Framework\TestCase;
-use BackEnd\Account;
+use BackEnd\Account\Account;
 use BackEnd\Expense;
 
 class AccountTest extends TestCase
 {
-    private $accountName = "Savings";
     private $tableID = 1;
-    private $currentAmount = 4452;
-    private $account = ["NAME" => "Savings", "ID" => "1", "CURRENT_AMOUNT" => 4452];
+    private $accountArray = ["name" => "Savings",
+        "id" => 1,
+        "current_amount" => 4452,
+        "currency" => "CHF",
+        "currency_id" => 1,
+        "added_date" => "2018/01/01 20:00:05",
+        "user_id" => 1,
+        "user" => "Julien"];
 
     public function test__construct()
     {
-        $account = new Account($this->accountName, $this->tableID, $this->currentAmount);
-        $this->assertEquals($this->accountName, $account->getName());
-        $this->assertEquals($this->currentAmount, $account->getCurrentAmount());
-        $this->assertEquals($this->tableID, $account->getTableID());
+        $account = new Account($this->accountArray);
+        $this->assertEquals($this->accountArray, $account->asDict());
     }
 
-    public function test__constructWithDefaultAccountValue()
+    public function test__constructWithoutNameShouldThrow()
     {
-        $account = new Account($this->accountName, $this->tableID);
-        $this->assertEquals(0, $account->getCurrentAmount());
+        unset($this->accountArray["name"]);
+        $this->expectException(MissingParametersException::class);
+        new Account($this->accountArray);
     }
 
-    public function testAsDict()
+    public function test__constructWithoutCurrencyShouldThrow()
     {
-        $account = new Account($this->accountName, $this->tableID, $this->currentAmount);
-        $dictAccount = $account->asDict();
-        $this->assertArraySubset($this->account, $dictAccount);
+        unset($this->accountArray["currency"]);
+        $this->expectException(MissingParametersException::class);
+        new Account($this->accountArray);
     }
+
+    public function test__constructWithWrongKeyShouldThrow()
+    {
+        unset($this->accountArray["currency_id"]);
+        $this->accountArray["currency_i"] = 1;
+        $this->expectException(\Exception::class);
+        new Account($this->accountArray);
+    }
+
 
     public function testLoadExpenses()
     {
         $expense = new Expense([]);
-        $expensesTable = $this->getMockBuilder(\BackEnd\Database\DBExpenses::class)->disableOriginalConstructor()
+        $expensesTable = $this->getMockBuilder(\BackEnd\Database\DBExpenses\DBExpenses::class)->disableOriginalConstructor()
             ->setMethods(['getExpensesForAccountID'])->getMock();
         $expensesTable->expects($this->once())
             ->method('getExpensesForAccountID')->with($this->tableID)->will($this->returnValue([$expense]));
-        $account = new Account($this->accountName, $this->tableID, $this->currentAmount);
+        $account = new Account($this->accountArray);
         $account->loadExpenses($expensesTable);
         $this->assertArraySubset([$expense], $account->getExpenses());
+    }
+
+    public function testAsPrintableArray()
+    {
+        $expense = new Account($this->accountArray);
+        $array = $expense->asPrintableArray();
+        $keys = array_keys($array);
+        foreach ($keys as $key) {
+            $this->assertTrue(strpos($key, "id") === FALSE);
+        }
     }
 }

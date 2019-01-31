@@ -6,9 +6,10 @@
  * Time: 11:34 PM
  */
 
-namespace BackEnd\Database;
-require_once ("DBTable.php");
-require_once("DBUsers.php");
+namespace BackEnd\Database\DBCategories;
+use BackEnd\Database\DBTable;
+use BackEnd\Database\DBUsers\DBUsers;
+use BackEnd\Database\DBCategories\InsertionException;
 
 class DBCategories extends DBTable
 {
@@ -33,8 +34,7 @@ class DBCategories extends DBTable
 
     public function addCategory($category){
         if($this->usersTable->checkIfIDExists($category["USER_ID"]) == false){
-            throw new \Exception("Couldn't insert category ".implode(" ,", $category)." in ".$this->name.
-                ". Reason: User ID does not exist.");
+            throw new InsertionException($category, $this->name, "User ID does not exist.");
         }
         $values = [];
         $indexValue = 0;
@@ -46,7 +46,7 @@ class DBCategories extends DBTable
         $query = 'INSERT INTO '.$this->driver->real_escape_string($this->name).
             ' (NAME, USER_ID, ADDED_DATE) VALUES ('.$values.')';
         if ($this->driver->query($query) === FALSE) {
-            throw new \Exception("Couldn't insert category ".implode(" ,", $category)." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
+            throw new InsertionException($category, $this->name, $this->driver->error_list[0]["error"]);
         }
     }
 

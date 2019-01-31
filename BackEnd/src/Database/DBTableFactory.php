@@ -12,10 +12,11 @@ use mysql_xdevapi\Exception;
 use BackEnd\Database\DBCategories;
 use BackEnd\Database\DBSubCategories;
 use BackEnd\Database\DBCurrencies;
-use BackEnd\Database\DBExpenses;
+use BackEnd\Database\DBExpenses\DBExpenses;
 use BackEnd\Database\DBPayees;
 use BackEnd\Database\DBUsers;
 use BackEnd\Database\DBAccounts\DBAccounts;
+use BackEnd\Database\DBExpenseStates\DBExpenseStates;
 
 class DBTableFactory
 {
@@ -36,6 +37,8 @@ class DBTableFactory
                 return new DBUsers($database);
             case "DBAccounts":
                 return new DBAccounts($database, $database->getTableByName("dbuser"), $database->getTableByName("dbcurrencies"));
+            case "DBExpenseStates":
+                return new DBExpenseStates($database);
         }
         throw new \Exception("Invalid table type: ". $tableName);
     }

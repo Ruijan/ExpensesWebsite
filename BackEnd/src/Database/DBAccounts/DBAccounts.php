@@ -11,6 +11,7 @@ use BackEnd\Database\DBTable;
 use BackEnd\Database\DBAccounts\AccountDuplicationException;
 use BackEnd\Database\DBAccounts\UserIDException;
 use BackEnd\Database\DBAccounts\CurrencyIDException;
+use BackEnd\Account\Account;
 
 
 class DBAccounts extends DBTable
@@ -36,28 +37,30 @@ class DBAccounts extends DBTable
                         PRIMARY KEY (ID)";
     }
 
-    public function addAccount($name, $currentAmount, $userID, $currencyID)
+    public function addAccount($account)
     {
-        $this->checkParameters($name, $currentAmount, $userID, $currencyID);
+        $this->checkParameters($account);
         $currentUTCDate = new \DateTime("now", new \DateTimeZone("UTC"));
         $query = 'INSERT INTO ' . $this->name . ' (NAME, USER_ID, CURRENCY_ID, ADDED_DATE, CURRENT_AMOUNT) VALUES ("' .
-            $this->driver->real_escape_string($name) . '", "' . $this->driver->real_escape_string($userID) . '", "' . $this->driver->real_escape_string($currencyID) . '", "' .
-            $currentUTCDate->format("Y-m-d H:i:s") . '", "' . $this->driver->real_escape_string($currentAmount) . '")';
+            $this->driver->real_escape_string($account->getName()) . '", "' . $this->driver->real_escape_string($account->getUserID()) .
+            '", "' . $this->driver->real_escape_string($account->getCurrencyID()) . '", "' .
+            $currentUTCDate->format("Y-m-d H:i:s") . '", "' . $this->driver->real_escape_string($account->getCurrentAmount()) . '")';
         if ($this->driver->query($query) === FALSE) {
-            throw new DBAccount\InsertionException($name, $currentAmount, $userID, $this->name, $this->driver->error_list[0]["error"]);
+            throw new DBAccount\InsertionException($account, $this->name, $this->driver->error_list[0]["error"]);
         }
+        $account->setID($this->driver->insert_id);
     }
 
-    protected function checkParameters($name, $currentAmount, $userID, $currencyID): void
+    protected function checkParameters($account): void
     {
-        if ($this->usersTable->checkIfIDExists($userID) == false) {
-            throw new UserIDException($name, $currentAmount, $userID, $this->name);
+        if ($this->usersTable->checkIfIDExists($account->getUserID()) == false) {
+            throw new UserIDException($account, $this->name);
         }
-        if ($this->currenciesTable->checkIfIDExists($currencyID) == false) {
-            throw new CurrencyIDException($name, $currentAmount, $userID, $this->name);
+        if ($this->currenciesTable->checkIfIDExists($account->getCurrencyID()) == false) {
+            throw new CurrencyIDException($account, $this->name);
         }
-        if ($this->doesAccountExists($name, $userID) !== false) {
-            throw new AccountDuplicationException($name, $currentAmount, $userID, $this->name);
+        if ($this->doesAccountExists($account->getName(), $account->getUserID()) !== false) {
+            throw new AccountDuplicationException($account, $this->name);
         }
     }
 
@@ -84,9 +87,14 @@ class DBAccounts extends DBTable
     public function getAccountsFromUserID($userID)
     {
         $accounts = array();
-        $result = $this->driver->query("SELECT ID, NAME, USER_ID, CURRENT_AMOUNT, ADDED_DATE FROM " . $this->name . " WHERE USER_ID='" . $this->driver->real_escape_string($userID) . "'");
+        $result = $this->driver->query("SELECT ID, NAME, USER_ID, CURRENT_AMOUNT, CURRENCY_ID, ADDED_DATE FROM " . $this->name . " WHERE USER_ID='" . $this->driver->real_escape_string($userID) . "'");
         while ($result and $row = $result->fetch_assoc()) {
-            $accounts[] = $row;
+            $user = $this->usersTable->getUserFromID($row["USER_ID"]);
+            $currency = $this->currenciesTable->getCurrencyFromID($row["CURRENCY_ID"]);
+            $row["USER"] = $user["NAME"];
+            $row["CURRENCY"] = $currency["NAME"];
+            $accounts[] = new Account($row);
+
         }
         return $accounts;
     }

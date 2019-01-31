@@ -13,6 +13,7 @@ use BackEnd\Database\DBExpenses\DBExpenses;
 use BackEnd\Expense;
 use BackEnd\Database\DBExpenses\WrongTypeKeyException;
 use BackEnd\Database\DBExpenses\InsertionKeyException;
+use BackEnd\Database\DBExpenses\InsertionException;
 use BackEnd\Database\DBCategories;
 use BackEnd\Database\DBSubCategories;
 use BackEnd\Database\DBPayees;
@@ -118,6 +119,16 @@ class DBExpensesTest extends TableCreationTest
         $nbExpenses = $this->driver->query('SELECT COUNT(*) FROM ' . $this->name)->fetch_all()[0][0];
         $this->assertEquals(1, $nbExpenses);
     }
+
+    /*public function testAddExpenseWithWrongExpenseDateShouldThrow()
+    {
+        $this->expenseArray["expense_date"] = 'Julien';
+        $this->expense->expects($this->once())
+            ->method('asArray')
+            ->with()->will($this->returnValue($this->expenseArray));
+        $this->expectException(InsertionException::class);
+        $this->table->addExpense($this->expense);
+    }*/
 
     public function testAddExpenseWithNoID()
     {
