@@ -6,8 +6,9 @@
  * Time: 10:14 PM
  */
 
-namespace BackEnd\Database;
-require_once ("DBTable.php");
+namespace BackEnd\Database\DBSubCategories;
+use BackEnd\Database\DBTable;
+use BackEnd\Database\DBSubCategories\InsertionException;
 
 class DBSubCategories extends DBTable
 {
@@ -39,12 +40,10 @@ class DBSubCategories extends DBTable
 
     public function addSubCategory($subCategory){
         if($this->dbPayers->checkIfIDExists($subCategory["USER_ID"]) == false){
-            throw new \Exception("Couldn't insert sub category ".implode(" ,", $subCategory)." in ".$this->name.
-                ". Reason: Payer ID does not exist.");
+            throw new InsertionException($subCategory, $this->name, "Payer ID does not exist.");
         }
         if($this->dbCategories->checkIfCategoryIDExists($subCategory["PARENT_ID"]) == false){
-            throw new \Exception("Couldn't insert sub category ".implode(" ,", $subCategory)." in ".$this->name.
-                ". Reason: Parent Category ID does not exist.");
+            throw new InsertionException($subCategory, $this->name, "Parent Category ID does not exist.");
         }
         $values = [];
         $indexValue = 0;
@@ -56,7 +55,7 @@ class DBSubCategories extends DBTable
         $query = 'INSERT INTO '.$this->driver->real_escape_string($this->name).
             ' (PARENT_ID, NAME, USER_ID, ADDED_DATE) VALUES ('.$values.')';
         if ($this->driver->query($query) === FALSE) {
-            throw new \Exception("Couldn't insert sub category ".implode(", ", $subCategory)."in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
+            throw new InsertionException($subCategory, $this->name, $this->driver->error_list[0]["error"]);
         }
     }
 

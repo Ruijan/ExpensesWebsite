@@ -9,6 +9,8 @@
 namespace BackEnd\Database\DBUsers;
 use BackEnd\Database\DBUsers\UndefinedUserID;
 use BackEnd\Database\DBTable;
+use BackEnd\Database\DBUsers\InsertionException;
+use BackEnd\Database\DBUsers\EmailValidationException;
 
 class DBUsers extends DBTable
 {
@@ -31,11 +33,11 @@ class DBUsers extends DBTable
                         PRIMARY KEY (ID)";
     }
 
-    public function addUser($payer)
+    public function addUser($user)
     {
         $values = [];
         $indexValue = 0;
-        foreach ($payer as $value) {
+        foreach ($user as $value) {
             $values[$indexValue] = '"' . $this->driver->real_escape_string($value) . '"';
             $indexValue += 1;
         }
@@ -44,7 +46,7 @@ class DBUsers extends DBTable
             ' (FIRST_NAME, NAME, EMAIL, PASSWORD, REGISTERED_DATE, LAST_CONNECTION, VALIDATION_ID) VALUES (' .
             $values . ')';
         if ($this->driver->query($query) === FALSE) {
-            throw new \Exception("Couldn't insert payer " . implode(" ,", $payer) . " in " . $this->name . ". Reason: " . $this->driver->error_list[0]["error"]);
+            throw new InsertionException($user, $this->name, $this->driver->error_list[0]["error"]);
         }
     }
 
@@ -53,11 +55,15 @@ class DBUsers extends DBTable
         $result = $this->driver->query("SELECT EMAIL_VALIDATED FROM " . $this->name . " WHERE VALIDATION_ID='" . $this->driver->real_escape_string($validationID) . "'");
         $row = $result->fetch_assoc();
         if (!$row or $row["EMAIL_VALIDATED"] == "1") {
-            throw new \Exception("Couldn't validate email with ID " . $validationID . " in " . $this->name . ". Either the ID is invalid or this email address has already been validated.");
+            throw new EmailValidationException($this->driver->real_escape_string($validationID),
+                $this->name,
+                "Either the ID is invalid or this email address has already been validated.");
         }
         $query = "UPDATE " . $this->name . " SET EMAIL_VALIDATED = 1 WHERE VALIDATION_ID = '" . $this->driver->real_escape_string($validationID) . "'";
         if ($this->driver->query($query) === FALSE) {
-            throw new \Exception("Couldn't validate email address with id " . $this->driver->real_escape_string($validationID) . " in " . $this->name . ". Reason: " . $this->driver->error_list[0]["error"]);
+            throw new EmailValidationException($this->driver->real_escape_string($validationID),
+                $this->name,
+                $this->driver->error_list[0]["error"]);
         }
     }
 
@@ -104,9 +110,7 @@ class DBUsers extends DBTable
     {
         $query = "SELECT ID FROM " . $this->name . " WHERE EMAIL = '" . $this->driver->real_escape_string($email) . "'";
         $result = $this->driver->query($query);
-        if ($result === FALSE) {
-            throw new \Exception("Couldn't find payee with ID " . $email . " in " . $this->name . ". Reason: " . $this->driver->error_list[0]["error"]);
-        } else if ($result->num_rows == 0) {
+        if ($result->num_rows == 0) {
             throw new UndefinedUserEmail($email);
         }
         return $result->fetch_assoc()["ID"];

@@ -8,7 +8,8 @@
 
 namespace BackEnd\Tests\Database;
 use BackEnd\Tests\Database\TableCreationTest;
-use BackEnd\Database\DBSubCategories;
+use BackEnd\Database\DBSubCategories\DBSubCategories;
+use BackEnd\Database\DBSubCategories\InsertionException;
 use BackEnd\Database\DBUsers;
 use BackEnd\Database\DBCategories;
 
@@ -58,7 +59,7 @@ class DBSubCategoriesTest extends TableCreationTest
         try{
             $this->table->addSubCategory($this->subCategory);
         }
-        catch (\Exception $e){
+        catch (InsertionException $e){
             $this->checkNbRowHasBeenAdded(0);
             return;
         }
@@ -75,7 +76,7 @@ class DBSubCategoriesTest extends TableCreationTest
         try{
             $this->table->addSubCategory($this->subCategory);
         }
-        catch (\Exception $e){
+        catch (InsertionException $e){
             $this->checkNbRowHasBeenAdded($expectedRows);
             $currentRows = 0;
             return;
@@ -92,7 +93,7 @@ class DBSubCategoriesTest extends TableCreationTest
         try{
             $this->table->addSubCategory($this->subCategory);
         }
-        catch (\Exception $e){
+        catch (InsertionException $e){
             $this->checkNbRowHasBeenAdded(1);
             return;
         }

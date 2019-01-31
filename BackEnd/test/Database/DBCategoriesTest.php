@@ -9,9 +9,10 @@
 namespace BackEnd\Tests\Database;
 use BackEnd\Tests\Database\TableCreationTest;
 use BackEnd\Database\DBUsers;
-use BackEnd\Database\DBCategories;
+use BackEnd\Database\DBCategories\DBCategories;
+use BackEnd\Database\DBCategories\InsertionException;
 
-class DBCategoryTest extends TableCreationTest
+class DBCategoriesTest extends TableCreationTest
 {
     private $usersTable;
     private $category = ["NAME" => "Food", "USER_ID" => "1", "ADDED_DATE" => ""];
@@ -51,7 +52,7 @@ class DBCategoryTest extends TableCreationTest
         try{
             $this->table->addCategory($this->category);
         }
-        catch (\Exception $e){
+        catch (InsertionException $e){
             $this->checkNbRowHasBeenAdded(0);
             return;
         }
@@ -65,7 +66,7 @@ class DBCategoryTest extends TableCreationTest
         try{
             $this->table->addCategory($this->category);
         }
-        catch (\Exception $e){
+        catch (InsertionException $e){
             $this->checkNbRowHasBeenAdded(1);
             return;
         }
