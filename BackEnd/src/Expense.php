@@ -53,7 +53,8 @@ class Expense
             $newArray = array_change_key_case($newArray, CASE_LOWER);
             $diffKeys = array_diff_key($newArray, $this->data);
             if(array_intersect_key($diffKeys, $this->data) !== $diffKeys) {
-                throw new \Exception();
+                print_r($diffKeys);
+                throw new \Exception("Unrecognized keys: ".implode(", ", array_keys (array_diff_key ($diffKeys, $this->data))));
             }
         }
         $this->data = array_merge($this->data, $newArray);

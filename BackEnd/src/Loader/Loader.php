@@ -9,7 +9,7 @@
 namespace BackEnd\Loader;
 
 
-class Loader
+abstract class Loader
 {
-
+    abstract public function load();
 }
