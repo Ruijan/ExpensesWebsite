@@ -38,7 +38,7 @@ class CSVLoaderTest extends TestCase
     }
 
     public function testLoad(){
-        $this->csvLoader->init(__DIR__ .'\\'.$this->fileName);
+        $this->csvLoader->init(__DIR__ .'/'.$this->fileName);
         $this->csvLoader->load();
         $expenses = $this->csvLoader->getExpenses();
         $this->assertEquals(56, sizeof($expenses));

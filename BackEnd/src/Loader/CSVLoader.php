@@ -88,11 +88,6 @@ class CSVLoader extends Loader
         return $record;
     }
 
-    public function getHeader()
-    {
-        return $this->header;
-    }
-
     public function getFileName()
     {
         return $this->fileName;
