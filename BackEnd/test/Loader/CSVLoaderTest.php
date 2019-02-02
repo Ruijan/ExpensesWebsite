@@ -43,6 +43,5 @@ class CSVLoaderTest extends TestCase
         $expenses = $this->csvLoader->getExpenses();
         $this->assertEquals(56, sizeof($expenses));
         $this->assertEquals($this->firstExpense, $expenses[0]);
-
     }
 }
