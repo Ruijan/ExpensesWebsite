@@ -42,18 +42,25 @@ class CSVLoader extends Loader
     {
         $newHeader = [];
         foreach ($header as $element) {
-            if ($element == "Date") {
-                $newHeader[] = "expense_date";
-            } else if ($element == "Reason") {
-                $newHeader[] = "sub_category";
-            } else if ($element == "Global reason") {
-                $newHeader[] = "category";
-            } else if ($element == "Where") {
-                $newHeader[] = "location";
-            } else if ($element == "Who") {
-                $newHeader[] = "payee";
-            } else {
-                $newHeader[] = $element;
+            switch ($element){
+                case "Date":
+                    $newHeader[] = "expense_date";
+                    break;
+                case "Reason":
+                    $newHeader[] = "sub_category";
+                    break;
+                case "Global reason":
+                    $newHeader[] = "category";
+                    break;
+                case "Where":
+                    $newHeader[] = "location";
+                    break;
+                case "Who":
+                    $newHeader[] = "payee";
+                    break;
+                default:
+                    $newHeader[] = $element;
+                    break;
             }
         }
         return $newHeader;
@@ -62,7 +69,7 @@ class CSVLoader extends Loader
     protected function loadExpenses()
     {
         $records = $this->reader->getRecords($this->header);
-        foreach ($records as $offset => $record) {
+        foreach ($records as $record) {
             $record = $this->setAmountForRecord($record);
             $this->expenses[] = new Expense($record);
         }

@@ -18,7 +18,6 @@ class CSVLoaderTest extends TestCase
 {
     private $csvLoader;
     private $fileName = "Swiss.csv";
-    private $header = ["Date", "Where", "Who", "Global reason", "Reason", "Out","In"];
     private $firstExpense;
 
     public function setUp()
@@ -41,7 +40,7 @@ class CSVLoaderTest extends TestCase
         $this->csvLoader->init(__DIR__ .'/'.$this->fileName);
         $this->csvLoader->load();
         $expenses = $this->csvLoader->getExpenses();
-        $this->assertEquals(56, sizeof($expenses));
+        $this->assertEquals(56, count($expenses));
         $this->assertEquals($this->firstExpense, $expenses[0]);
     }
 }
