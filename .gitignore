@@ -2,3 +2,4 @@
 .scannerwork
 vendor
 build
+*lock*
