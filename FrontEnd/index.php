@@ -37,6 +37,5 @@ class IndexPage{
         </div>";
   }
 }
-
 $page = new IndexPage;
 $page->display();
