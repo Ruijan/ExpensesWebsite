@@ -51,6 +51,15 @@ class RouterTest extends TestCase
         $this->router->resolveRoute();
     }
 
+    public function testResolveEmptyRouteShouldThrow()
+    {
+        $this->serverProperties->expects($this->once())->method('getURI')
+            ->with()->will($this->returnValue(""));
+        $this->expectException(\InvalidArgumentException::class);
+        $this->router = new Router($this->serverProperties, $this->factories);
+        $this->router->resolveRoute();
+    }
+
     public function testResolveWrongRouteShouldThrow()
     {
         $this->serverProperties->expects($this->once())->method('getURI')
