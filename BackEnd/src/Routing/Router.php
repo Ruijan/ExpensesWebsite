@@ -16,25 +16,17 @@ class Router
     private $request;
     private $response;
     private $serverProperties;
+    private $requestFactories;
 
-
-    function __construct(ServerProperties $serverProperties)
+    function __construct($serverProperties, array $requestFactories)
     {
         $this->serverProperties = $serverProperties;
+        $this->requestFactories = $requestFactories;
     }
 
     function resolveRoute()
     {
-        $formattedRoute = $this->formatRoute($this->serverProperties->getURI());
-        $path = explode('/', $formattedRoute);
-        switch($path[0]){
-            case "connection":
-                unset($path[0]);
-                $this->request = new ConnectionRequestFactory(implode('/', $path));
-                break;
-            default:
-                throw new \InvalidArgumentException("Wrong path");
-        }
+        $this->generateRequest();
         $this->request->init();
         $this->response = $this->request->getResponse();
         $this->response->execute();
@@ -48,6 +40,27 @@ class Router
             return '/';
         }
         return $result;
+    }
+
+    public function getServerProperties(){
+        return $this->serverProperties;
+    }
+
+    public function getRequestFactories(){
+        return $this->requestFactories;
+    }
+
+    protected function generateRequest(): void
+    {
+        $formattedRoute = $this->formatRoute($this->serverProperties->getURI());
+        $path = explode('/', $formattedRoute);
+        $factoryName = $path[0];
+        if (!array_key_exists($factoryName, $this->requestFactories)) {
+            throw new \InvalidArgumentException("Wrong path");
+        }
+        unset($path[0]);
+        $newRoute = implode('/', $path);
+        $this->request = $this->requestFactories[$factoryName]->createRequest($newRoute);
     }
 
 }
