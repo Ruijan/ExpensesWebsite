@@ -7,37 +7,37 @@
  */
 
 namespace BackEnd\Database;
+use BackEnd\Database\DBCategories\DBCategories;
+use BackEnd\Database\DBSubCategories\DBSubCategories;
+use BackEnd\Database\DBUsers\DBUsers;
 use mysql_xdevapi\Exception;
-
-use BackEnd\Database\DBCategories;
-use BackEnd\Database\DBSubCategories;
 use BackEnd\Database\DBCurrencies;
 use BackEnd\Database\DBExpenses\DBExpenses;
 use BackEnd\Database\DBPayees;
-use BackEnd\Database\DBUsers;
 use BackEnd\Database\DBAccounts\DBAccounts;
 use BackEnd\Database\DBExpenseStates\DBExpenseStates;
+use BackEnd\Database\DBTables;
 
 class DBTableFactory
 {
     static public function createTable($tableName, $database){
 
         switch ($tableName) {
-            case "DBCategories":
-                return new DBCategories($database, $database->getTableByName("dbuser"));
-            case "DBSubCategories":
-                return new DBSubCategories($database, $database->getTableByName("dbuser"), $database->getTableByName("dbcategories"));
-            case "DBCurrencies":
+            case DBTables::Categories:
+                return new DBCategories($database, $database->getTableByName(DBTables::Users));
+            case DBTables::SubCategories:
+                return new DBSubCategories($database, $database->getTableByName(DBTables::Users), $database->getTableByName(DBTables::Categories));
+            case DBTables::Currencies:
                 return new DBCurrencies($database);
-            case "DBExpenses":
+            case DBTables::Expenses:
                 return new DBExpenses($database);
-            case "DBPayees":
+            case DBTables::Payees:
                 return new DBPayees($database);
-            case "DBUsers":
+            case DBTables::Users:
                 return new DBUsers($database);
-            case "DBAccounts":
-                return new DBAccounts($database, $database->getTableByName("dbuser"), $database->getTableByName("dbcurrencies"));
-            case "DBExpenseStates":
+            case DBTables::Accounts:
+                return new DBAccounts($database, $database->getTableByName(DBTables::Users), $database->getTableByName(DBTables::Currencies));
+            case DBTables::ExpenseStates:
                 return new DBExpenseStates($database);
         }
         throw new \Exception("Invalid table type: ". $tableName);

@@ -15,7 +15,7 @@ class MissingParametersException extends \Exception
 {
     public function __construct(array $missingParameters, string $requestName, int $code = 0, Throwable $previous = null)
     {
-        $message = "Missing parameters ".implode(', ', $missingParameters)."in request ".$requestName;
+        $message = "Missing parameters ".implode(', ', $missingParameters)." in request ".$requestName;
         parent::__construct($message, $code, $previous);
     }
 }

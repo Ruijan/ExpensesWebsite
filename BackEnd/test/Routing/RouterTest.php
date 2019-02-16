@@ -45,8 +45,6 @@ class RouterTest extends TestCase
         $this->request->expects($this->once())->method('getResponse')
             ->with()->will($this->returnValue($this->response));
         $this->response->expects($this->once())->method('execute');
-        $this->serverProperties->expects($this->once())->method('getURI')
-            ->with()->will($this->returnValue("connection/signIn"));
         $this->router = new Router($this->serverProperties, $this->factories);
         $this->router->resolveRoute();
     }

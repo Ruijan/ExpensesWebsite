@@ -7,6 +7,7 @@
  */
 
 namespace BackEnd\Database\DBExpenses;
+use BackEnd\Database\DBTables;
 use mysql_xdevapi\Exception;
 
 use BackEnd\Database\DBTable;
@@ -34,11 +35,11 @@ class DBExpenses extends DBTable
     private $statesTable;
     public function __construct($database){
         parent::__construct($database, "expenses");
-        $this->categoriesTable = $database->getTableByName("dbcategories");
-        $this->subCategoriesTable = $database->getTableByName("dbsubcategories");
-        $this->payeesTable = $database->getTableByName("dbpayees");
-        $this->currenciesTable = $database->getTableByName("dbcurrencies");
-        $this->statesTable = $database->getTableByName("dbstates");
+        $this->categoriesTable = $database->getTableByName(DBTables::Categories);
+        $this->subCategoriesTable = $database->getTableByName(DBTables::SubCategories);
+        $this->payeesTable = $database->getTableByName(DBTables::Payees);
+        $this->currenciesTable = $database->getTableByName(DBTables::Currencies);
+        $this->statesTable = $database->getTableByName(DBTables::ExpenseStates);
     }
 
     public function getTableHeader(){

@@ -6,6 +6,7 @@
  * Time: 11:05 PM
  */
 namespace BackEnd\Tests\Database;
+use BackEnd\Database\DBTables;
 use PHPUnit\Framework\TestCase;
 use BackEnd\Database\Database;
 use BackEnd\Database\DBTableFactory;
@@ -14,12 +15,17 @@ class DBTableFactoryTest extends TestCase
 {
     protected $driver;
     protected $database;
-    private $tables = ["DBCategories", "DBCurrencies", "DBExpenses", "DBPayees", "DBUsers",
+    private $classNames = ["DBCategories", "DBCurrencies", "DBExpenses", "DBPayees", "DBUsers",
         "DBSubCategories", "DBAccounts", "DBExpenseStates"];
-    private $tableNameSpace = ["", "", "", "", "", "", "DBAccounts"];
+    private $tables = [];
     private $factory;
 
     public function setUp(){
+        $classIndex = 0;
+        foreach($this->classNames as $className){
+            $this->tables[$classIndex] = strtolower($className);
+            $classIndex += 1;
+        }
         $this->factory = new DBTableFactory();
     }
 
@@ -27,17 +33,19 @@ class DBTableFactoryTest extends TestCase
         $this->database = $this->getMockBuilder(Database::class)->disableOriginalConstructor()->setMethods(["getDriver", "getTableByName"])->getMock();
         $this->database->expects($this->exactly(10))
             ->method('getTableByName')
-            ->withConsecutive(["dbuser"],
-                ["dbcategories"], ["dbsubcategories"], ["dbpayees"], ["dbcurrencies"], ["dbstates"],
-                ["dbuser"], ["dbcategories"],
-                ["dbuser"], ["dbcurrencies"]);
+            ->withConsecutive([DBTables::Users],
+                [DBTables::Categories], [DBTables::SubCategories], [DBTables::Payees], [DBTables::Currencies], [DBTables::ExpenseStates],
+                [DBTables::Users], [DBTables::Categories],
+                [DBTables::Users], [DBTables::Currencies]);
+        $tableIndex = 0;
         foreach($this->tables as $tableName){
             $table = $this->factory->createTable($tableName, $this->database);
-            $expectedClass = explode('\\',$tableName);
+            $expectedClass = explode('\\',$this->classNames[$tableIndex]);
             $expectedClass = end($expectedClass);
             $currentClass = explode('\\', get_class($table));
             $currentClass = end($currentClass);
             $this->assertEquals($expectedClass, $currentClass);
+            $tableIndex += 1;
         }
     }
 

@@ -18,6 +18,17 @@ class Database
         $this->driver->select_db($this->databaseName);
     }
 
+    public function init(){
+        foreach($this->tables as $table){
+            try {
+                $table->init();
+            }
+            catch(TableCreationException $e){
+
+            }
+        }
+    }
+
     public function getDriver(){
         return $this->driver;
     }

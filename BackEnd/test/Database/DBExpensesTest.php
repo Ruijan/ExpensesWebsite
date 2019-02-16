@@ -13,11 +13,11 @@ use BackEnd\Database\DBExpenses\DBExpenses;
 use BackEnd\Expense;
 use BackEnd\Database\DBExpenses\WrongTypeKeyException;
 use BackEnd\Database\DBExpenses\InsertionKeyException;
-use BackEnd\Database\DBExpenses\InsertionException;
-use BackEnd\Database\DBCategories;
-use BackEnd\Database\DBSubCategories;
+use BackEnd\Database\DBCategories\DBCategories;
+use BackEnd\Database\DBSubCategories\DBSubCategories;
 use BackEnd\Database\DBPayees;
 use BackEnd\Database\DBCurrencies;
+use BackEnd\Database\DBTables;
 
 class DBExpensesTest extends TableCreationTest
 {
@@ -75,11 +75,11 @@ class DBExpensesTest extends TableCreationTest
 
     public function createTable()
     {
-        $this->database->addTable($this->categoriesTable, "dbcategories");
-        $this->database->addTable($this->subCategoriesTable, "dbsubcategories");
-        $this->database->addTable($this->payeesTable, "dbpayees");
-        $this->database->addTable($this->currenciesTable, "dbcurrencies");
-        $this->database->addTable($this->statesTable, "dbstates");
+        $this->database->addTable($this->categoriesTable, DBTables::Categories);
+        $this->database->addTable($this->subCategoriesTable, DBTables::SubCategories);
+        $this->database->addTable($this->payeesTable, DBTables::Payees);
+        $this->database->addTable($this->currenciesTable, DBTables::Currencies);
+        $this->database->addTable($this->statesTable, DBTables::ExpenseStates);
         $this->table = new DBExpenses($this->database);
         $this->assertEquals($this->categoriesTable, $this->table->getCategoriesTable());
         $this->assertEquals($this->subCategoriesTable, $this->table->getSubCategoriesTable());

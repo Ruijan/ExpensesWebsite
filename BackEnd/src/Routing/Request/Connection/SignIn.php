@@ -32,7 +32,6 @@ class SignIn extends PostRequest
         if(sizeof($missingParameters) > 0){
             throw new MissingParametersException($missingParameters, "SignIn");
         }
-
     }
 
     public function getResponse()

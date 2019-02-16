@@ -52,15 +52,22 @@ class Router
 
     protected function generateRequest(): void
     {
+        $current_path = str_replace('\\', '/', substr(getcwd(),
+            strlen($_SERVER['DOCUMENT_ROOT']),strlen(getcwd())));
         $formattedRoute = $this->formatRoute($this->serverProperties->getURI());
+        $formattedRoute = str_replace($current_path.'/', '', $formattedRoute);
         $path = explode('/', $formattedRoute);
         $factoryName = $path[0];
         if (!array_key_exists($factoryName, $this->requestFactories)) {
-            throw new \InvalidArgumentException("Wrong path");
+            throw new \InvalidArgumentException("Wrong path ".$formattedRoute);
         }
         unset($path[0]);
         $newRoute = implode('/', $path);
         $this->request = $this->requestFactories[$factoryName]->createRequest($newRoute);
+    }
+
+    public function getResponse(){
+        $this->request->getResponse()->getAnswer();
     }
 
 }
