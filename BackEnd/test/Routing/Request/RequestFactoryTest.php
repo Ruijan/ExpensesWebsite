@@ -9,6 +9,7 @@
 namespace Request;
 
 use BackEnd\Database\DBTables;
+use BackEnd\Routing\Request\Connection\SignUp;
 use BackEnd\Routing\Request\ConnectionRequestFactory;
 use BackEnd\Routing\Request\Connection\SignIn;
 use PHPUnit\Framework\TestCase;
@@ -28,13 +29,22 @@ class RequestFactoryTest extends TestCase
         $this->assertEquals($this->database, $factory->getDatabase());
     }
 
-    public function testCreateRequest(){
+    public function testCreateSignInRequest(){
         $this->database->expects($this->once())
             ->method('getTableByName')
             ->with(DBTables::Users);
         $factory = new ConnectionRequestFactory($this->database);
         $request = $factory->createRequest("SignIn");
         $this->assertEquals(SignIn::class, get_class($request));
+    }
+
+    public function testCreateSignUpRequest(){
+        $this->database->expects($this->once())
+            ->method('getTableByName')
+            ->with(DBTables::Users);
+        $factory = new ConnectionRequestFactory($this->database);
+        $request = $factory->createRequest("SignUp");
+        $this->assertEquals(SignUp::class, get_class($request));
     }
 
     public function testCreateWrongTypeOfRequestShouldThrow(){

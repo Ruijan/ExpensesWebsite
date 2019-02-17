@@ -60,6 +60,7 @@ class SignUp extends PostRequest
     public function getLastName(){
         return $this->lastName;
     }
+
     public function getRegisteredDate(){
         return $this->registeredDate;
     }
@@ -75,6 +76,7 @@ class SignUp extends PostRequest
     public function getPassword(){
         return $this->password;
     }
+
     public function getUsersTable(){
         return $this->usersTable;
     }

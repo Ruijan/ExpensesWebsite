@@ -31,7 +31,7 @@ class RouterTest extends TestCase
         $this->request = $this->getMockBuilder(SignIn::class)
             ->disableOriginalConstructor()->setMethods(['init', 'getResponse'])->getMock();
         $this->response = $this->getMockBuilder(BackEnd\Routing\Response\Connection\SignIn::class)
-            ->disableOriginalConstructor()->setMethods(['execute'])->getMock();
+            ->disableOriginalConstructor()->setMethods(['execute','getAnswer'])->getMock();
         $this->factories = array("connection" => $connectionRequestFactory);
     }
 
@@ -72,5 +72,20 @@ class RouterTest extends TestCase
         $this->router = new Router($this->serverProperties, $this->factories);
         $this->assertEquals($this->serverProperties, $this->router->getServerProperties());
         $this->assertEquals($this->factories, $this->router->getRequestFactories());
+    }
+
+    public function testGetResponse(){
+        $this->serverProperties->expects($this->once())->method('getURI')
+            ->with()->will($this->returnValue("connection/signIn"));
+        $this->factories["connection"]->expects($this->once())->method('createRequest')
+            ->with()->will($this->returnValue($this->request));
+        $this->request->expects($this->once())->method('init');
+        $this->request->expects($this->exactly(2))->method('getResponse')
+            ->with()->will($this->returnValue($this->response));
+        $this->response->expects($this->once())->method('execute');
+        $this->response->expects($this->once())->method('getAnswer')->with()->will($this->returnValue("Answer"));
+        $this->router = new Router($this->serverProperties, $this->factories);
+        $this->router->resolveRoute();
+        $this->assertEquals("Answer", $this->router->getResponse());
     }
 }

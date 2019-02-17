@@ -67,7 +67,7 @@ class Router
     }
 
     public function getResponse(){
-        $this->request->getResponse()->getAnswer();
+        return $this->request->getResponse()->getAnswer();
     }
 
 }

@@ -11,6 +11,7 @@ use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
 use BackEnd\Routing\Request\PostRequest;
 use BackEnd\Routing\Request\Connection\SignIn;
+use BackEnd\Routing\Request\Connection\SignUp;
 use http\Exception\InvalidArgumentException;
 
 class ConnectionRequestFactory
@@ -26,6 +27,10 @@ class ConnectionRequestFactory
         switch($type){
             case "SignIn":
                 return new SignIn($this->database->getTableByName(DBTables::Users));
+                break;
+            case "SignUp":
+                return new SignUp($this->database->getTableByName(DBTables::Users));
+                break;
             default:
                 throw new \InvalidArgumentException("Request type: ".$type." not found.");
         }
