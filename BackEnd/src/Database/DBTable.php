@@ -7,21 +7,6 @@
  */
 
 namespace BackEnd\Database;
-use Throwable;
-
-class TableCreationException extends \Exception{
-    public function __construct(string $tableName, string $databaseName, string $error, int $code = 0, Throwable $previous = null)
-    {
-        parent::__construct("Couldn't create table ".$tableName." in ".$databaseName.". Reason: ".$error, $code, $previous);
-    }
-}
-
-class TableDropException extends \Exception{
-    public function __construct(string $tableName, string $databaseName, string $error, int $code = 0, Throwable $previous = null)
-    {
-        parent::__construct("Couldn't drop table ".$tableName." in ".$databaseName.". Reason: ".$error, $code, $previous);
-    }
-}
 
 class DBTable
 {
@@ -37,9 +22,7 @@ class DBTable
 
     public function init(){
         $query = "CREATE TABLE ".$this->name." (".$this->getTableHeader().")";
-        if ($this->driver->query($query) === FALSE) {
-            throw new TableCreationException($this->name, $this->database->getDBName(), $this->driver->error_list[0]["error"]);
-        }
+        $this->driver->query($query);
     }
 
     public function getDatabase(){
@@ -59,8 +42,6 @@ class DBTable
 
     public function dropTable(){
         $query = "DROP TABLE ".$this->name;
-        if ($this->driver->query($query) === FALSE) {
-            throw new TableDropException($this->name, $this->database->getDBName(), $this->driver->error_list[0]["error"]);
-        }
+        $this->driver->query($query);
     }
 }

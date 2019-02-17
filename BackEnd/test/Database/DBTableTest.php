@@ -24,39 +24,15 @@ class DBTableTest extends TableCreationTest
     public function createTable(){
 
         $this->table = new DBTable($this->database, $this->name);
-        try{
-            $this->table->dropTable();
-        }
-        catch(TableDropException $e){
-
-        }
-
+        $this->table->dropTable();
     }
 
     public function initTable(){
-        try{
-            $this->table->init();
-        }
-        catch(TableCreationException $e){
-
-        }
-
+        $this->table->init();
     }
 
     public function testDropTable(){
         $this->table->dropTable();
         $this->assertFalse($this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 "));
-    }
-
-    public function testDropTableTwiceShouldThrow(){
-        $this->table->dropTable();
-        try{
-            $this->table->dropTable();
-            $this->assertTrue(false);
-        }
-        catch(TableDropException $e){
-            $query = $this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 ");
-            $this->assertFalse($query !== FALSE);
-        }
     }
 }

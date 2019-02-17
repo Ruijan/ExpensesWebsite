@@ -20,12 +20,7 @@ class Database
 
     public function init(){
         foreach($this->tables as $table){
-            try {
-                $table->init();
-            }
-            catch(TableCreationException $e){
-
-            }
+            $table->init();
         }
     }
 
