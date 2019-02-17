@@ -8,8 +8,10 @@
 
 namespace BackEnd\Tests\Database;
 
+use BackEnd\Database\DBTable;
 use PHPUnit\Framework\TestCase;
 use BackEnd\Database\Database;
+use BackEnd\Database\DBTables;
 
 class DatabaseTest extends TestCase
 {
@@ -45,6 +47,13 @@ class DatabaseTest extends TestCase
             ->method('real_escape_string')->will($this->returnValue(false));
         $this->expectException(\Exception::class);
         $this->dBHandler = new Database($observer, $this->dbName);
+    }
+
+    public function testInit(){
+        $table = $this->getMockBuilder(DBTable::class)->disableOriginalConstructor()->setMethods(['init'])->getMock();
+        $this->dBHandler->addTable($table, DBTables::USERS);
+        $table->expects($this->once())->method('init');
+        $this->dBHandler->init();
     }
 
     public function testDropDatabase()

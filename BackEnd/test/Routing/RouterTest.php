@@ -25,28 +25,30 @@ class RouterTest extends TestCase
     public function setUp()
     {
         $this->serverProperties = $this->getMockBuilder(ServerProperties::class)
-            ->disableOriginalConstructor()->setMethods(['getURI'])->getMock();
+            ->disableOriginalConstructor()->setMethods(['getURI', 'getDocumentRoot', 'getCurrentFolder'])->getMock();
         $connectionRequestFactory = $this->getMockBuilder(ConnectionRequestFactory::class)
             ->disableOriginalConstructor()->setMethods(['createRequest'])->getMock();
         $this->request = $this->getMockBuilder(SignIn::class)
             ->disableOriginalConstructor()->setMethods(['init', 'getResponse'])->getMock();
         $this->response = $this->getMockBuilder(BackEnd\Routing\Response\Connection\SignIn::class)
-            ->disableOriginalConstructor()->setMethods(['execute'])->getMock();
+            ->disableOriginalConstructor()->setMethods(['execute','getAnswer'])->getMock();
         $this->factories = array("connection" => $connectionRequestFactory);
     }
 
     public function testResolveRoute()
     {
         $this->serverProperties->expects($this->once())->method('getURI')
-            ->with()->will($this->returnValue("connection/signIn"));
+            ->with()->will($this->returnValue("Expenses/Website/connection/signIn"));
+        $this->serverProperties->expects($this->once())->method('getDocumentRoot')
+            ->with()->will($this->returnValue("C:/wamp64/www"));
+        $this->serverProperties->expects($this->once())->method('getCurrentFolder')
+            ->with()->will($this->returnValue("C:\wamp64\www\Expenses\Website"));
         $this->factories["connection"]->expects($this->once())->method('createRequest')
             ->with()->will($this->returnValue($this->request));
         $this->request->expects($this->once())->method('init');
         $this->request->expects($this->once())->method('getResponse')
             ->with()->will($this->returnValue($this->response));
         $this->response->expects($this->once())->method('execute');
-        $this->serverProperties->expects($this->once())->method('getURI')
-            ->with()->will($this->returnValue("connection/signIn"));
         $this->router = new Router($this->serverProperties, $this->factories);
         $this->router->resolveRoute();
     }
@@ -55,6 +57,10 @@ class RouterTest extends TestCase
     {
         $this->serverProperties->expects($this->once())->method('getURI')
             ->with()->will($this->returnValue(""));
+        $this->serverProperties->expects($this->once())->method('getDocumentRoot')
+            ->with()->will($this->returnValue("C:/wamp64/www"));
+        $this->serverProperties->expects($this->once())->method('getCurrentFolder')
+            ->with()->will($this->returnValue("C:\wamp64\www\Expenses\Website"));
         $this->expectException(\InvalidArgumentException::class);
         $this->router = new Router($this->serverProperties, $this->factories);
         $this->router->resolveRoute();
@@ -64,6 +70,10 @@ class RouterTest extends TestCase
     {
         $this->serverProperties->expects($this->once())->method('getURI')
             ->with()->will($this->returnValue("wrongRoute/signIn"));
+        $this->serverProperties->expects($this->once())->method('getDocumentRoot')
+            ->with()->will($this->returnValue("C:/wamp64/www"));
+        $this->serverProperties->expects($this->once())->method('getCurrentFolder')
+            ->with()->will($this->returnValue("C:\wamp64\www\Expenses\Website"));
         $this->expectException(\InvalidArgumentException::class);
         $this->router = new Router($this->serverProperties, $this->factories);
         $this->router->resolveRoute();
@@ -74,5 +84,24 @@ class RouterTest extends TestCase
         $this->router = new Router($this->serverProperties, $this->factories);
         $this->assertEquals($this->serverProperties, $this->router->getServerProperties());
         $this->assertEquals($this->factories, $this->router->getRequestFactories());
+    }
+
+    public function testGetResponse(){
+        $this->serverProperties->expects($this->once())->method('getURI')
+            ->with()->will($this->returnValue("Expenses/Website/connection/signIn"));
+        $this->serverProperties->expects($this->once())->method('getDocumentRoot')
+            ->with()->will($this->returnValue("C:/wamp64/www"));
+        $this->serverProperties->expects($this->once())->method('getCurrentFolder')
+            ->with()->will($this->returnValue("C:\wamp64\www\Expenses\Website"));
+        $this->factories["connection"]->expects($this->once())->method('createRequest')
+            ->with()->will($this->returnValue($this->request));
+        $this->request->expects($this->once())->method('init');
+        $this->request->expects($this->exactly(2))->method('getResponse')
+            ->with()->will($this->returnValue($this->response));
+        $this->response->expects($this->once())->method('execute');
+        $this->response->expects($this->once())->method('getAnswer')->with()->will($this->returnValue("Answer"));
+        $this->router = new Router($this->serverProperties, $this->factories);
+        $this->router->resolveRoute();
+        $this->assertEquals("Answer", $this->router->getResponse());
     }
 }

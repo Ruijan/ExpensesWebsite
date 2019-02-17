@@ -106,7 +106,7 @@ class DBUsers extends DBTable
         return $result->fetch_assoc();
     }
 
-    protected function checkIfEmailExists($email)
+    public function checkIfEmailExists($email)
     {
         $query = "SELECT ID FROM " . $this->name . " WHERE EMAIL = '" . $this->driver->real_escape_string($email) . "'";
         $result = $this->driver->query($query);
