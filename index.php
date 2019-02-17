@@ -8,14 +8,12 @@ $driver = new \mysqli("127.0.0.1", "root", "");
 $dbName = "Expenses";
 $tableFactory = new \BackEnd\Database\DBTableFactory();
 $database = new \BackEnd\Database\Database($driver, $dbName);
-$database->addTable($tableFactory->createTable(DBTables::CURRENCIES, $database),DBTables::CURRENCIES);
-$database->addTable($tableFactory->createTable(DBTables::EXPENSES_STATES, $database),DBTables::EXPENSES_STATES);
-$database->addTable($tableFactory->createTable(DBTables::USERS, $database),DBTables::USERS);
-$database->addTable($tableFactory->createTable(DBTables::CATEGORIES, $database),DBTables::CATEGORIES);
-$database->addTable($tableFactory->createTable(DBTables::SUBCATEGORIES, $database),DBTables::SUBCATEGORIES);
-$database->addTable($tableFactory->createTable(DBTables::ACCOUNTS, $database),DBTables::ACCOUNTS);
-$database->addTable($tableFactory->createTable(DBTables::PAYEES, $database),DBTables::PAYEES);
-$database->addTable($tableFactory->createTable(DBTables::EXPENSES, $database),DBTables::EXPENSES);
+$tableNames = [DBTables::CURRENCIES, DBTables::EXPENSES_STATES, DBTables::USERS,
+    DBTables::CATEGORIES, DBTables::SUBCATEGORIES, DBTables::ACCOUNTS,
+    DBTables::PAYEES, DBTables::EXPENSES];
+foreach($tableNames as $tableName){
+    $database->addTable($tableFactory->createTable($tableName, $database),$tableName);
+}
 $database->init();
 $connectionRequestFactory = new ConnectionRequestFactory($database);
 $router = new Router(new \BackEnd\Routing\ServerProperties(), ["connection" => $connectionRequestFactory]);

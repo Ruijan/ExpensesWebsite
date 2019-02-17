@@ -52,8 +52,12 @@ class Router
 
     protected function generateRequest(): void
     {
-        $current_path = str_replace('\\', '/', substr(getcwd(),
-            strlen($this->serverProperties->documentRoot()),strlen(getcwd())));
+        $root = $this->serverProperties->getDocumentRoot();
+        $currentFolder = str_replace('\\', '/',$this->serverProperties->getCurrentFolder());
+        $current_path = str_replace('\\', '/', str_replace(
+            $root.'/',
+            '',
+            $currentFolder));
         $formattedRoute = $this->formatRoute($this->serverProperties->getURI());
         $formattedRoute = str_replace($current_path.'/', '', $formattedRoute);
         $path = explode('/', $formattedRoute);
