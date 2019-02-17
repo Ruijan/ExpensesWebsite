@@ -29,7 +29,7 @@ class SignIn extends PostRequest
         if($this->password == ""){
             $missingParameters[] = "password";
         }
-        if(sizeof($missingParameters) > 0){
+        if(count($missingParameters) > 0){
             throw new MissingParametersException($missingParameters, "SignIn");
         }
     }

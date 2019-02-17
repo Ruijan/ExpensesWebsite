@@ -75,11 +75,11 @@ class DBExpensesTest extends TableCreationTest
 
     public function createTable()
     {
-        $this->database->addTable($this->categoriesTable, DBTables::Categories);
-        $this->database->addTable($this->subCategoriesTable, DBTables::SubCategories);
-        $this->database->addTable($this->payeesTable, DBTables::Payees);
-        $this->database->addTable($this->currenciesTable, DBTables::Currencies);
-        $this->database->addTable($this->statesTable, DBTables::ExpenseStates);
+        $this->database->addTable($this->categoriesTable, DBTables::CATEGORIES);
+        $this->database->addTable($this->subCategoriesTable, DBTables::SUBCATEGORIES);
+        $this->database->addTable($this->payeesTable, DBTables::PAYEES);
+        $this->database->addTable($this->currenciesTable, DBTables::CURRENCIES);
+        $this->database->addTable($this->statesTable, DBTables::EXPENSES_STATES);
         $this->table = new DBExpenses($this->database);
         $this->assertEquals($this->categoriesTable, $this->table->getCategoriesTable());
         $this->assertEquals($this->subCategoriesTable, $this->table->getSubCategoriesTable());

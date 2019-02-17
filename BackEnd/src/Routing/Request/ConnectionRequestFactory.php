@@ -26,9 +26,9 @@ class ConnectionRequestFactory
 
         switch($type){
             case "SignIn":
-                return new SignIn($this->database->getTableByName(DBTables::Users));
+                return new SignIn($this->database->getTableByName(DBTables::USERS));
             case "SignUp":
-                return new SignUp($this->database->getTableByName(DBTables::Users));
+                return new SignUp($this->database->getTableByName(DBTables::USERS));
             default:
                 throw new \InvalidArgumentException("Request type: ".$type." not found.");
         }

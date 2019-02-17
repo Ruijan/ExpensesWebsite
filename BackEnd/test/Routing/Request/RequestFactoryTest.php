@@ -32,7 +32,7 @@ class RequestFactoryTest extends TestCase
     public function testCreateSignInRequest(){
         $this->database->expects($this->once())
             ->method('getTableByName')
-            ->with(DBTables::Users);
+            ->with(DBTables::USERS);
         $factory = new ConnectionRequestFactory($this->database);
         $request = $factory->createRequest("SignIn");
         $this->assertEquals(SignIn::class, get_class($request));
@@ -41,7 +41,7 @@ class RequestFactoryTest extends TestCase
     public function testCreateSignUpRequest(){
         $this->database->expects($this->once())
             ->method('getTableByName')
-            ->with(DBTables::Users);
+            ->with(DBTables::USERS);
         $factory = new ConnectionRequestFactory($this->database);
         $request = $factory->createRequest("SignUp");
         $this->assertEquals(SignUp::class, get_class($request));

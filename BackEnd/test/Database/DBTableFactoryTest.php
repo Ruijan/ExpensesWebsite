@@ -33,10 +33,10 @@ class DBTableFactoryTest extends TestCase
         $this->database = $this->getMockBuilder(Database::class)->disableOriginalConstructor()->setMethods(["getDriver", "getTableByName"])->getMock();
         $this->database->expects($this->exactly(10))
             ->method('getTableByName')
-            ->withConsecutive([DBTables::Users],
-                [DBTables::Categories], [DBTables::SubCategories], [DBTables::Payees], [DBTables::Currencies], [DBTables::ExpenseStates],
-                [DBTables::Users], [DBTables::Categories],
-                [DBTables::Users], [DBTables::Currencies]);
+            ->withConsecutive([DBTables::USERS],
+                [DBTables::CATEGORIES], [DBTables::SUBCATEGORIES], [DBTables::PAYEES], [DBTables::CURRENCIES], [DBTables::EXPENSES_STATES],
+                [DBTables::USERS], [DBTables::CATEGORIES],
+                [DBTables::USERS], [DBTables::CURRENCIES]);
         $tableIndex = 0;
         foreach($this->tables as $tableName){
             $table = $this->factory->createTable($tableName, $this->database);

@@ -51,7 +51,7 @@ class DatabaseTest extends TestCase
 
     public function testInit(){
         $table = $this->getMockBuilder(DBTable::class)->disableOriginalConstructor()->setMethods(['init'])->getMock();
-        $this->dBHandler->addTable($table, DBTables::Users);
+        $this->dBHandler->addTable($table, DBTables::USERS);
         $table->expects($this->once())->method('init');
         $this->dBHandler->init();
     }

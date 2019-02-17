@@ -23,21 +23,21 @@ class DBTableFactory
     static public function createTable($tableName, $database){
 
         switch ($tableName) {
-            case DBTables::Categories:
-                return new DBCategories($database, $database->getTableByName(DBTables::Users));
-            case DBTables::SubCategories:
-                return new DBSubCategories($database, $database->getTableByName(DBTables::Users), $database->getTableByName(DBTables::Categories));
-            case DBTables::Currencies:
+            case DBTables::CATEGORIES:
+                return new DBCategories($database, $database->getTableByName(DBTables::USERS));
+            case DBTables::SUBCATEGORIES:
+                return new DBSubCategories($database, $database->getTableByName(DBTables::USERS), $database->getTableByName(DBTables::CATEGORIES));
+            case DBTables::CURRENCIES:
                 return new DBCurrencies($database);
-            case DBTables::Expenses:
+            case DBTables::EXPENSES:
                 return new DBExpenses($database);
-            case DBTables::Payees:
+            case DBTables::PAYEES:
                 return new DBPayees($database);
-            case DBTables::Users:
+            case DBTables::USERS:
                 return new DBUsers($database);
-            case DBTables::Accounts:
-                return new DBAccounts($database, $database->getTableByName(DBTables::Users), $database->getTableByName(DBTables::Currencies));
-            case DBTables::ExpenseStates:
+            case DBTables::ACCOUNTS:
+                return new DBAccounts($database, $database->getTableByName(DBTables::USERS), $database->getTableByName(DBTables::CURRENCIES));
+            case DBTables::EXPENSES_STATES:
                 return new DBExpenseStates($database);
         }
         throw new \Exception("Invalid table type: ". $tableName);

@@ -35,11 +35,11 @@ class DBExpenses extends DBTable
     private $statesTable;
     public function __construct($database){
         parent::__construct($database, "expenses");
-        $this->categoriesTable = $database->getTableByName(DBTables::Categories);
-        $this->subCategoriesTable = $database->getTableByName(DBTables::SubCategories);
-        $this->payeesTable = $database->getTableByName(DBTables::Payees);
-        $this->currenciesTable = $database->getTableByName(DBTables::Currencies);
-        $this->statesTable = $database->getTableByName(DBTables::ExpenseStates);
+        $this->categoriesTable = $database->getTableByName(DBTables::CATEGORIES);
+        $this->subCategoriesTable = $database->getTableByName(DBTables::SUBCATEGORIES);
+        $this->payeesTable = $database->getTableByName(DBTables::PAYEES);
+        $this->currenciesTable = $database->getTableByName(DBTables::CURRENCIES);
+        $this->statesTable = $database->getTableByName(DBTables::EXPENSES_STATES);
     }
 
     public function getTableHeader(){

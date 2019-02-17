@@ -11,12 +11,12 @@ namespace BackEnd\Database;
 
 abstract class DBTables
 {
-    public const Users = "dbusers";
-    public const Accounts = "dbaccounts";
-    const Currencies = "dbcurrencies";
-    const Expenses = "dbexpenses";
-    const Categories = "dbcategories";
-    const SubCategories = "dbsubcategories";
-    const ExpenseStates = "dbexpensestates";
-    const Payees = "dbpayees";
+    public const USERS = "dbusers";
+    public const ACCOUNTS = "dbaccounts";
+    const CURRENCIES = "dbcurrencies";
+    const EXPENSES = "dbexpenses";
+    const CATEGORIES = "dbcategories";
+    const SUBCATEGORIES = "dbsubcategories";
+    const EXPENSES_STATES = "dbexpensestates";
+    const PAYEES = "dbpayees";
 }
