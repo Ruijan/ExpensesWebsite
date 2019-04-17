@@ -3,7 +3,7 @@ require_once 'vendor/autoload.php';
 use BackEnd\Routing\Request\ConnectionRequestFactory;
 use BackEnd\Routing\Router;
 use BackEnd\Database\DBTables;
-echo "Hellow world";
+echo "Hello world</br>";
 try{
     $driver = new \mysqli("127.0.0.1", "root", "");
     $dbName = "Expenses";
@@ -21,7 +21,7 @@ try{
     $current_path = str_replace('\\', '/', substr(getcwd(),strlen($_SERVER['DOCUMENT_ROOT']),strlen(getcwd())));
     $router->resolveRoute();
     echo $router->getResponse();
-    echo "Hellow world";
+    echo "Hellow world</br>";
 }catch(Exception $e){
     echo $e->getMessage();
 }
