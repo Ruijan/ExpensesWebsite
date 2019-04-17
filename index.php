@@ -3,6 +3,7 @@ require_once 'vendor/autoload.php';
 use BackEnd\Routing\Request\ConnectionRequestFactory;
 use BackEnd\Routing\Router;
 use BackEnd\Database\DBTables;
+echo "Hellow world";
 
 $driver = new \mysqli("127.0.0.1", "root", "");
 $dbName = "Expenses";
