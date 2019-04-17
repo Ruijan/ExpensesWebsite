@@ -20,3 +20,4 @@ $router = new Router(new \BackEnd\Routing\ServerProperties(), ["connection" => $
 $current_path = str_replace('\\', '/', substr(getcwd(),strlen($_SERVER['DOCUMENT_ROOT']),strlen(getcwd())));
 $router->resolveRoute();
 echo $router->getResponse();
+echo "Hellow world";
