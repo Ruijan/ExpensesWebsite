@@ -38,7 +38,7 @@ class RouterTest extends TestCase
     public function testResolveRoute()
     {
         $this->serverProperties->expects($this->once())->method('getURI')
-            ->with()->will($this->returnValue("Expenses/Website/connection/signIn"));
+            ->with()->will($this->returnValue("/Expenses/Website/connection/signIn"));
         $this->serverProperties->expects($this->once())->method('getDocumentRoot')
             ->with()->will($this->returnValue("C:/wamp64/www"));
         $this->serverProperties->expects($this->once())->method('getCurrentFolder')
@@ -69,7 +69,7 @@ class RouterTest extends TestCase
     public function testResolveWrongRouteShouldThrow()
     {
         $this->serverProperties->expects($this->once())->method('getURI')
-            ->with()->will($this->returnValue("wrongRoute/signIn"));
+            ->with()->will($this->returnValue("/wrongRoute/signIn"));
         $this->serverProperties->expects($this->once())->method('getDocumentRoot')
             ->with()->will($this->returnValue("C:/wamp64/www"));
         $this->serverProperties->expects($this->once())->method('getCurrentFolder')
@@ -88,7 +88,7 @@ class RouterTest extends TestCase
 
     public function testGetResponse(){
         $this->serverProperties->expects($this->once())->method('getURI')
-            ->with()->will($this->returnValue("Expenses/Website/connection/signIn"));
+            ->with()->will($this->returnValue("/Expenses/Website/connection/signIn"));
         $this->serverProperties->expects($this->once())->method('getDocumentRoot')
             ->with()->will($this->returnValue("C:/wamp64/www"));
         $this->serverProperties->expects($this->once())->method('getCurrentFolder')
