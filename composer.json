@@ -1,5 +1,5 @@
 {
-  "name": "Website/backend",
+  "name": "website/backend",
   "description": "Handle database request and load them into classes",
   "license": "proprietary",
   "authors": [
