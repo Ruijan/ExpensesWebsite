@@ -5,7 +5,7 @@ use BackEnd\Routing\Router;
 use BackEnd\Database\DBTables;
 echo "Hello world</br>";
 try{
-    $driver = new \mysqli("127.0.0.1", "root", "");
+    $driver = new \mysqli("35.241.210.238", "root", "Jqc9ffuHBsbfcN68");
     $dbName = "Expenses";
     $tableFactory = new \BackEnd\Database\DBTableFactory();
     $database = new \BackEnd\Database\Database($driver, $dbName);
@@ -13,6 +13,7 @@ try{
         DBTables::CATEGORIES, DBTables::SUBCATEGORIES, DBTables::ACCOUNTS,
         DBTables::PAYEES, DBTables::EXPENSES];
     foreach($tableNames as $tableName){
+        echo "Creating Database ".$tableName.".</br>";
         $database->addTable($tableFactory->createTable($tableName, $database),$tableName);
     }
     $database->init();

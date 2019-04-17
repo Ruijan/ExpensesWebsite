@@ -21,7 +21,7 @@ use BackEnd\Database\DBTables;
 class DBTableFactory
 {
     static public function createTable($tableName, $database){
-        echo "Creating Database ".$tableName.".</br>";
+
         switch ($tableName) {
             case DBTables::CATEGORIES:
                 return new DBCategories($database, $database->getTableByName(DBTables::USERS));
