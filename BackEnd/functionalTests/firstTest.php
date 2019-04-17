@@ -1,6 +1,6 @@
 <?php
 
-require_once('vendor/autoload.php');
+require_once('../../vendor/autoload.php');
 
 use Applitools\RectangleSize;
 use Applitools\Selenium\Eyes;
@@ -19,7 +19,7 @@ class HelloWorld
 
         // Open a chrome browser.
         $capabilities = array(WebDriverCapabilityType::BROWSER_NAME => 'chrome');
-        $this->webDriver = RemoteWebDriver::create('http://localhost:4444/wd/hub', $capabilities);
+        $this->webDriver = RemoteWebDriver::create('https://pixelnos-ledger-api.herokuapp.com/', $capabilities);
 
         $this->webDriver->get($this->url);
 
