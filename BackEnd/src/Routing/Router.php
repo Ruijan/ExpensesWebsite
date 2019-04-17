@@ -61,11 +61,12 @@ class Router
         $formattedRoute = $this->formatRoute($this->serverProperties->getURI());
         $formattedRoute = str_replace($current_path.'/', '', $formattedRoute);
         $path = explode('/', $formattedRoute);
-        $factoryName = $path[0];
-        if (!array_key_exists($factoryName, $this->requestFactories)) {
-            throw new \InvalidArgumentException("Wrong path ".$formattedRoute);
-        }
         unset($path[0]);
+        $factoryName = $path[1];
+        if (!array_key_exists($factoryName, $this->requestFactories)) {
+            throw new \InvalidArgumentException("Wrong path ".$factoryName);
+        }
+        unset($path[1]);
         $newRoute = implode('/', $path);
         $this->request = $this->requestFactories[$factoryName]->createRequest($newRoute);
     }
