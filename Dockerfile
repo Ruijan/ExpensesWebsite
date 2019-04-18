@@ -8,5 +8,7 @@ ENV COMPOSER_HOME /tmp
 ENV COMPOSER_VERSION 1.6.3
 
 RUN curl -s http://getcomposer.org/installer | php \
+  && docker-php-ext-install mysqli \
+  && docker-php-ext-enable mysqli \
   && php composer.phar install -n
 CMD [ "php", "./index.php" ]
