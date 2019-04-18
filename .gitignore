@@ -2,6 +2,5 @@
 .scannerwork
 vendor
 build
-!*lock*
-!composer.phar
-!composer.lock
+*lock*
+composer.phar
