@@ -32,7 +32,7 @@ install:
 
 script:
   - php vendor/bin/phpunit --configuration phpunit.xml --coverage-clover build/logs/clover.xml
-  - sonar-scanner
+#  - sonar-scanner
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
