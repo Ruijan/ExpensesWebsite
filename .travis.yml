@@ -1,3 +1,8 @@
+sudo: required
+
+services:
+  - mysql
+  - docker
 language: php
 
 php:
@@ -5,9 +10,6 @@ php:
 
 notifications:
   email: false
-
-services:
-  - mysql
 
 addons:
   sonarcloud:
@@ -18,8 +20,10 @@ addons:
 
 deploy:
   provider: gae
-  keyfile: "expenses-67539-5e9b334025af.json"
+  keyfile: "gce.json"
   project: "expenses-67539"
+  verbosity: debug
+  on: master
 
 install:
   - composer require --dev phpunit/phpunit ^7.4
