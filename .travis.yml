@@ -14,7 +14,7 @@ addons:
       secure: a13f01ed89e5d3975de0736eeeec33c0de9eb91b
 deploy:
   provider: gae
-  keyfile: gce.json
+  keyfile: expenses-238118-5f3c15437165.json
   project: expenses-238118
   verbosity: debug
   on: prod
@@ -29,4 +29,6 @@ after_success:
 - php vendor/bin/codacycoverage clover build/logs/clover.xml
 before_install:
 - openssl aes-256-cbc -K $encrypted_8d17a9479776_key -iv $encrypted_8d17a9479776_iv
-  -in gce.json.enc -out gce.json -d
+  -in expenses-238118-5f3c15437165.json.enc -out expenses-238118-5f3c15437165.json
+  -d
+
