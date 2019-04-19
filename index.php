@@ -41,7 +41,7 @@ try{
     echo "Connecting to DB...";
     $driver = new \mysqli($cleardb_server, $cleardb_username, $cleardb_password);
     echo "OK<br/>";
-    $dbName = "Expenses";
+    $dbName = $cleardb_db;
     $tableFactory = new \BackEnd\Database\DBTableFactory();
     $database = new \BackEnd\Database\Database($driver, $dbName);
     $tableNames = [DBTables::CURRENCIES, DBTables::EXPENSES_STATES, DBTables::USERS,
