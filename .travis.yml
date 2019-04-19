@@ -11,14 +11,8 @@ addons:
     projectKey: ExpensesWebsite
     token:
       secure: a13f01ed89e5d3975de0736eeeec33c0de9eb91b
-deploy:
-  provider: gae
-  skip_cleanup: true
-  keyfile: expenses-238118-7f87df2ef95c.json
-  project: expenses-238118
-  verbosity: debug
-  default: true
-  on: prod
+before-install:
+- openssl aes-256-cbc -K $encrypted_8d17a9479776_key -iv $encrypted_8d17a9479776_iv -in expenses-238118-7f87df2ef95c.json.enc -out expenses-238118-7f87df2ef95c.json -d
 install:
 - composer require --dev phpunit/phpunit ^7.4
 - curl -s http://getcomposer.org/installer | php
@@ -28,5 +22,11 @@ script:
 after_success:
 - bash <(curl -s https://codecov.io/bash)
 - php vendor/bin/codacycoverage clover build/logs/clover.xml
-before-install:
-- openssl aes-256-cbc -K $encrypted_8d17a9479776_key -iv $encrypted_8d17a9479776_iv -in expenses-238118-7f87df2ef95c.json.enc -out expenses-238118-7f87df2ef95c.json -d
+deploy:
+  provider: gae
+  skip_cleanup: true
+  keyfile: expenses-238118-7f87df2ef95c.json
+  project: expenses-238118
+  verbosity: debug
+  default: true
+  on: prod
