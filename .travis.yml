@@ -28,3 +28,4 @@ after_success:
 - php vendor/bin/codacycoverage clover build/logs/clover.xml
 before-install:
 - openssl aes-256-cbc -K $encrypted_8d17a9479776_key -iv $encrypted_8d17a9479776_iv -in expenses-238118-7f87df2ef95c.json.enc -out expenses-238118-7f87df2ef95c.json -d
+- ls
