@@ -16,6 +16,7 @@ deploy:
   keyfile: expenses-238118-7f87df2ef95c.json
   project: expenses-238118
   verbosity: debug
+  skip_cleanup: true
   on: prod
 install:
 - composer require --dev phpunit/phpunit ^7.4
