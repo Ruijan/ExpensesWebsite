@@ -13,7 +13,7 @@ addons:
       secure: a13f01ed89e5d3975de0736eeeec33c0de9eb91b
 deploy:
   provider: gae
-  keyfile: expenses-238118-5f3c15437165.json
+  keyfile: expenses-238118-7f87df2ef95c.json
   project: expenses-238118
   verbosity: debug
   on: prod
