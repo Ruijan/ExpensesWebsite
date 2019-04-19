@@ -11,10 +11,6 @@ addons:
     projectKey: ExpensesWebsite
     token:
       secure: a13f01ed89e5d3975de0736eeeec33c0de9eb91b
-before-install:
-- travis -v
-- openssl aes-256-cbc -K $encrypted_8d17a9479776_key -iv $encrypted_8d17a9479776_iv -in expenses-238118-7f87df2ef95c.json.enc -out expenses-238118-7f87df2ef95c.json -d
-- travis -v
 install:
 - composer require --dev phpunit/phpunit ^7.4
 - curl -s http://getcomposer.org/installer | php
@@ -32,3 +28,7 @@ deploy:
   verbosity: debug
   default: true
   on: prod
+before_install:
+- openssl aes-256-cbc -K $encrypted_8d17a9479776_key -iv $encrypted_8d17a9479776_iv
+  -in expenses-238118-7f87df2ef95c.json.enc -out expenses-238118-7f87df2ef95c.json
+  -d
