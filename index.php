@@ -4,29 +4,34 @@ use BackEnd\Routing\Request\ConnectionRequestFactory;
 use BackEnd\Routing\Router;
 use BackEnd\Database\DBTables;
 
-try{
-    echo "Retrieving db infos<br/>";
-    //Get Heroku ClearDB connection information
-    $cleardb_url      = parse_url(getenv("CLEARDB_DATABASE_URL"));
-    $cleardb_server   = $cleardb_url["host"];
-    $cleardb_username = $cleardb_url["user"];
-    $cleardb_password = $cleardb_url["pass"];
-    $cleardb_db       = substr($cleardb_url["path"],1);
+/**
+ * @param $db
+ * @return array
+ */
+function getDBParameters(): array
+{
+    $server = "127.0.0.1";
+    $username = "root";
+    $password = "";
+    $db = "expenses";
+    $prodDBParams = getenv("CLEARDB_DATABASE_URL");
+    if ($prodDBParams !== false){
+        $prodDBParams = ($prodDBParams);
+        $server = $prodDBParams["host"];
+        $username = $prodDBParams["user"];
+        $password = $prodDBParams["pass"];
+        $db = substr($prodDBParams["path"], 1);
+    }
 
-    echo $cleardb_db;
-    $active_group = 'default';
-    $query_builder = TRUE;
-
-    $db['default'] = array(
-        'dsn'    => '',
-        'hostname' => $cleardb_server,
-        'username' => $cleardb_username,
-        'password' => $cleardb_password,
-        'database' => $cleardb_db,
+    return array(
+        'dsn' => '',
+        'hostname' => $server,
+        'username' => $username,
+        'password' => $password,
+        'database' => $db,
         'dbdriver' => 'mysqli',
         'dbprefix' => '',
         'pconnect' => FALSE,
-        'db_debug' => (ENVIRONMENT !== 'production'),
         'cache_on' => FALSE,
         'cachedir' => '',
         'char_set' => 'utf8',
@@ -38,17 +43,18 @@ try{
         'failover' => array(),
         'save_queries' => TRUE
     );
-    echo "Connecting to DB...";
-    $driver = new \mysqli($cleardb_server, $cleardb_username, $cleardb_password);
-    echo "OK<br/>";
-    $dbName = $cleardb_db;
+}
+
+try{
+    $dbParams = getDBParameters();
+    $driver = new \mysqli($dbParams["hostname"], $dbParams["username"], $dbParams["password"]);
+    $dbName = $dbParams["database"];
     $tableFactory = new \BackEnd\Database\DBTableFactory();
     $database = new \BackEnd\Database\Database($driver, $dbName);
     $tableNames = [DBTables::CURRENCIES, DBTables::EXPENSES_STATES, DBTables::USERS,
         DBTables::CATEGORIES, DBTables::SUBCATEGORIES, DBTables::ACCOUNTS,
         DBTables::PAYEES, DBTables::EXPENSES];
     foreach($tableNames as $tableName){
-        echo "Creating Database ".$tableName.".</br>";
         $database->addTable($tableFactory->createTable($tableName, $database),$tableName);
     }
     $database->init();

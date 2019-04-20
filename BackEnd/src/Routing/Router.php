@@ -52,27 +52,42 @@ class Router
 
     protected function generateRequest(): void
     {
-        $root = $this->serverProperties->getDocumentRoot();
-        $currentFolder = str_replace('\\', '/',$this->serverProperties->getCurrentFolder());
-        $current_path = str_replace('\\', '/', str_replace(
-            $root.'/',
-            '',
-            $currentFolder));
-        $formattedRoute = $this->formatRoute($this->serverProperties->getURI());
-        $formattedRoute = str_replace($current_path.'/', '', $formattedRoute);
+        $formattedRoute = $this->makeFormattedRoute();
         $path = explode('/', $formattedRoute);
-        unset($path[0]);
-        $factoryName = $path[1];
+        $factoryName = $path[0];
         if (!array_key_exists($factoryName, $this->requestFactories)) {
             throw new \InvalidArgumentException("Wrong path ".$factoryName);
         }
-        unset($path[1]);
+        unset($path[0]);
         $newRoute = implode('/', $path);
         $this->request = $this->requestFactories[$factoryName]->createRequest($newRoute);
     }
 
     public function getResponse(){
         return $this->request->getResponse()->getAnswer();
+    }
+
+    /**
+     * @return bool|mixed|string
+     */
+    protected function makeFormattedRoute()
+    {
+        $root = $this->serverProperties->getDocumentRoot();
+        $currentFolder = str_replace('\\', '/', $this->serverProperties->getCurrentFolder());
+        $current_path = str_replace('\\', '/', str_replace(
+            $root . '/',
+            '',
+            $currentFolder));
+        $needle = "action=";
+        $url = $this->serverProperties->getURI();
+        if (strpos($url, $needle) > 0) {
+            $formattedRoute = substr($url, strpos($url, "action=") + strlen($needle));
+        } else {
+            $formattedRoute = $this->formatRoute($url);
+            $formattedRoute = str_replace($current_path . '/', '', $formattedRoute);
+            $formattedRoute = substr($formattedRoute, 1);
+        }
+        return $formattedRoute;
     }
 
 }
