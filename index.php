@@ -13,14 +13,14 @@ function getDBParameters(): array
     $server = "127.0.0.1";
     $username = "root";
     $password = "";
-    $db = "expenses";
+    $databaseName = "expenses";
     $prodDBParams = getenv("CLEARDB_DATABASE_URL");
     if ($prodDBParams !== false){
         $prodDBParams = parse_url($prodDBParams);
         $server = $prodDBParams["host"];
         $username = $prodDBParams["user"];
         $password = $prodDBParams["pass"];
-        $db = substr($prodDBParams["path"], 1);
+        $databaseName = substr($prodDBParams["path"], 1);
     }
 
     return array(
@@ -28,7 +28,7 @@ function getDBParameters(): array
         'hostname' => $server,
         'username' => $username,
         'password' => $password,
-        'database' => $db,
+        'database' => $databaseName,
         'dbdriver' => 'mysqli',
         'dbprefix' => '',
         'pconnect' => FALSE,
