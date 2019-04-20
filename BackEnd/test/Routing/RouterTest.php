@@ -53,6 +53,20 @@ class RouterTest extends TestCase
         $this->router->resolveRoute();
     }
 
+    public function testResolveRouteWithActionInURL()
+    {
+        $this->serverProperties->expects($this->once())->method('getURI')
+            ->with()->will($this->returnValue("/Expenses/Website/?action=connection/signIn"));
+        $this->factories["connection"]->expects($this->once())->method('createRequest')
+            ->with()->will($this->returnValue($this->request));
+        $this->request->expects($this->once())->method('init');
+        $this->request->expects($this->once())->method('getResponse')
+            ->with()->will($this->returnValue($this->response));
+        $this->response->expects($this->once())->method('execute');
+        $this->router = new Router($this->serverProperties, $this->factories);
+        $this->router->resolveRoute();
+    }
+
     public function testResolveEmptyRouteShouldThrow()
     {
         $this->serverProperties->expects($this->once())->method('getURI')

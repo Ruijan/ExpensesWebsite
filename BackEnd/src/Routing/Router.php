@@ -72,17 +72,18 @@ class Router
      */
     protected function makeFormattedRoute()
     {
-        $root = $this->serverProperties->getDocumentRoot();
-        $currentFolder = str_replace('\\', '/', $this->serverProperties->getCurrentFolder());
-        $current_path = str_replace('\\', '/', str_replace(
-            $root . '/',
-            '',
-            $currentFolder));
+
         $needle = "action=";
         $url = $this->serverProperties->getURI();
         if (strpos($url, $needle) > 0) {
             $formattedRoute = substr($url, strpos($url, "action=") + strlen($needle));
         } else {
+            $root = $this->serverProperties->getDocumentRoot();
+            $currentFolder = str_replace('\\', '/', $this->serverProperties->getCurrentFolder());
+            $current_path = str_replace('\\', '/', str_replace(
+                $root . '/',
+                '',
+                $currentFolder));
             $formattedRoute = $this->formatRoute($url);
             $formattedRoute = str_replace($current_path . '/', '', $formattedRoute);
             $formattedRoute = substr($formattedRoute, 1);

@@ -16,7 +16,7 @@ function getDBParameters(): array
     $db = "expenses";
     $prodDBParams = getenv("CLEARDB_DATABASE_URL");
     if ($prodDBParams !== false){
-        $prodDBParams = ($prodDBParams);
+        $prodDBParams = parse_url($prodDBParams);
         $server = $prodDBParams["host"];
         $username = $prodDBParams["user"];
         $password = $prodDBParams["pass"];
@@ -63,7 +63,6 @@ try{
     $current_path = str_replace('\\', '/', substr(getcwd(),strlen($_SERVER['DOCUMENT_ROOT']),strlen(getcwd())));
     $router->resolveRoute();
     echo $router->getResponse();
-    echo "Hellow world</br>";
 }catch(Exception $e){
     echo $e->getMessage();
 }
