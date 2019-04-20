@@ -16,7 +16,6 @@ class Database
             throw new \Exception("Couldn't create database ".$databaseName.". Reason ".$this->driver->error);
         }
         $this->driver->select_db($this->databaseName);
-        echo "Database ".$this->databaseName." created.</br>";
     }
 
     public function init(){

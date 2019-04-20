@@ -1,12 +1,10 @@
-sudo: required
-
 services:
-  - mysql
-  - docker
+- mysql
+
 language: php
 
 php:
-  - 7.2.10
+- 7.2.10
 
 notifications:
   email: false
@@ -14,26 +12,18 @@ notifications:
 addons:
   sonarcloud:
     organization: ruijan-github
-    projectKey: "ExpensesWebsite" # the key of the org you chose at step #3
+    projectKey: ExpensesWebsite
     token:
-      secure: a13f01ed89e5d3975de0736eeeec33c0de9eb91b # encrypted value of your token
-
-deploy:
-  provider: gae
-  keyfile: "gce.json"
-  project: "expenses-67539"
-  verbosity: debug
-  on: master
+      secure: a13f01ed89e5d3975de0736eeeec33c0de9eb91b
 
 install:
-  - composer require --dev phpunit/phpunit ^7.4
-  - curl -s http://getcomposer.org/installer | php
-  - php composer.phar install -n
+- composer require --dev phpunit/phpunit ^7.4
+- curl -s http://getcomposer.org/installer | php
+- php composer.phar install -n
 
 script:
-  - php vendor/bin/phpunit --configuration phpunit.xml --coverage-clover build/logs/clover.xml
-#  - sonar-scanner
+- php vendor/bin/phpunit --configuration phpunit.xml --coverage-clover build/logs/clover.xml
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
-  - php vendor/bin/codacycoverage clover build/logs/clover.xml
+- bash <(curl -s https://codecov.io/bash)
+- php vendor/bin/codacycoverage clover build/logs/clover.xml
