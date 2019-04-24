@@ -7,6 +7,7 @@
  */
 namespace BackEnd\Tests\Database;
 use \BackEnd\Database\Database;
+use BackEnd\Database\TableCreationException;
 use PHPUnit\Framework\TestCase;
 
 abstract class TableCreationTest extends TestCase
@@ -59,19 +60,6 @@ abstract class TableCreationTest extends TestCase
             $existingColumn[$column["Field"]] += 1;
             $this->assertEquals($existingColumn[$column["Field"]], 1);
         }
-    }
-
-    public function testCouldNotInitTableTwice(){
-
-        try{
-            $this->initTable();
-        }
-        catch(\Exception $e){
-            $query = $this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 ");
-            $this->assertTrue($query !== FALSE);
-            return;
-        }
-        $this->assertTrue(false);
     }
 
     public function tearDown(){

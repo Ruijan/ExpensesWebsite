@@ -17,10 +17,15 @@ class ServerPropertiesTest extends TestCase
     public function setUp()
     {
         $_SERVER["REQUEST_URI"] = "Website/BackEnd/";
+        $_SERVER["DOCUMENT_ROOT"] = "Website/BackEnd/";
     }
+
+
 
     public function test__construct(){
         $request = new ServerProperties();
         $this->assertEquals($_SERVER["REQUEST_URI"], $request->getURI());
+        $this->assertEquals($_SERVER["DOCUMENT_ROOT"], $request->getDocumentRoot());
+        $this->assertEquals(getcwd(), $request->getCurrentFolder());
     }
 }

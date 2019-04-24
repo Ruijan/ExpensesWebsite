@@ -13,9 +13,15 @@ class Database
         $query = "CREATE DATABASE IF NOT EXISTS ".$databaseName.";";
         $query = $this->driver->real_escape_string($query);
         if ($this->driver->query($query) === FALSE) {
-            throw new \Exception("Couldn't create database ".$databaseName.". Reason".$this->driver->error);
+            throw new \Exception("Couldn't create database ".$databaseName.". Reason ".$this->driver->error);
         }
         $this->driver->select_db($this->databaseName);
+    }
+
+    public function init(){
+        foreach($this->tables as $table){
+            $table->init();
+        }
     }
 
     public function getDriver(){

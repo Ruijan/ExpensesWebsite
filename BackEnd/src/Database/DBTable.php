@@ -8,7 +8,6 @@
 
 namespace BackEnd\Database;
 
-
 class DBTable
 {
     protected $name;
@@ -23,9 +22,7 @@ class DBTable
 
     public function init(){
         $query = "CREATE TABLE ".$this->name." (".$this->getTableHeader().")";
-        if ($this->driver->query($query) === FALSE) {
-            throw new \Exception("Couldn't create table ".$this->name." in ".$this->database->getDBName().". Reason: ".$this->driver->error_list[0]["error"]);
-        }
+        $this->driver->query($query);
     }
 
     public function getDatabase(){
@@ -45,8 +42,6 @@ class DBTable
 
     public function dropTable(){
         $query = "DROP TABLE ".$this->name;
-        if ($this->driver->query($query) === FALSE) {
-            throw new \Exception("Couldn't drop table ".$this->name." in ".$this->database->getDBName().". Reason: ".$this->driver->error_list[0]["error"]);
-        }
+        $this->driver->query($query);
     }
 }

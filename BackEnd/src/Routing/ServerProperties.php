@@ -7,11 +7,11 @@
  */
 
 namespace BackEnd\Routing;
-use BackEnd\Routing\Request\Request;
 
 class ServerProperties
 {
     private $requestUri;
+    private $documentRoot;
     public function __construct(){
         foreach($_SERVER as $key => $value)
         {
@@ -33,5 +33,13 @@ class ServerProperties
 
     public function getURI(){
         return $this->requestUri;
+    }
+
+    public function getDocumentRoot(){
+        return $this->documentRoot;
+    }
+
+    public function getCurrentFolder(){
+        return getcwd();
     }
 }

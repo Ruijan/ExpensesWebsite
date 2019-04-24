@@ -7,8 +7,10 @@
  */
 
 namespace BackEnd\Tests\Database;
+use BackEnd\Database\TableCreationException;
 use BackEnd\Tests\Database\TableCreationTest;
 use BackEnd\Database\DBTable;
+use BackEnd\Database\TableDropException;
 
 class DBTableTest extends TableCreationTest
 {
@@ -20,7 +22,9 @@ class DBTableTest extends TableCreationTest
     }
 
     public function createTable(){
+
         $this->table = new DBTable($this->database, $this->name);
+        $this->table->dropTable();
     }
 
     public function initTable(){
@@ -30,17 +34,5 @@ class DBTableTest extends TableCreationTest
     public function testDropTable(){
         $this->table->dropTable();
         $this->assertFalse($this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 "));
-    }
-
-    public function testDropTableTwiceShouldThrow(){
-        $this->table->dropTable();
-        try{
-            $this->table->dropTable();
-            $this->assertTrue(false);
-        }
-        catch(\Exception $e){
-            $query = $this->driver->query("SELECT 1 FROM ".$this->name." LIMIT 1 ");
-            $this->assertFalse($query !== FALSE);
-        }
     }
 }
