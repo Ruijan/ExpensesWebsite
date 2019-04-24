@@ -110,7 +110,7 @@ class RouterTest extends TestCase
         $this->factories["connection"]->expects($this->once())->method('createRequest')
             ->with()->will($this->returnValue($this->request));
         $this->request->expects($this->once())->method('init');
-        $this->request->expects($this->exactly(2))->method('getResponse')
+        $this->request->expects($this->exactly(1))->method('getResponse')
             ->with()->will($this->returnValue($this->response));
         $this->response->expects($this->once())->method('execute');
         $this->response->expects($this->once())->method('getAnswer')->with()->will($this->returnValue("Answer"));
