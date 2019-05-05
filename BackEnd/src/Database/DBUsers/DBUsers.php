@@ -100,7 +100,9 @@ class DBUsers extends DBTable
 
     public function getUserFromEmail($email)
     {
-        $this->checkIfEmailExists($email);
+        if($this->checkIfEmailExists($email) === FALSE){
+            throw new UndefinedUserEmail($email);
+        }
         $result = $this->driver->query("SELECT ID, FIRST_NAME, NAME, REGISTERED_DATE, LAST_CONNECTION, EMAIL_VALIDATED, EMAIL  FROM " .
             $this->name . " WHERE EMAIL='" . $this->driver->real_escape_string($email) . "'");
         return $result->fetch_assoc();
@@ -111,7 +113,7 @@ class DBUsers extends DBTable
         $query = "SELECT ID FROM " . $this->name . " WHERE EMAIL = '" . $this->driver->real_escape_string($email) . "'";
         $result = $this->driver->query($query);
         if ($result->num_rows == 0) {
-            throw new UndefinedUserEmail($email);
+            return FALSE;
         }
         return $result->fetch_assoc()["ID"];
     }
