@@ -41,6 +41,6 @@ class SignUpTest extends TestCase
         $this->usersTable->expects($this->once())->method('addUser');
         $response = new SignUp($this->request, $this->usersTable);
         $response->execute();
-        $this->assertEquals('Added', $response->getAnswer());
+        $this->assertEquals('Signed Up', $response->getAnswer());
     }
 }
