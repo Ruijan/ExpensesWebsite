@@ -1,5 +1,5 @@
 <?php
-require_once 'vendor/autoload.php';
+require_once '../vendor/autoload.php';
 use BackEnd\Routing\Request\ConnectionRequestFactory;
 use BackEnd\Routing\Router;
 use BackEnd\Database\DBTables;

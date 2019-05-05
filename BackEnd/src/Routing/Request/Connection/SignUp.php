@@ -46,7 +46,7 @@ class SignUp extends PostRequest
             $missingParameters[] = "last_name";
         }
         if(count($missingParameters) > 0){
-            throw new MissingParametersException($missingParameters, "SignIn");
+            throw new MissingParametersException($missingParameters, "SignUp");
         }
     }
 
