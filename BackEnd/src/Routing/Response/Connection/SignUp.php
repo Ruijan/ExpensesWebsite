@@ -31,9 +31,9 @@ class SignUp
     public function execute(){
         $user = $this->createUserFromRequest();
         $alreadyExist = $this->usersTable->checkIfEmailExists($this->request->getEmail());
-        if(!$alreadyExist){
+        if($alreadyExist === FALSE){
             $this->usersTable->addUser($user);
-            $this->response = 'Added';
+            $this->response = 'Signed Up';
         }
     }
 
