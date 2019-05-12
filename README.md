@@ -5,6 +5,37 @@
 [![Build Status](https://travis-ci.org/Ruijan/ExpensesWebsite.svg?branch=master)](https://travis-ci.org/Ruijan/ExpensesWebsite)
 [![CodeFactor](https://www.codefactor.io/repository/github/ruijan/expenseswebsite/badge)](https://www.codefactor.io/repository/github/ruijan/expenseswebsite)
 [![BCH compliance](https://bettercodehub.com/edge/badge/Ruijan/ExpensesWebsite?branch=master)](https://bettercodehub.com/results/Ruijan/ExpensesWebsite)
+
+## How To
+### Introduction
+Every request is a HTTP request. It can be a GET or a POST request. 
+Dev server: heroku
+Prod server: heroku
+
+To send a request:
+Request: `connection/SignIn`
+Beta: `heroku.com/request`
+Current: `heroku.com/BackEnd/index.php?action=request`
+
+Example in PHP:
+```php
+$url = 'heroku.com/BackEnd/index.php?action=connection/SignIn';
+$data = array('email' => 'example@host.com', 'password' => '123456789');
+$options = array(
+    'http' => array(
+        'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+        'method'  => 'POST',
+        'content' => http_build_query($data)
+    )
+);
+$context  = stream_context_create($options);
+$result = file_get_contents($url, false, $context);
+```
+
+### Connecting
+* SignIn: `connection/SignIn`. Required: e`email` (string), `password` (string)
+* SignUp: `connection/SignUp`. Required: `email` (string), `password` (string), `first_name` (string), `last_name` (string)
+
 ## Install
 
 ### Prerequisites

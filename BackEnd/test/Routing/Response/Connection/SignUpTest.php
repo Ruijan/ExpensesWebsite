@@ -43,4 +43,17 @@ class SignUpTest extends TestCase
         $response->execute();
         $this->assertEquals('Signed Up', $response->getAnswer());
     }
+
+    public function testExecuteWithExistingUser()
+    {
+        $this->request->expects($this->any())
+            ->method('getEmail')->with()->will($this->returnValue("email@test.com"));
+        $this->request->expects($this->any())
+            ->method('getPassword')->with()->will($this->returnValue("1j1j423jodwa"));
+        $this->usersTable->expects($this->once())
+            ->method('checkIfEmailExists')->with("email@test.com")->will($this->returnValue(True));
+        $response = new SignUp($this->request, $this->usersTable);
+        $response->execute();
+        $this->assertEquals('User already exists', $response->getAnswer());
+    }
 }
