@@ -34,10 +34,9 @@ class SignUp
         if($alreadyExist === FALSE){
             $this->usersTable->addUser($user);
             $this->response = 'Signed Up';
+            return;
         }
-        else{
-            $this->response = 'User already exists';
-        }
+        $this->response = 'User already exists';
     }
 
     public function getAnswer(){
