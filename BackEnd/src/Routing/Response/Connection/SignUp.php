@@ -34,7 +34,9 @@ class SignUp
         if($alreadyExist === FALSE){
             $this->usersTable->addUser($user);
             $this->response = 'Signed Up';
+            return;
         }
+        $this->response = 'User already exists';
     }
 
     public function getAnswer(){
@@ -46,10 +48,10 @@ class SignUp
      */
     protected function createUserFromRequest(): array
     {
-        $user = ["EMAIL" => $this->request->getEmail(),
-            "PASSWORD" => $this->request->getPassword(),
-            "FIRST_NAME" => $this->request->getFirstName(),
+        $user = ["FIRST_NAME" => $this->request->getFirstName(),
             "LAST_NAME" => $this->request->getLastName(),
+            "EMAIL" => $this->request->getEmail(),
+            "PASSWORD" => $this->request->getPassword(),
             "REGISTERED_DATE" => $this->request->getRegisteredDate(),
             "LAST_CONNECTION" => $this->request->getLastConnection(),
             "VALIDATION_ID" => $this->request->getValidationID()];
