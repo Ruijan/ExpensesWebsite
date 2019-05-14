@@ -8,6 +8,7 @@
 namespace BackEnd\Routing\Request\Connection;
 
 use BackEnd\Routing\Request\PostRequest;
+use BackEnd\Routing\Request\MissingParametersException;
 
 class SignIn extends PostRequest
 {
