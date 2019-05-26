@@ -33,7 +33,7 @@ class AccountRequestFactoryTest extends TestCase
             ->method('getTableByName')
             ->withConsecutive([DBTables::USERS], [DBTables::ACCOUNTS]);
         $factory = new AccountRequestFactory($this->database);
-        $request = $factory->createRequest("AccountCreation");
+        $request = $factory->createRequest("Create");
         $this->assertEquals(AccountCreation::class, get_class($request));
     }
 
