@@ -21,7 +21,7 @@ class AccountRequestFactory
     public function createRequest($type){
 
         switch($type){
-            case "AccountCreation":
+            case "Create":
                 return new AccountCreation($this->database->getTableByName(DBTables::USERS),
                     $this->database->getTableByName(DBTables::ACCOUNTS));
             default:
