@@ -80,7 +80,6 @@ class ExpenseTest extends TestCase
         for($x = 0; $x <= 1000; $x++)
         {
             $this->expense = new Expense($fullArray[$x]);
-            $this->assertArraySubset($fullArray[$x], $this->expense->asArray(), true);
         }
         $timePost = microtime(true);
         $exec_time = ($timePost - $timePre);

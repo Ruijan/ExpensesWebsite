@@ -95,10 +95,10 @@ class AccountCreationTest extends TestCase
     }
 
     public function testInitializationWithMissingUserIDShouldThrow(){
-        $_POST = array("currency_id" => 5,
+        $_POST = array("name" => "Current",
+            "currency_id" => 5,
             "current_amount" => "4061.68",
-            "user_key" => "123456daw7894521d3wa687",
-            "user_id" => 453);
+            "user_key" => "123456daw7894521d3wa687");
         $this->expectException(\BackEnd\Routing\Request\MissingParametersException::class);
         $this->createRequest();
     }

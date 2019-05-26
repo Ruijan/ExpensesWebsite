@@ -59,7 +59,10 @@ try{
     }
     $database->init();
     $connectionRequestFactory = new ConnectionRequestFactory($database);
-    $router = new Router(new \BackEnd\Routing\ServerProperties(), ["connection" => $connectionRequestFactory]);
+    $accountRequestFactory = new AccountRequestFactory($database);
+    $router = new Router(new \BackEnd\Routing\ServerProperties(),
+        ["connection" => $connectionRequestFactory,
+            "account" => $accountRequestFactory]);
     $current_path = str_replace('\\', '/', substr(getcwd(),strlen($_SERVER['DOCUMENT_ROOT']),strlen(getcwd())));
     $router->resolveRoute();
     echo $router->getResponse();
