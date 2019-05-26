@@ -82,10 +82,10 @@ In **PHP language level** select 7.2 (object type hint, abstract function overri
 Then in CLI Interpreter, click on `...` to open a new window.
 Create a new Interpreter by clicking on the `+` on the top left corner.
 *   Name: `PHP`
-*   General
-  *   PHP executable: `C:\wamp64\bin\php\php7.2.10\php.exe` or your webserver php.exe file
+* General
+  * PHP executable: `C:\wamp64\bin\php\php7.2.10\php.exe` or your webserver php.exe file
 * Additional
-  *   Debugger extention: `C:\wamp64\bin\php\php7.2.10\zend_ext\php_xdebug-2.6.1-7.2-vc15-x86_64.dll` or the path to your webserver debugger dll.
+  * Debugger extention: `C:\wamp64\bin\php\php7.2.10\zend_ext\php_xdebug-2.6.1-7.2-vc15-x86_64.dll` or the path to your webserver debugger dll.
 Apply changes.
 
 #### Setup Coverage
