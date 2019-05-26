@@ -30,13 +30,13 @@ class SignInTest extends TestCase
     public function testInitializationWithMissingPasswordShouldThrow(){
         $_POST = array("email" => "testEmail@gmail.com");
         $signInRequest = new SignIn($this->usersTable);
-        $this->expectException(\Backend\Routing\Request\Connection\MissingParametersException::class);
+        $this->expectException(\Backend\Routing\Request\MissingParametersException::class);
         $signInRequest->init();
     }
     public function testInitializationWithMissingEmailShouldThrow(){
         $_POST = array("password" => "dwa486413dwa");
         $signInRequest = new SignIn($this->usersTable);
-        $this->expectException(\Backend\Routing\Request\Connection\MissingParametersException::class);
+        $this->expectException(\Backend\Routing\Request\MissingParametersException::class);
         $signInRequest->init();
     }
 

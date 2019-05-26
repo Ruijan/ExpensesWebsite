@@ -6,19 +6,23 @@
  * Time: 9:47 PM
  */
 namespace BackEnd\Routing\Request\Account;
+use BackEnd\Account\Account;
+use BackEnd\Database\DBAccounts\CurrencyIDException;
 use BackEnd\Routing\Request\PostRequest;
 use BackEnd\Routing\Request\MissingParametersException;
-use mysql_xdevapi\Exception;
+use BackEnd\Routing\Request\Connection\InvalidSessionException;
 
 class AccountCreation extends PostRequest
 {
     protected $name;
-    protected $currency;
     protected $currentAmount;
-    protected $currencyID;
+    protected $currencyId;
     protected $userKey;
+    protected $userId;
+
     protected $accountsTable;
     protected $usersTable;
+    protected $currenciesTable;
 
     public function __construct($accountsTable, $usersTable)
     {
@@ -33,14 +37,17 @@ class AccountCreation extends PostRequest
         if($this->name == ""){
             $missingParameters[] = "name";
         }
-        if($this->currency == ""){
-            $missingParameters[] = "currency";
+        if($this->currencyId == ""){
+            $missingParameters[] = "currency_id";
         }
         if($this->currentAmount == ""){
             $missingParameters[] = "current_amount";
         }
         if($this->userKey == ""){
             $missingParameters[] = "user_key";
+        }
+        if($this->userId == ""){
+            $missingParameters[] = "user_id";
         }
         if(count($missingParameters) > 0){
             throw new MissingParametersException($missingParameters, "AccountCreation");
@@ -49,17 +56,21 @@ class AccountCreation extends PostRequest
 
     public function getResponse(){
         if(!$this->usersTable->isUserSessionKeyValid($this->userKey)){
-            throw new Exception("User not valid. User is not connected or has been away for too long.");
+            throw new InvalidSessionException("AccountCreation");
         }
-        return new \BackEnd\Routing\Response\Account\AccountCreation();
+        $account = new Account(["name" => $this->name,
+            "currency_id" => $this->currencyId,
+            "current_amount" => $this->currentAmount,
+            "user_id" => $this->userId]);
+        return new \BackEnd\Routing\Response\Account\AccountCreation($this, $account);
     }
 
     public function getName(){
         return $this->name;
     }
 
-    public function getCurrency(){
-        return $this->currency;
+    public function getCurrencyID(){
+        return $this->currencyId;
     }
 
     public function getCurrentAmount(){
@@ -69,6 +80,11 @@ class AccountCreation extends PostRequest
     public function getUSerKey(){
         return $this->userKey;
     }
+
+    public function getUSerID(){
+        return $this->userId;
+    }
+
 
     public function getAccountsTable(){
         return $this->accountsTable;
