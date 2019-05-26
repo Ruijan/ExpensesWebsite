@@ -33,11 +33,11 @@ $result = file_get_contents($url, false, $context);
 ```
 
 ### Connecting
-* SignIn: `connection/SignIn`. Required: `email` (string), `password` (string)
-* SignUp: `connection/SignUp`. Required: `email` (string), `password` (string), `first_name` (string), `last_name` (string)
+*   SignIn: `connection/SignIn`. Required: `email` (string), `password` (string)
+*   SignUp: `connection/SignUp`. Required: `email` (string), `password` (string), `first_name` (string), `last_name` (string)
 
 ### Accounts
-* Creation: `account/Creation`. Required: `user_id` (int), `user_key` (int), `name` (string), `currency_id` (int), `current_amount` (float)
+*   Creation: `account/Creation`. Required: `user_id` (int), `user_key` (int), `name` (string), `currency_id` (int), `current_amount` (float)
 
 ## Install
 
