@@ -6,7 +6,7 @@
  * Time: 12:12 AM
  */
 
-namespace BackEnd\Routing\Request\Connection;
+namespace BackEnd\Routing\Request;
 
 
 use Throwable;

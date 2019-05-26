@@ -6,7 +6,8 @@
  * Time: 9:26 PM
  */
 
-namespace BackEnd\Routing\Request;
+namespace BackEnd\Routing\Request\Connection;
+
 use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
 use BackEnd\Routing\Request\PostRequest;

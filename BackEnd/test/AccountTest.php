@@ -40,7 +40,7 @@ class AccountTest extends TestCase
 
     public function test__constructWithoutCurrencyShouldThrow()
     {
-        unset($this->accountArray["currency"]);
+        unset($this->accountArray["currency_id"]);
         $this->expectException(MissingParametersException::class);
         new Account($this->accountArray);
     }

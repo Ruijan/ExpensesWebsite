@@ -41,25 +41,25 @@ class SignUpTest extends TestCase
     public function testInitializationWithMissingPasswordShouldThrow(){
         unset($_POST["password"]);
         $signUpRequest = new SignUp($this->usersTable);
-        $this->expectException(\Backend\Routing\Request\Connection\MissingParametersException::class);
+        $this->expectException(\Backend\Routing\Request\MissingParametersException::class);
         $signUpRequest->init();
     }
     public function testInitializationWithMissingEmailShouldThrow(){
         unset($_POST["email"]);
         $signUpRequest = new SignUp($this->usersTable);
-        $this->expectException(\Backend\Routing\Request\Connection\MissingParametersException::class);
+        $this->expectException(\BackEnd\Routing\Request\MissingParametersException::class);
         $signUpRequest->init();
     }
     public function testInitializationWithMissingFirstNameShouldThrow(){
         unset($_POST["first_name"]);
         $signUpRequest = new SignUp($this->usersTable);
-        $this->expectException(\Backend\Routing\Request\Connection\MissingParametersException::class);
+        $this->expectException(\Backend\Routing\Request\MissingParametersException::class);
         $signUpRequest->init();
     }
     public function testInitializationWithMissingLastNameShouldThrow(){
         unset($_POST["last_name"]);
         $signUpRequest = new SignUp($this->usersTable);
-        $this->expectException(\Backend\Routing\Request\Connection\MissingParametersException::class);
+        $this->expectException(\Backend\Routing\Request\MissingParametersException::class);
         $signUpRequest->init();
     }
 
