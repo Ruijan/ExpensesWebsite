@@ -24,7 +24,7 @@ class AccountCreationTest extends TestCase
         $this->accountsTable = $this->getMockBuilder(\BackEnd\Database\DBAccounts\DBAccounts::class)->disableOriginalConstructor()
             ->setMethods(['addAccount'])->getMock();
         $this->account = $this->getMockBuilder(\BackEnd\Account\Account::class)->disableOriginalConstructor()
-            ->getMock();
+            ->setMethods(['asDict'])->getMock();
     }
 
     public function test__construct()
@@ -44,9 +44,11 @@ class AccountCreationTest extends TestCase
             ->method('updateSession')->with();
         $this->accountsTable->expects($this->once())
             ->method('addAccount')->with($this->account);
+        $this->account->expects($this->once())
+            ->method('asDict')->with()->will($this->returnValue(array("ACCOUNT_ID" => 5)));
         $response = $this->createResponse();
         $response->execute();
-        $this->assertEquals('Account added', $response->getAnswer());
+        $this->assertEquals('{"STATUS":"OK","DATA":{"ACCOUNT_ID":5}}', $response->getAnswer());
     }
 
     private function createResponse(){

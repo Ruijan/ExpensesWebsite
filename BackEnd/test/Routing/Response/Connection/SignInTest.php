@@ -48,7 +48,9 @@ class SignInTest extends TestCase
                         "EMAIL" => "email@test.com")));
         $response = new SignIn($this->request, $this->usersTable);
         $response->execute();
-        $this->assertEquals('{"Status":"OK","Data":{"first_name":"Juju","last_name":"RECHEN","user_ID":1,"email_validated":true,"email":"email@test.com"}}', $response->getAnswer());
+        $this->assertEquals(
+            '{"STATUS":"OK","DATA":{"FIRST_NAME":"Juju","LAST_NAME":"RECHEN","USER_ID":1,"EMAIL_VALIDATED":true,"EMAIL":"email@test.com"}}',
+            $response->getAnswer());
     }
 
     public function testExecuteWithInvalidPasswordShouldReturnError()
@@ -61,6 +63,6 @@ class SignInTest extends TestCase
             ->method('areCredentialsValid')->with("email@test.com", "1j1j423jodwa")->will($this->returnValue(false));
         $response = new SignIn($this->request, $this->usersTable);
         $response->execute();
-        $this->assertEquals('{"Status":"ERROR","ERROR_MESSAGE":"Email or password invalid"}', $response->getAnswer());
+        $this->assertEquals('{"STATUS":"ERROR","ERROR_MESSAGE":"Email or password invalid"}', $response->getAnswer());
     }
 }

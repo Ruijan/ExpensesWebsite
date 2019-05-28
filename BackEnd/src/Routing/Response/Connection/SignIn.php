@@ -34,7 +34,7 @@ class SignIn
         $password = $this->request->getPassword();
         $credentialsValid = $this->usersTable->areCredentialsValid($email, $password);
         $this->response = json_encode(array(
-            "Status" => "ERROR",
+            "STATUS" => "ERROR",
             "ERROR_MESSAGE" => 'Email or password invalid'));
         if($credentialsValid){
             $user = $this->usersTable->getUserFromEmail($email);
@@ -44,12 +44,12 @@ class SignIn
 
     private function createResponseFromUser($user){
         $response = array(
-            "Status" => "OK",
-            "Data" => array( "first_name" => $user["FIRST_NAME"],
-                "last_name" => $user["NAME"],
-                "user_ID" => $user["ID"],
-                "email_validated" => $user["EMAIL_VALIDATED"],
-                "email" => $user["EMAIL"])
+            "STATUS" => "OK",
+            "DATA" => array( "FIRST_NAME" => $user["FIRST_NAME"],
+                "LAST_NAME" => $user["NAME"],
+                "USER_ID" => $user["ID"],
+                "EMAIL_VALIDATED" => $user["EMAIL_VALIDATED"],
+                "EMAIL" => $user["EMAIL"])
         );
         return $response;
     }
