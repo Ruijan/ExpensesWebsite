@@ -31,9 +31,9 @@ class User
         }
     }
 
-    public function connect($userTable){
-        if(!$this->connected and $userTable->areCredentialsValid($_POST["email"], $_POST["password"])){
-            $dbUser = $userTable->getUserFromEmail($_POST["email"]);
+    public function connect($userTable, $email, $password){
+        if(!$this->connected and $userTable->areCredentialsValid($email, $password)){
+            $dbUser = $userTable->getUserFromEmail($email);
             $this->fillUserFromArray($dbUser);
             $now = new \DateTime("now", new \DateTimeZone("UTC"));
             $now = $now->format("Y-m-d H:i:s");

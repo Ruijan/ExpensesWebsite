@@ -15,17 +15,20 @@ class SignInTest extends TestCase
 {
     private $request;
     private $usersTable;
+    private $user;
     public function setUp()
     {
         $this->request = $this->getMockBuilder(\BackEnd\Routing\Request\Connection\SignIn::class)->disableOriginalConstructor()
             ->setMethods(['getEmail', 'getPassword'])->getMock();
         $this->usersTable = $this->getMockBuilder(\BackEnd\Database\DBUsers\DBUsers::class)->disableOriginalConstructor()
             ->setMethods(['areCredentialsValid', 'getUserFromEmail'])->getMock();
+        $this->user = $this->getMockBuilder(\BackEnd\User::class)->disableOriginalConstructor()
+            ->setMethods(['connect', 'isConnected', 'asDict'])->getMock();
     }
 
     public function test__construct()
     {
-        $response = new SignIn($this->request, $this->usersTable);
+        $response = new SignIn($this->request, $this->usersTable, $this->user);
         $this->assertEquals($this->request, $response->getRequest());
         $this->assertEquals($this->usersTable, $response->getUsersTable());
     }
@@ -36,17 +39,19 @@ class SignInTest extends TestCase
             ->method('getEmail')->with()->will($this->returnValue("email@test.com"));
         $this->request->expects($this->any())
             ->method('getPassword')->with()->will($this->returnValue("1j1j423jodwa"));
-        $this->usersTable->expects($this->once())
-            ->method('areCredentialsValid')->with("email@test.com", "1j1j423jodwa")->will($this->returnValue(True));
-        $this->usersTable->expects($this->once())
-            ->method('getUserFromEmail')->with("email@test.com")->will(
+        $this->user->expects($this->once())
+            ->method('connect')->with($this->usersTable, "email@test.com", "1j1j423jodwa");
+        $this->user->expects($this->once())
+            ->method('isConnected')->with()->will($this->returnValue(True));
+        $this->user->expects($this->once())
+            ->method('asDict')->with()->will(
                 $this->returnValue(
                     array("ID" => 1,
                         "NAME" => "RECHEN",
                         "FIRST_NAME" => "Juju",
                         "EMAIL_VALIDATED" => true,
                         "EMAIL" => "email@test.com")));
-        $response = new SignIn($this->request, $this->usersTable);
+        $response = new SignIn($this->request, $this->usersTable, $this->user);
         $response->execute();
         $this->assertEquals(
             '{"STATUS":"OK","DATA":{"FIRST_NAME":"Juju","LAST_NAME":"RECHEN","USER_ID":1,"EMAIL_VALIDATED":true,"EMAIL":"email@test.com"}}',
@@ -59,9 +64,11 @@ class SignInTest extends TestCase
             ->method('getEmail')->with()->will($this->returnValue("email@test.com"));
         $this->request->expects($this->any())
             ->method('getPassword')->with()->will($this->returnValue("1j1j423jodwa"));
-        $this->usersTable->expects($this->once())
-            ->method('areCredentialsValid')->with("email@test.com", "1j1j423jodwa")->will($this->returnValue(false));
-        $response = new SignIn($this->request, $this->usersTable);
+        $this->user->expects($this->once())
+            ->method('connect')->with($this->usersTable, "email@test.com", "1j1j423jodwa");
+        $this->user->expects($this->once())
+            ->method('isConnected')->with()->will($this->returnValue(False));
+        $response = new SignIn($this->request, $this->usersTable, $this->user);
         $response->execute();
         $this->assertEquals('{"STATUS":"ERROR","ERROR_MESSAGE":"Email or password invalid"}', $response->getAnswer());
     }

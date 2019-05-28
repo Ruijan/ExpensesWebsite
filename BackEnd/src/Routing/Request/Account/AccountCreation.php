@@ -11,6 +11,7 @@ use BackEnd\Database\DBAccounts\CurrencyIDException;
 use BackEnd\Routing\Request\PostRequest;
 use BackEnd\Routing\Request\MissingParametersException;
 use BackEnd\Routing\Request\Connection\InvalidSessionException;
+use BackEnd\User;
 
 class AccountCreation extends PostRequest
 {
@@ -20,14 +21,17 @@ class AccountCreation extends PostRequest
     protected $userKey;
     protected $userId;
 
+    protected $user;
+
     protected $accountsTable;
     protected $usersTable;
     protected $currenciesTable;
 
-    public function __construct($accountsTable, $usersTable)
+    public function __construct($accountsTable, $usersTable, $user)
     {
         $this->accountsTable = $accountsTable;
         $this->usersTable = $usersTable;
+        $this->user = $user;
     }
 
     public function init(){
@@ -43,9 +47,6 @@ class AccountCreation extends PostRequest
         if($this->currentAmount == ""){
             $missingParameters[] = "current_amount";
         }
-        if($this->userKey == ""){
-            $missingParameters[] = "user_key";
-        }
         if($this->userId == ""){
             $missingParameters[] = "user_id";
         }
@@ -54,8 +55,12 @@ class AccountCreation extends PostRequest
         }
     }
 
+    /**
+     * @return \BackEnd\Routing\Response\Account\AccountCreation
+     * @throws InvalidSessionException
+     */
     public function getResponse(){
-        if(!$this->usersTable->isUserSessionKeyValid($this->userKey)){
+        if(!$this->user->isConnected()){
             throw new InvalidSessionException("AccountCreation");
         }
         $account = new Account(["name" => $this->name,
@@ -77,14 +82,9 @@ class AccountCreation extends PostRequest
         return $this->currentAmount;
     }
 
-    public function getUSerKey(){
-        return $this->userKey;
-    }
-
     public function getUSerID(){
         return $this->userId;
     }
-
 
     public function getAccountsTable(){
         return $this->accountsTable;

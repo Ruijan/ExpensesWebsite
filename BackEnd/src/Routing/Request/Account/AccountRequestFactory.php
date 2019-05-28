@@ -9,6 +9,7 @@
 namespace BackEnd\Routing\Request\Account;
 use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
+use BackEnd\User;
 
 class AccountRequestFactory
 {
@@ -23,7 +24,7 @@ class AccountRequestFactory
         switch($type){
             case "Create":
                 return new AccountCreation($this->database->getTableByName(DBTables::USERS),
-                    $this->database->getTableByName(DBTables::ACCOUNTS));
+                    $this->database->getTableByName(DBTables::ACCOUNTS), new User());
             default:
                 throw new \InvalidArgumentException("Request type: ".$type." not found.");
         }
