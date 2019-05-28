@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once '../vendor/autoload.php';
 use BackEnd\Routing\Request\Connection\ConnectionRequestFactory;
 use BackEnd\Routing\Request\Account\AccountRequestFactory;
