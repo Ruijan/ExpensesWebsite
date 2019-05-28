@@ -9,16 +9,19 @@
 namespace BackEnd\Routing\Response\Connection;
 
 use BackEnd\Database\DBUsers\DBUsers;
+use BackEnd\User;
 
 class SignIn
 {
     private $request;
     private $usersTable;
     private $response = '';
-    public function __construct(\BackEnd\Routing\Request\Connection\SignIn $request, DBUsers $usersTable)
+    private $user;
+    public function __construct(\BackEnd\Routing\Request\Connection\SignIn $request, DBUsers $usersTable, $user)
     {
         $this->request = $request;
         $this->usersTable = $usersTable;
+        $this->user = $user;
     }
 
     public function getRequest(){
@@ -32,13 +35,12 @@ class SignIn
     public function execute(){
         $email = $this->request->getEmail();
         $password = $this->request->getPassword();
-        $credentialsValid = $this->usersTable->areCredentialsValid($email, $password);
+        $this->user->connect($this->usersTable, $email, $password);
         $this->response = json_encode(array(
             "STATUS" => "ERROR",
             "ERROR_MESSAGE" => 'Email or password invalid'));
-        if($credentialsValid){
-            $user = $this->usersTable->getUserFromEmail($email);
-            $this->response = json_encode($this->createResponseFromUser($user));
+        if($this->user->isConnected()){
+            $this->response = json_encode($this->createResponseFromUser($this->user->asDict()));
         }
     }
 

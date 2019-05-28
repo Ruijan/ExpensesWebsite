@@ -14,7 +14,7 @@ class InvalidSessionException extends \Exception
 {
     public function __construct(string $requestName, int $code = 0, Throwable $previous = null)
     {
-        $message = "Invalid user session key during request ".$requestName;
+        $message = "Invalid user session during request ".$requestName;
         parent::__construct($message, $code, $previous);
     }
 }

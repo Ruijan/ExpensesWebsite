@@ -45,8 +45,6 @@ class UserTest extends TestCase
     }
 
     public function testSuccessfullyConnectUser(){
-        $_POST["email"] = $this->dbUser["EMAIL"];
-        $_POST["password"] = $this->password;
         $this->user = new \BackEnd\User();
         $this->user->disconnect();
         $this->tableUsers->expects($this->exactly(1))
@@ -57,7 +55,7 @@ class UserTest extends TestCase
         $now = $now->format("Y-m-d H:i:s");
         $this->tableUsers->expects($this->once())
             ->method('updateLastConnection')->with($this->dbUser["ID"])->will($this->returnValue($now));
-        $this->user->connect($this->tableUsers);
+        $this->user->connect($this->tableUsers, $this->dbUser["EMAIL"], $this->password);
         $this->checkIfUserIsConnected();
     }
 
@@ -68,7 +66,7 @@ class UserTest extends TestCase
             ->method('getUserFromEmail');
         $this->initializeSession();
         $this->user = new \BackEnd\User();
-        $this->user->connect($this->tableUsers);
+        $this->user->connect($this->tableUsers, "", "");
     }
 
     private function initializeSession(){

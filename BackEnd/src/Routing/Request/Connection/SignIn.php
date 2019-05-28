@@ -9,6 +9,7 @@ namespace BackEnd\Routing\Request\Connection;
 
 use BackEnd\Routing\Request\PostRequest;
 use BackEnd\Routing\Request\MissingParametersException;
+use BackEnd\User;
 
 class SignIn extends PostRequest
 {
@@ -37,7 +38,7 @@ class SignIn extends PostRequest
 
     public function getResponse()
     {
-        return new \BackEnd\Routing\Response\Connection\SignIn($this, $this->usersTable);
+        return new \BackEnd\Routing\Response\Connection\SignIn($this, $this->usersTable, new User());
     }
 
     public function getEmail(){
