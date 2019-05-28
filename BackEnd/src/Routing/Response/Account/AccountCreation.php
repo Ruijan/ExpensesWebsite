@@ -8,7 +8,6 @@
 
 namespace BackEnd\Routing\Response\Account;
 
-
 class AccountCreation
 {
     protected $request;
@@ -28,7 +27,10 @@ class AccountCreation
     public function execute(){
         $this->usersTable->updateSession($this->request->getUserID());
         $this->accountsTable->addAccount($this->account);
-        $this->response = "Account added";
+
+        $this->response = json_encode(array(
+            "STATUS" => "OK",
+            "DATA" => $this->account->asDict()));
     }
 
     public function getRequest(){

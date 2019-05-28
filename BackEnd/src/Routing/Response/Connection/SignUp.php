@@ -31,12 +31,13 @@ class SignUp
     public function execute(){
         $user = $this->createUserFromRequest();
         $alreadyExist = $this->usersTable->checkIfEmailExists($this->request->getEmail());
+        $response = array("STATUS" => "ERROR",
+            "ERROR_MESSAGE" => "User already exists");
         if($alreadyExist === FALSE){
             $this->usersTable->addUser($user);
-            $this->response = 'Signed Up';
-            return;
+            $response = array("STATUS" => "OK");
         }
-        $this->response = 'User already exists';
+        $this->response = json_encode($response);
     }
 
     public function getAnswer(){
