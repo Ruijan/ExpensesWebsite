@@ -20,14 +20,24 @@ class User
     private $emailValidated;
     private $connected = false;
     private $accounts = [];
+    private $mandatoryFields = ["EMAIL", "FIRST_NAME", "NAME", "ID",
+        "REGISTERED_DATE", "LAST_CONNECTION", "EMAIL_VALIDATED"];
 
     public function __construct()
     {
-        if(isset($_SESSION) and isset($_SESSION["EMAIL"]) and isset($_SESSION["FIRST_NAME"]) and isset($_SESSION["NAME"])
-            and isset($_SESSION["ID"]) and isset($_SESSION["REGISTERED_DATE"]) and isset($_SESSION["LAST_CONNECTION"])
+        if(isset($_SESSION)
+            and isset($_SESSION["EMAIL"])
+            and isset($_SESSION["FIRST_NAME"])
+            and isset($_SESSION["NAME"])
+            and isset($_SESSION["ID"])
+            and isset($_SESSION["REGISTERED_DATE"])
+            and isset($_SESSION["LAST_CONNECTION"])
             and isset($_SESSION["EMAIL_VALIDATED"])){
             $this->fillUserFromArray($_SESSION);
             $this->connected = true;
+        }
+        else{
+            print_r(array_diff(array_keys($_SESSION), $this->mandatoryFields ));
         }
     }
 
