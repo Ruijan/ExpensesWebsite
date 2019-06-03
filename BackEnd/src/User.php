@@ -40,7 +40,7 @@ class User
         if(!$this->connected and $userTable->areCredentialsValid($email, $password)){
             $dbUser = $userTable->getUserFromEmail($email);
             $this->fillUserFromArray($dbUser);
-            $sessionID = openssl_random_pseudo_bytes(16);
+            $sessionID = bin2hex(random_bytes(16));
             $this->updateLastConnection($userTable, $sessionID);
             $this->connected = true;
         }
