@@ -18,9 +18,8 @@ class AccountCreation extends PostRequest
     protected $name;
     protected $currentAmount;
     protected $currencyId;
-    protected $userKey;
+    protected $sessionId;
     protected $userId;
-
     protected $user;
 
     protected $accountsTable;
@@ -50,6 +49,9 @@ class AccountCreation extends PostRequest
         if($this->userId == ""){
             $missingParameters[] = "user_id";
         }
+        if($this->sessionId == ""){
+            $missingParameters[] = "session_id";
+        }
         if(count($missingParameters) > 0){
             throw new MissingParametersException($missingParameters, "AccountCreation");
         }
@@ -60,9 +62,8 @@ class AccountCreation extends PostRequest
      * @throws InvalidSessionException
      */
     public function getResponse(){
+        $this->user->connectWithSessionID($this->sessionId, $this->userId);
         if(!$this->user->isConnected()){
-            echo "user: ";
-            print_r($this->user->asDict());
             throw new InvalidSessionException("AccountCreation");
         }
         $account = new Account(["name" => $this->name,

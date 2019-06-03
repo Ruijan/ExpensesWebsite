@@ -50,11 +50,12 @@ class SignInTest extends TestCase
                         "NAME" => "RECHEN",
                         "FIRST_NAME" => "Juju",
                         "EMAIL_VALIDATED" => true,
-                        "EMAIL" => "email@test.com")));
+                        "EMAIL" => "email@test.com",
+                        "SESSION_ID" => "1234567891234567")));
         $response = new SignIn($this->request, $this->usersTable, $this->user);
         $response->execute();
         $this->assertEquals(
-            '{"STATUS":"OK","DATA":{"FIRST_NAME":"Juju","LAST_NAME":"RECHEN","USER_ID":1,"EMAIL_VALIDATED":true,"EMAIL":"email@test.com"}}',
+            '{"STATUS":"OK","DATA":{"FIRST_NAME":"Juju","LAST_NAME":"RECHEN","USER_ID":1,"EMAIL_VALIDATED":true,"EMAIL":"email@test.com","SESSION_ID":"1234567891234567"}}',
             $response->getAnswer());
     }
 

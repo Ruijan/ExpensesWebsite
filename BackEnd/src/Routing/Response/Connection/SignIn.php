@@ -51,7 +51,8 @@ class SignIn
                 "LAST_NAME" => $user["NAME"],
                 "USER_ID" => $user["ID"],
                 "EMAIL_VALIDATED" => $user["EMAIL_VALIDATED"],
-                "EMAIL" => $user["EMAIL"])
+                "EMAIL" => $user["EMAIL"],
+                "SESSION_ID" => $user["SESSION_ID"])
         );
         return $response;
     }

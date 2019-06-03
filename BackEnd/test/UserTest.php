@@ -21,7 +21,8 @@ class UserTest extends TestCase
         "REGISTERED_DATE" => "",
         "LAST_CONNECTION" => "",
         "EMAIL_VALIDATED" => "1",
-        "ID" => '154'];
+        "ID" => '154',
+        "SESSION_ID" => '1234567891234567'];
     public function setUp()
     {
         @session_start();
@@ -29,8 +30,11 @@ class UserTest extends TestCase
         $this->dbUser["REGISTERED_DATE"] = new \DateTime("now", new \DateTimeZone("UTC"));
         $this->dbUser["REGISTERED_DATE"] = $this->dbUser["REGISTERED_DATE"]->format("Y-m-d H:i:s");
         $this->dbUser["LAST_CONNECTION"] = $this->dbUser["REGISTERED_DATE"];
-        $this->tableUsers = $this->getMockBuilder(\BackEnd\DBUser::class)->disableOriginalConstructor()->setMethods(['areCredentialsValid', 'getUserFromEmail', 'updateLastConnection'])->getMock();
-        $this->tableAccounts = $this->getMockBuilder(\BackEnd\DBAccount::class)->disableOriginalConstructor()->setMethods(['getAccountsFromUserID'])->getMock();
+        $this->tableUsers = $this->getMockBuilder(\BackEnd\DBUser::class)->disableOriginalConstructor()
+            ->setMethods(['areCredentialsValid', 'getUserFromEmail', 'getUserFromID',
+                'disconnectUser', 'updateLastConnection', 'checkSessionID'])->getMock();
+        $this->tableAccounts = $this->getMockBuilder(\BackEnd\DBAccount::class)->disableOriginalConstructor()
+            ->setMethods(['getAccountsFromUserID'])->getMock();
     }
 
     public function test__constructWithoutSESSIONAndPOST(){
@@ -38,15 +42,15 @@ class UserTest extends TestCase
         $this->assertFalse($this->user->isConnected());
     }
 
-    public function test__constructWithSession(){
-        $this->initializeSession();
+    public function testConnectWithSessionID(){
         $this->user = new \BackEnd\User();
+        $this->prepareSuccessfulConnectionExpectations();
+        $this->user->connectWithSessionID($this->tableUsers, $this->dbUser["SESSION_ID"], $this->dbUser["ID"]);
         $this->checkIfUserIsConnected();
     }
 
-    public function testSuccessfullyConnectUser(){
+    public function testConnectUser(){
         $this->user = new \BackEnd\User();
-        $this->user->disconnect();
         $this->tableUsers->expects($this->exactly(1))
             ->method('areCredentialsValid')->with($this->dbUser["EMAIL"], $this->password)->will($this->returnValue(true));
         $this->tableUsers->expects($this->once())
@@ -64,19 +68,10 @@ class UserTest extends TestCase
             ->method('areCredentialsValid');
         $this->tableUsers->expects($this->exactly(0))
             ->method('getUserFromEmail');
-        $this->initializeSession();
         $this->user = new \BackEnd\User();
+        $this->prepareSuccessfulConnectionExpectations();
+        $this->user->connectWithSessionID($this->tableUsers, $this->dbUser["SESSION_ID"], $this->dbUser["ID"]);
         $this->user->connect($this->tableUsers, "", "");
-    }
-
-    private function initializeSession(){
-        $_SESSION["FIRST_NAME"] = $this->dbUser["FIRST_NAME"];
-        $_SESSION["NAME"] = $this->dbUser["NAME"];
-        $_SESSION["REGISTERED_DATE"] = $this->dbUser["REGISTERED_DATE"];
-        $_SESSION["LAST_CONNECTION"] = $this->dbUser["LAST_CONNECTION"];
-        $_SESSION["EMAIL_VALIDATED"] = $this->dbUser["EMAIL_VALIDATED"];
-        $_SESSION["EMAIL"] =  $this->dbUser["EMAIL"];
-        $_SESSION["ID"] = $this->dbUser["ID"];
     }
 
     private function checkIfUserIsConnected(){
@@ -87,43 +82,34 @@ class UserTest extends TestCase
         $this->assertEquals($this->dbUser["EMAIL_VALIDATED"], $this->user->isEmailValidated());
         $this->assertEquals($this->dbUser["ID"], $this->user->getID());
         $this->assertEquals($this->dbUser["EMAIL"], $this->user->getEmail());
-        $this->assertEquals($this->dbUser, $_SESSION);
+        $this->assertEquals($this->dbUser["SESSION_ID"], $this->user->getSessionID());
         $this->assertTrue($this->user->isConnected());
     }
 
     public function testDisconnectUser(){
-        $this->initializeSession();
+        $this->prepareSuccessfulConnectionExpectations();
         $this->user = new \BackEnd\User();
-        $this->user->disconnect();
-        $this->assertFalse(isset($_SESSION["FIST_NAME"]));
-        $this->assertFalse(isset($_SESSION["NAME"]));
-        $this->assertFalse(isset($_SESSION["REGISTERED_DATE"]));
-        $this->assertFalse(isset($_SESSION["LAST_CONNECTION"]));
-        $this->assertFalse(isset($_SESSION["EMAIL_VALIDATED"]));
-        $this->assertFalse(isset($_SESSION["ID"]));
-        $this->assertFalse(isset($_SESSION["EMAIL"]));
+        $this->user->connectWithSessionID($this->tableUsers, $this->dbUser["SESSION_ID"], $this->dbUser["ID"]);
+        $this->tableUsers->expects($this->once())
+            ->method('disconnectUser')->with($this->dbUser["ID"]);
+        $this->user->disconnect($this->tableUsers);
         $this->assertFalse($this->user->isConnected());
-        $this->assertEquals(null, $this->user->getFirstName());
-        $this->assertEquals(null, $this->user->getLastName());
-        $this->assertEquals(null, $this->user->getLastConnectionDate());
-        $this->assertEquals(null, $this->user->getRegistrationDate());
-        $this->assertEquals(null, $this->user->getRegistrationDate());
-        $this->assertEquals(null, $this->user->getEmail());
-        $this->assertEquals(null, $this->user->getID());
     }
 
     public function testLoadAccounts(){
         $this->tableAccounts->expects($this->exactly(1))
             ->method('getAccountsFromUserID')->with($this->dbUser["ID"])->will($this->returnValue([null]));
-        $this->initializeSession();
+        $this->prepareSuccessfulConnectionExpectations();
         $this->user = new \BackEnd\User();
+        $this->user->connectWithSessionID($this->tableUsers, $this->dbUser["SESSION_ID"], $this->dbUser["ID"]);
         $this->user->loadAccounts($this->tableAccounts);
         $this->assertEquals([null], $this->user->getAccounts());
     }
 
     public function testGetUserAsDictionary(){
-        $this->initializeSession();
+        $this->prepareSuccessfulConnectionExpectations();
         $this->user = new \BackEnd\User();
+        $this->user->connectWithSessionID($this->tableUsers, $this->dbUser["SESSION_ID"], $this->dbUser["ID"]);
         $this->assertEquals($this->dbUser, $this->user->asDict());
     }
 
@@ -131,5 +117,17 @@ class UserTest extends TestCase
     {
         @session_destroy();
         parent::tearDown();
+    }
+
+    protected function prepareSuccessfulConnectionExpectations(): void
+    {
+        $this->tableUsers->expects($this->exactly(1))
+            ->method('checkSessionID')->with($this->dbUser["SESSION_ID"], $this->dbUser["ID"])->will($this->returnValue(true));
+        $this->tableUsers->expects($this->once())
+            ->method('getUserFromID')->with($this->dbUser["ID"])->will($this->returnValue($this->dbUser));
+        $now = new \DateTime("now", new \DateTimeZone("UTC"));
+        $now = $now->format("Y-m-d H:i:s");
+        $this->tableUsers->expects($this->once())
+            ->method('updateLastConnection')->with($this->dbUser["ID"], $now, $this->dbUser["SESSION_ID"])->will($this->returnValue($now));
     }
 }

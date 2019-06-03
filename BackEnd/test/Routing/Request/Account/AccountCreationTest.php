@@ -20,12 +20,12 @@ class AccountCreationTest extends TestCase
         $_POST = array("name" => "Current",
             "currency_id" => 5,
             "current_amount" => "4061.68",
-            "user_key" => "123456daw7894521d3wa687",
-            "user_id" => 453);
+            "user_id" => 453,
+            "session_id" => "1234567891234567");
         $this->usersTable = $this->getMockBuilder(\BackEnd\Database\DBUsers\DBUsers::class)->disableOriginalConstructor()
             ->setMethods(['isUserSessionKeyValid'])->getMock();
         $this->user = $this->getMockBuilder(\BackEnd\Database\DBUsers\DBUsers::class)->disableOriginalConstructor()
-            ->setMethods(['isConnected'])->getMock();
+            ->setMethods(['isConnected', 'connectWithSessionID'])->getMock();
     }
 
     public function testInitialization(){
@@ -43,6 +43,9 @@ class AccountCreationTest extends TestCase
         $this->user->expects($this->once())
             ->method('isConnected')
             ->with()->will($this->returnValue(true));
+        $this->user->expects($this->once())
+            ->method('connectWithSessionID')
+            ->with($_POST["session_id"], $_POST["user_id"]);
         $response = $accountCreationRequest->getResponse();
         $this->assertEquals(\BackEnd\Routing\Response\Account\AccountCreation::class, get_class($response));
     }
@@ -54,7 +57,7 @@ class AccountCreationTest extends TestCase
             ->method('isConnected')
             ->with()
             ->will($this->returnValue(false));
-        $this->expectException(\Backend\Routing\Request\Connection\InvalidSessionException::class);
+        $this->expectException(\BackEnd\Routing\Request\Connection\InvalidSessionException::class);
         $response = $accountCreationRequest->getResponse();
         $this->assertEquals(\BackEnd\Routing\Response\Account\AccountCreation::class, get_class($response));
     }
