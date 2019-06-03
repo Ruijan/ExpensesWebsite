@@ -43,7 +43,7 @@ class SignInTest extends TestCase
             ->method('connect')->with($this->usersTable, "email@test.com", "1j1j423jodwa");
         $this->user->expects($this->once())
             ->method('isConnected')->with()->will($this->returnValue(True));
-        $this->user->expects($this->once())
+        $this->user->expects($this->any())
             ->method('asDict')->with()->will(
                 $this->returnValue(
                     array("ID" => 1,

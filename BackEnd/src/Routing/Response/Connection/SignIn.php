@@ -39,9 +39,10 @@ class SignIn
         $this->response = json_encode(array(
             "STATUS" => "ERROR",
             "ERROR_MESSAGE" => 'Email or password invalid'));
-        echo "here is the user";
-        print_r($this->user->asDict());
+
         if($this->user->isConnected()){
+            echo "here is the user";
+            print_r($this->user->asDict());
             $this->response = json_encode($this->createResponseFromUser($this->user->asDict()));
         }
     }
