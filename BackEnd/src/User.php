@@ -36,12 +36,12 @@ class User
             $this->fillUserFromArray($_SESSION);
             $this->connected = true;
         }
-        elseif(isset($_SESSION)){
+        /*elseif(isset($_SESSION)){
             print_r(array_diff($this->mandatoryFields, array_keys($_SESSION)));
         }
         else{
             echo "No session found";
-        }
+        }*/
     }
 
     public function connect($userTable, $email, $password){
