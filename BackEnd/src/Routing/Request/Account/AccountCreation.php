@@ -61,6 +61,8 @@ class AccountCreation extends PostRequest
      */
     public function getResponse(){
         if(!$this->user->isConnected()){
+            echo "user: ";
+            print_r($this->user->asDisct());
             throw new InvalidSessionException("AccountCreation");
         }
         $account = new Account(["name" => $this->name,
