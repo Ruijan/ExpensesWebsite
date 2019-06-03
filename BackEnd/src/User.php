@@ -37,7 +37,7 @@ class User
             $this->connected = true;
         }
         elseif(isset($_SESSION)){
-            print_r(array_diff(array_keys($_SESSION), $this->mandatoryFields ));
+            print_r(array_diff($this->mandatoryFields, array_keys($_SESSION)));
         }
         else{
             echo "No session found";
