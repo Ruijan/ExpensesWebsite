@@ -33,21 +33,14 @@ class SignIn
     }
 
     public function execute(){
-
-        try{
-            $email = $this->request->getEmail();
-            $password = $this->request->getPassword();
-            $this->user->connect($this->usersTable, $email, $password);
-            $this->response = json_encode(array(
-                "STATUS" => "ERROR",
-                "ERROR_MESSAGE" => 'Email or password invalid'));
-            if($this->user->isConnected()){
-                echo "here is the user";
-                print_r($this->user->asDict());
-                $this->response = json_encode($this->createResponseFromUser($this->user->asDict()));
-            }
-        }catch(\Exception $e){
-            echo $e->getMessage();
+        $email = $this->request->getEmail();
+        $password = $this->request->getPassword();
+        $this->user->connect($this->usersTable, $email, $password);
+        $this->response = json_encode(array(
+            "STATUS" => "ERROR",
+            "ERROR_MESSAGE" => 'Email or password invalid'));
+        if($this->user->isConnected()){
+            $this->response = json_encode($this->createResponseFromUser($this->user->asDict()));
         }
     }
 
