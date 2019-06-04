@@ -23,8 +23,6 @@ class User
     private $sessionID;
     private $connected = false;
     private $accounts = [];
-    private $mandatoryFields = ["EMAIL", "FIRST_NAME", "NAME", "ID",
-        "REGISTERED_DATE", "LAST_CONNECTION", "EMAIL_VALIDATED", "SESSION_ID"];
 
 
     public function connectWithSessionID($userTable, $sessionID, $userID){

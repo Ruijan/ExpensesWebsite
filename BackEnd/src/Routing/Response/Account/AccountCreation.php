@@ -25,7 +25,6 @@ class AccountCreation
     }
 
     public function execute(){
-        $this->usersTable->updateSession($this->request->getUserID());
         $this->accountsTable->addAccount($this->account);
 
         $this->response = json_encode(array(

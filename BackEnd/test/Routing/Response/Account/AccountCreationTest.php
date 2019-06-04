@@ -18,9 +18,7 @@ class AccountCreationTest extends TestCase
     public function setUp()
     {
         $this->request = $this->getMockBuilder(\BackEnd\Routing\Request\Account\AccountCreation::class)->disableOriginalConstructor()
-            ->setMethods(['getAccountsTable', 'getUsersTable', 'getUserID'])->getMock();
-        $this->usersTable = $this->getMockBuilder(\BackEnd\Database\DBUsers\DBUsers::class)->disableOriginalConstructor()
-            ->setMethods(['updateSession'])->getMock();
+            ->setMethods(['getAccountsTable', 'getUsersTable'])->getMock();
         $this->accountsTable = $this->getMockBuilder(\BackEnd\Database\DBAccounts\DBAccounts::class)->disableOriginalConstructor()
             ->setMethods(['addAccount'])->getMock();
         $this->account = $this->getMockBuilder(\BackEnd\Account\Account::class)->disableOriginalConstructor()
@@ -38,10 +36,6 @@ class AccountCreationTest extends TestCase
 
     public function testExecute()
     {
-        $this->request->expects($this->once())
-            ->method('getUserID')->with()->will($this->returnValue("5"));
-        $this->usersTable->expects($this->once())
-            ->method('updateSession')->with();
         $this->accountsTable->expects($this->once())
             ->method('addAccount')->with($this->account);
         $this->account->expects($this->once())

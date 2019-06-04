@@ -81,8 +81,9 @@ class DBUsers extends DBTable
 
     public function isSessionIDValid($sessionID, $userID)
     {
-        $result = $this->driver->query("SELECT ID FROM " . $this->name . " WHERE SESSION_ID='" . $this->driver->real_escape_string($sessionID) .
-            "' AND ID='" . $this->driver->real_escape_string($userID) . "'");
+        $query = "SELECT ID FROM " . $this->name . " WHERE SESSION_ID='" . $this->driver->real_escape_string($sessionID) .
+            "' AND ID='" . $this->driver->real_escape_string($userID) . "'";
+        $result = $this->driver->query($query);
         $row = $result->fetch_assoc();
         if (!$row) {
             return false;
