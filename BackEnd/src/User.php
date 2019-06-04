@@ -37,16 +37,11 @@ class User
     }
 
     public function connect($userTable, $email, $password){
-        echo "checking if user is already connected and if credentials are valid<br/>/n";
         if(!$this->connected and $userTable->areCredentialsValid($email, $password)){
-            echo "get user from email<br/>/n";
             $dbUser = $userTable->getUserFromEmail($email);
-            echo "fill fields<br/>/n";
             $this->fillUserFromArray($dbUser);
-            echo "update last connection with session id<br/>/n";
             $this->sessionID = bin2hex(random_bytes(16));
             $this->updateLastConnection($userTable, $this->sessionID);
-            echo "connected<br/>/n";
             $this->connected = true;
         }
     }

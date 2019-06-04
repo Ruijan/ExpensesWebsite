@@ -33,21 +33,14 @@ class SignIn
     }
 
     public function execute(){
-        echo "Executing request<br/>";
         $email = $this->request->getEmail();
         $password = $this->request->getPassword();
-        echo "Connecting user...<br/>";
         $this->user->connect($this->usersTable, $email, $password);
         $this->response = json_encode(array(
             "STATUS" => "ERROR",
             "ERROR_MESSAGE" => 'Email or password invalid'));
-        echo "Checking...<br/>";
         if($this->user->isConnected()){
-            echo "User connected<br/>";
             $this->response = json_encode($this->createResponseFromUser($this->user->asDict()));
-        }
-        else{
-            echo "Not connected<br/>";
         }
     }
 
