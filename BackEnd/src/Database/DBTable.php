@@ -21,8 +21,32 @@ class DBTable
     }
 
     public function init(){
+        $this->createTable();
+        $this->updateTableColumns();
+    }
+
+    protected function createTable(){
         $query = "CREATE TABLE ".$this->name." (".$this->getTableHeader().")";
         $this->driver->query($query);
+    }
+
+    public function updateTableColumns(){
+        $columns = explode(',', $this->getTableHeader());
+        foreach ($columns as $column){
+            $columnName = explode(' ', ltrim ($column))[0];
+            $parameters = substr(ltrim($column), strlen($columnName) + 1);
+            if($columnName != "PRIMARY"){
+                $query = "SHOW COLUMNS FROM `".$this->name."` LIKE '".$columnName."'";
+                $result = $this->driver->query($query);
+                if($result->num_rows == 0){
+                    $query = "ALTER TABLE ".$this->name." ADD ".$columnName." ".$parameters;
+                    $result = $this->driver->query($query);
+                    if ($result === FALSE) {
+                        echo $this->driver->error_list[0]["error"];
+                    }
+                }
+            }
+        }
     }
 
     public function getDatabase(){
