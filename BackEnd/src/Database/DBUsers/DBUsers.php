@@ -79,6 +79,17 @@ class DBUsers extends DBTable
         return true;
     }
 
+    public function isSessionIDValid($sessionID, $userID)
+    {
+        $result = $this->driver->query("SELECT ID FROM " . $this->name . " WHERE SESSION_ID='" . $this->driver->real_escape_string($sessionID) .
+            "' AND ID='" . $this->driver->real_escape_string($userID) . "'");
+        $row = $result->fetch_assoc();
+        if (!$row) {
+            return false;
+        }
+        return true;
+    }
+
     public function updateLastConnection($userID, $lastConnection, $sessionID)
     {
         $this->checkIfIDExists($userID);

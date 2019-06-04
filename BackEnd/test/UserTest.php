@@ -32,7 +32,7 @@ class UserTest extends TestCase
         $this->dbUser["LAST_CONNECTION"] = $this->dbUser["REGISTERED_DATE"];
         $this->tableUsers = $this->getMockBuilder(\BackEnd\DBUser::class)->disableOriginalConstructor()
             ->setMethods(['areCredentialsValid', 'getUserFromEmail', 'getUserFromID',
-                'disconnectUser', 'updateLastConnection', 'checkSessionID'])->getMock();
+                'disconnectUser', 'updateLastConnection', 'isSessionIDValid'])->getMock();
         $this->tableAccounts = $this->getMockBuilder(\BackEnd\DBAccount::class)->disableOriginalConstructor()
             ->setMethods(['getAccountsFromUserID'])->getMock();
     }
@@ -122,7 +122,7 @@ class UserTest extends TestCase
     protected function prepareSuccessfulConnectionExpectations(): void
     {
         $this->tableUsers->expects($this->exactly(1))
-            ->method('checkSessionID')->with($this->dbUser["SESSION_ID"], $this->dbUser["ID"])->will($this->returnValue(true));
+            ->method('isSessionIDValid')->with($this->dbUser["SESSION_ID"], $this->dbUser["ID"])->will($this->returnValue(true));
         $this->tableUsers->expects($this->once())
             ->method('getUserFromID')->with($this->dbUser["ID"])->will($this->returnValue($this->dbUser));
         $now = new \DateTime("now", new \DateTimeZone("UTC"));

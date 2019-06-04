@@ -31,7 +31,7 @@ class AccountRequestFactoryTest extends TestCase
     public function testCreateAccountCreationRequest(){
         $this->database->expects($this->exactly(2))
             ->method('getTableByName')
-            ->withConsecutive([DBTables::USERS], [DBTables::ACCOUNTS]);
+            ->withConsecutive([DBTables::ACCOUNTS], [DBTables::USERS]);
         $factory = new AccountRequestFactory($this->database);
         $request = $factory->createRequest("Create");
         $this->assertEquals(AccountCreation::class, get_class($request));

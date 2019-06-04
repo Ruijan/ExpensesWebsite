@@ -28,7 +28,7 @@ class User
 
 
     public function connectWithSessionID($userTable, $sessionID, $userID){
-        if(!$this->connected and $userTable->checkSessionID($sessionID, $userID)){
+        if(!$this->connected and $userTable->isSessionIDValid($sessionID, $userID)){
             $dbUser = $userTable->getUserFromID($userID);
             $this->fillUserFromArray($dbUser);
             $this->updateLastConnection($userTable, $sessionID);

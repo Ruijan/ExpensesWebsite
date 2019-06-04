@@ -107,6 +107,14 @@ class DBUserTest extends TableCreationTest
         $this->assertFalse($this->table->areCredentialsValid($this->user["EMAIL"], "wrongPassword"));
     }
 
+    public function testValidSessionID()
+    {
+        $this->table->addUser($this->user);
+        $this->user["ID"] = 1;
+        $this->user["SESSION_ID"] = "0";
+        $this->assertTrue($this->table->isSessionIDValid($this->user["SESSION_ID"], $this->user["ID"]));
+    }
+
     public function testUpdateLastConnectionForUserID()
     {
         $this->table->addUser($this->user);

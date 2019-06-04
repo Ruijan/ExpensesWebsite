@@ -23,8 +23,8 @@ class AccountRequestFactory
 
         switch($type){
             case "Create":
-                return new AccountCreation($this->database->getTableByName(DBTables::USERS),
-                    $this->database->getTableByName(DBTables::ACCOUNTS), new User());
+                return new AccountCreation($this->database->getTableByName(DBTables::ACCOUNTS),
+                    $this->database->getTableByName(DBTables::USERS), new User());
             default:
                 throw new \InvalidArgumentException("Request type: ".$type." not found.");
         }
