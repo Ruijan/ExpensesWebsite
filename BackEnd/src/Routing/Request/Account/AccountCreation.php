@@ -62,7 +62,7 @@ class AccountCreation extends PostRequest
      * @throws InvalidSessionException
      */
     public function getResponse(){
-        $this->user->connectWithSessionID($this->sessionId, $this->userId);
+        $this->user->connectWithSessionID($this->usersTable, $this->sessionId, $this->userId);
         if(!$this->user->isConnected()){
             throw new InvalidSessionException("AccountCreation");
         }

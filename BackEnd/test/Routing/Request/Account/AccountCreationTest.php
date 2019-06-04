@@ -45,7 +45,7 @@ class AccountCreationTest extends TestCase
             ->with()->will($this->returnValue(true));
         $this->user->expects($this->once())
             ->method('connectWithSessionID')
-            ->with($_POST["session_id"], $_POST["user_id"]);
+            ->with($this->usersTable, $_POST["session_id"], $_POST["user_id"]);
         $response = $accountCreationRequest->getResponse();
         $this->assertEquals(\BackEnd\Routing\Response\Account\AccountCreation::class, get_class($response));
     }
