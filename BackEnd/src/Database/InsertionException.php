@@ -6,16 +6,16 @@
  * Time: 9:54 PM
  */
 
-namespace BackEnd\Database\DBUsers;
+namespace BackEnd\Database;
 
 
 use Throwable;
 
 class InsertionException extends \Exception
 {
-    public function __construct($user, string $tableName, string $reason,  int $code = 0, Throwable $previous = null)
+    public function __construct($elementName, $element, string $tableName, string $reason,  int $code = 0, Throwable $previous = null)
     {
-        $message = "Couldn't insert user " . implode(" ,", $user) .
+        $message = "Couldn't insert " . $elementName . " " . implode(" ,", $element) .
             " in " . $tableName.
             ". Reason: " . $reason;
         parent::__construct($message, $code, $previous);

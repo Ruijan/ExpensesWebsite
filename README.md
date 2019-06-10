@@ -33,8 +33,13 @@ $result = file_get_contents($url, false, $context);
 ```
 
 ### Connecting
-* SignIn: `connection/SignIn`. Required: e`email` (string), `password` (string)
-* SignUp: `connection/SignUp`. Required: `email` (string), `password` (string), `first_name` (string), `last_name` (string)
+*   SignIn: `connection/SignIn`. Required: `email` (string), `password` (string)
+*   SignUp: `connection/SignUp`. Required: `email` (string), `password` (string), `first_name` (string), `last_name` (string)
+
+### Accounts
+*   Creation: `account/Create`. Required: `user_id` (int), `user_key` (int), `name` (string), `currency_id` (int), `current_amount` (float)
+*   Creation: `account/Retrieve`. Required: `user_id` (int), `user_key` (int), `id` (int)
+*   Creation: `account/RetrieveAll`. Required: `user_id` (int), `user_key` (int)
 
 ## Install
 
@@ -42,8 +47,8 @@ $result = file_get_contents($url, false, $context);
 
 #### WampServer or equivalent webserver
 If you don't have any webserver install on your computer, please install one among the following list:
-* WampServer: http://www.wampserver.com/en/
-* Mamp: https://www.mamp.info/en/
+*   WampServer: http://www.wampserver.com/en/
+*   Mamp: https://www.mamp.info/en/
 
 #### XDebug for code coverage
 Once installed, check your php version with:
@@ -54,8 +59,8 @@ and paste the result in https://xdebug.org/wizard.php. Follow the instructions o
 
 #### Composer
 You need **Composer** in order to setup the project. If you don't have it installed, please follow this link to set it up:
-* **Windows**: https://getcomposer.org/doc/00-intro.md#installation-windows
-* **MacOS & Linux**: https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos
+*   **Windows**: https://getcomposer.org/doc/00-intro.md#installation-windows
+*   **MacOS & Linux**: https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos
 For a complete description of **Composer** usage, please refer to https://getcomposer.org/doc/01-basic-usage.md
 
 ### Download and install
@@ -76,7 +81,7 @@ Once started, go to **File->Settings->Languages & Frameworks->PHP**
 In **PHP language level** select 7.2 (object type hint, abstract function override)
 Then in CLI Interpreter, click on `...` to open a new window.
 Create a new Interpreter by clicking on the `+` on the top left corner.
-* Name: `PHP`
+*   Name: `PHP`
 * General
   * PHP executable: `C:\wamp64\bin\php\php7.2.10\php.exe` or your webserver php.exe file
 * Additional
@@ -88,8 +93,8 @@ Then go to **File->Settings->Build, Execution, Deployment->Coverage**. Select `R
 
 #### Run and debug unit tests
 To run the unit tests, go to **Run->Edit Configurations**. Add a new configuration by clicking on `+` on the top left corner of the window. Then select PHPUnit. Define the configuration as follow:
-* Directory: `C:\wamp64\www\Expenses\Website\`
-* Check box **Use alternative configuration file** with `C:\wamp64\www\Expenses\Website\phpunit.xml`
+*   Directory: `C:\wamp64\www\Expenses\Website\`
+*   Check box **Use alternative configuration file** with `C:\wamp64\www\Expenses\Website\phpunit.xml`
 Apply changes and click on ok.
 
 To run the unit tests, right click on the folder **BackEnd** in the project's directory tree and then on **Run BackEnd (PHPUnit)**

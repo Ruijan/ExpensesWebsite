@@ -7,10 +7,8 @@
  */
 
 namespace BackEnd\Database\DBUsers;
-use BackEnd\Database\DBUsers\UndefinedUserID;
 use BackEnd\Database\DBTable;
-use BackEnd\Database\DBUsers\InsertionException;
-use BackEnd\Database\DBUsers\EmailValidationException;
+use BackEnd\Database\InsertionException;
 
 class DBUsers extends DBTable
 {
@@ -30,6 +28,7 @@ class DBUsers extends DBTable
                         LAST_CONNECTION datetime DEFAULT '2018-01-01 00:00:00',
                         VALIDATION_ID int(11) UNIQUE,
                         EMAIL_VALIDATED bit DEFAULT 0,
+                        SESSION_ID char(50) DEFAULT 0,
                         PRIMARY KEY (ID)";
     }
 
@@ -46,8 +45,16 @@ class DBUsers extends DBTable
             ' (FIRST_NAME, NAME, EMAIL, PASSWORD, REGISTERED_DATE, LAST_CONNECTION, VALIDATION_ID) VALUES (' .
             $values . ')';
         if ($this->driver->query($query) === FALSE) {
-            throw new InsertionException($user, $this->name, $this->driver->error_list[0]["error"]);
+            throw new InsertionException("user", $user, $this->name, $this->driver->error_list[0]["error"]);
         }
+    }
+
+    public function deleteUserFromEmail($email){
+        if(!$this->checkIfEmailExists($email)){
+            throw new UndefinedUserEmail($email);
+        }
+        $query = "DELETE FROM " . $this->name ." WHERE EMAIL='".$this->driver->real_escape_string($email)."'";
+        $this->driver->query($query);
     }
 
     public function validateEmail($validationID)
@@ -69,8 +76,9 @@ class DBUsers extends DBTable
 
     public function areCredentialsValid($email, $password)
     {
-        $result = $this->driver->query("SELECT ID FROM " . $this->name . " WHERE EMAIL='" . $this->driver->real_escape_string($email) .
-            "' AND PASSWORD='" . $this->driver->real_escape_string($password) . "'");
+        $query = "SELECT ID FROM " . $this->name . " WHERE EMAIL='" . $this->driver->real_escape_string($email) .
+            "' AND PASSWORD='" . $this->driver->real_escape_string($password) . "'";
+        $result = $this->driver->query($query);
         $row = $result->fetch_assoc();
         if (!$row) {
             return false;
@@ -78,23 +86,32 @@ class DBUsers extends DBTable
         return true;
     }
 
-    public function updateLastConnection($userID, $lastConnection)
+    public function isSessionIDValid($sessionID, $userID)
+    {
+        $query = "SELECT ID FROM " . $this->name . " WHERE SESSION_ID='" . $this->driver->real_escape_string($sessionID) .
+            "' AND ID='" . $this->driver->real_escape_string($userID) . "'";
+        $result = $this->driver->query($query);
+        $row = $result->fetch_assoc();
+        if (!$row) {
+            return false;
+        }
+        return true;
+    }
+
+    public function updateLastConnection($userID, $lastConnection, $sessionID)
     {
         $this->checkIfIDExists($userID);
-        $query = "UPDATE " . $this->name . " SET LAST_CONNECTION = '" . $this->driver->real_escape_string($lastConnection) . "' WHERE ID = '" . $this->driver->real_escape_string($userID) . "'";
+        $query = "UPDATE " . $this->name . " SET LAST_CONNECTION = '" . $this->driver->real_escape_string($lastConnection) .
+            "', SESSION_ID = '". $this->driver->real_escape_string($sessionID) .  "' WHERE ID = '" . $this->driver->real_escape_string($userID) . "'";
         if ($this->driver->query($query) === FALSE) {
             throw new \Exception("Couldn't update last connection for userid " . $this->driver->real_escape_string($userID) . " in " . $this->name . ". Reason: " . $this->driver->error_list[0]["error"]);
         }
     }
 
-    protected function checkIfIDExists($expectedPayerID)
+    public function checkIfIDExists($userID)
     {
-        $query = "SELECT ID FROM " . $this->name . " WHERE ID = " . $this->driver->real_escape_string($expectedPayerID);
-        $result = $this->driver->query($query);
-        if ($result === FALSE) {
-            throw new \Exception("Couldn't find payee with ID " . $expectedPayerID . " in " . $this->name . ". Reason: " . $this->driver->error_list[0]["error"]);
-        } else if ($result->num_rows == 0) {
-            throw new UndefinedUserID($expectedPayerID);
+        if (!$this->doesUserIDExist($userID)) {
+            throw new UndefinedUserID($userID);
         }
     }
 
@@ -103,7 +120,7 @@ class DBUsers extends DBTable
         if($this->checkIfEmailExists($email) === FALSE){
             throw new UndefinedUserEmail($email);
         }
-        $result = $this->driver->query("SELECT ID, FIRST_NAME, NAME, REGISTERED_DATE, LAST_CONNECTION, EMAIL_VALIDATED, EMAIL  FROM " .
+        $result = $this->driver->query("SELECT ID, FIRST_NAME, NAME, REGISTERED_DATE, LAST_CONNECTION, EMAIL_VALIDATED, EMAIL, SESSION_ID  FROM " .
             $this->name . " WHERE EMAIL='" . $this->driver->real_escape_string($email) . "'");
         return $result->fetch_assoc();
     }
@@ -118,11 +135,23 @@ class DBUsers extends DBTable
         return $result->fetch_assoc()["ID"];
     }
 
+    public function doesUserIDExist($userID){
+        $query = "SELECT ID FROM " . $this->name . " WHERE ID = " . $this->driver->real_escape_string($userID);
+        $result = $this->driver->query($query);
+        return $result != false and  $result->num_rows != 0;
+    }
+
     public function getUserFromID($userID)
     {
         $this->checkIfIDExists($userID);
-        $result = $this->driver->query("SELECT ID, FIRST_NAME, NAME, REGISTERED_DATE, LAST_CONNECTION, EMAIL_VALIDATED, EMAIL  FROM " .
+        $result = $this->driver->query("SELECT ID, FIRST_NAME, NAME, REGISTERED_DATE, LAST_CONNECTION, EMAIL_VALIDATED, EMAIL, SESSION_ID  FROM " .
             $this->name . " WHERE ID='" . $this->driver->real_escape_string($userID) . "'");
         return $result->fetch_assoc();
+    }
+
+    public function disconnectUser($userID){
+        $this->checkIfIDExists($userID);
+        $query = "UPDATE " . $this->name . " SET SESSION_ID = '' WHERE ID = '" . $this->driver->real_escape_string($userID) . "'";
+        $this->driver->query($query);
     }
 }

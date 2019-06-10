@@ -8,8 +8,30 @@
 
 namespace BackEnd\Routing\Request;
 
-interface Request
+abstract class Request extends ArrayToPropertiesSetter
 {
-    public function init();
-    public function getResponse();
+    protected $response;
+    protected $mandatoryFields;
+    public function __construct($data, $mandatoryFields){
+        parent::__construct($data);
+        $this->mandatoryFields = $mandatoryFields;
+    }
+
+    abstract public function execute();
+
+    protected function checkRequiredParameters(): void
+    {
+        $missingFields = $this->getMissingFields($this->mandatoryFields);
+        if (count($missingFields) > 0) {
+            throw new MissingParametersException($missingFields, "AccountCreation");
+        }
+    }
+
+    public function getResponse(){
+        return $this->response;
+    }
+
+    public function getMandatoryFields(){
+        return $this->mandatoryFields;
+    }
 }

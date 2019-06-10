@@ -13,60 +13,75 @@ use BackEnd\Database\DBUsers\DBUsers;
 class SignUpTest extends TestCase
 {
     private $usersTable;
+    private $user;
+    private $dbUser;
+
     public function setUp()
     {
-        $_POST = array("email" => "testEmail@gmail.com",
+        $this->user = array("email" => "testEmail@gmail.com",
             "password" => "13464awd6a43123w",
             "last_name" => "testName",
             "first_name" => "testFirstName");
-        $this->usersTable = $this->getMockBuilder(DBUsers::class)->disableOriginalConstructor()->getMock();
-    }
-
-    public function testInitialization(){
-        $signUpRequest = new SignUp($this->usersTable);
         $registeredDate = new \DateTime("now", new \DateTimeZone("UTC"));
-        $registeredFormatedDate = $registeredDate->format("Y-m-d H:i:s");
-        $lastConnection = $registeredFormatedDate;
-        $signUpRequest->init();
-        $this->assertEquals($_POST["email"], $signUpRequest->getEmail());
-        $this->assertEquals($_POST["password"], $signUpRequest->getPassword());
-        $this->assertEquals($_POST["last_name"], $signUpRequest->getLastName());
-        $this->assertEquals($_POST["first_name"], $signUpRequest->getFirstName());
-        $this->assertEquals($registeredFormatedDate, $signUpRequest->getRegisteredDate());
-        $this->assertEquals($lastConnection, $signUpRequest->getLastConnection());
-        $this->assertTrue($registeredDate->getTimestamp() - $signUpRequest->getValidationID() < 10);
-        $this->assertEquals($this->usersTable, $signUpRequest->getUsersTable());
+        $registeredFormattedDate = $registeredDate->format("Y-m-d H:i:s");
+        $lastConnection = $registeredFormattedDate;
+        $this->dbUser = array("EMAIL" => "testEmail@gmail.com",
+            "PASSWORD" => "13464awd6a43123w",
+            "LAST_NAME" => "testName",
+            "FIRST_NAME" => "testFirstName",
+            "REGISTERED_DATE" => $lastConnection,
+            "LAST_CONNECTION" => $lastConnection,
+            "VALIDATION_ID" => $registeredDate->getTimestamp());
+        $this->usersTable = $this->getMockBuilder(\BackEnd\Database\DBUsers\DBUsers::class)->disableOriginalConstructor()
+            ->setMethods(['addUser', 'getUserFromEmail'])->getMock();    }
+
+    public function test__construct(){
+        $mandatoryFields = ["email", "password", "first_name", "last_name"];
+        $request = $this->createRequest();
+
+        $this->assertEquals($this->dbUser["REGISTERED_DATE"], $request->getRegisteredDate());
+        $this->assertEquals($this->dbUser["LAST_CONNECTION"], $request->getLastConnection());
+        $this->assertTrue($this->dbUser["VALIDATION_ID"] - $request->getValidationID() < 10);
+        $this->assertEquals($this->usersTable, $request->getUsersTable());
+        $this->assertEquals($mandatoryFields, $request->getMandatoryFields());
     }
 
-    public function testInitializationWithMissingPasswordShouldThrow(){
-        unset($_POST["password"]);
-        $signUpRequest = new SignUp($this->usersTable);
-        $this->expectException(\Backend\Routing\Request\Connection\MissingParametersException::class);
-        $signUpRequest->init();
-    }
-    public function testInitializationWithMissingEmailShouldThrow(){
-        unset($_POST["email"]);
-        $signUpRequest = new SignUp($this->usersTable);
-        $this->expectException(\Backend\Routing\Request\Connection\MissingParametersException::class);
-        $signUpRequest->init();
-    }
-    public function testInitializationWithMissingFirstNameShouldThrow(){
-        unset($_POST["first_name"]);
-        $signUpRequest = new SignUp($this->usersTable);
-        $this->expectException(\Backend\Routing\Request\Connection\MissingParametersException::class);
-        $signUpRequest->init();
-    }
-    public function testInitializationWithMissingLastNameShouldThrow(){
-        unset($_POST["last_name"]);
-        $signUpRequest = new SignUp($this->usersTable);
-        $this->expectException(\Backend\Routing\Request\Connection\MissingParametersException::class);
-        $signUpRequest->init();
+    public function test__constructWithMissingParameters()
+    {
+        $this->user = array();
+        $request = $this->createRequest();
+        $request->execute();
+        $response = json_decode($request->getResponse(), $assoc = true );
+        $this->assertEquals("ERROR", $response["STATUS"]);
+        $this->assertContains("Missing parameter", $response["ERROR_MESSAGE"]);
+        foreach ($request->getMandatoryFields() as $field) {
+            $this->assertContains($field, $response["ERROR_MESSAGE"]);
+        }
     }
 
     public function testGetResponse(){
-        $signUpRequest = new SignUp($this->usersTable);
-        $signUpRequest->init();
-        $response = $signUpRequest->getResponse();
-        $this->assertEquals(\BackEnd\Routing\Response\Connection\SignUp::class, get_class($response));
+        $request = $this->createRequest();
+        $this->usersTable->expects($this->once())
+            ->method('addUser');
+        $this->usersTable->expects($this->once())
+            ->method('getUserFromEmail')->will($this->returnValue($this->dbUser));
+        $request->execute();
+        $response = json_decode($request->getResponse(), $assoc = true);
+        if($response["STATUS"] == "ERROR"){
+            $this->assertEquals("", $response["ERROR_MESSAGE"]);
+            $this->assertEquals("OK", $response["STATUS"]);
+        }
+        else{
+            $this->assertEquals("OK", $response["STATUS"]);
+        }
+    }
+
+    /**
+     * @return SignUp
+     */
+    protected function createRequest(): SignUp
+    {
+        $request = new SignUp($this->usersTable, $this->user);
+        return $request;
     }
 }

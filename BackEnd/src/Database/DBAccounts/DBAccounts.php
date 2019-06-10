@@ -7,12 +7,10 @@
  */
 
 namespace BackEnd\Database\DBAccounts;
-use BackEnd\Database\DBTable;
-use BackEnd\Database\DBAccounts\AccountDuplicationException;
-use BackEnd\Database\DBAccounts\UserIDException;
-use BackEnd\Database\DBAccounts\CurrencyIDException;
-use BackEnd\Account\Account;
 
+use BackEnd\Database\DBTable;
+
+use BackEnd\Account\Account;
 
 class DBAccounts extends DBTable
 {
@@ -37,6 +35,13 @@ class DBAccounts extends DBTable
                         PRIMARY KEY (ID)";
     }
 
+    /**
+     * @param $account
+     * @throws AccountDuplicationException
+     * @throws CurrencyIDException
+     * @throws InsertionException
+     * @throws UserIDException
+     */
     public function addAccount($account)
     {
         $this->checkParameters($account);
@@ -46,17 +51,23 @@ class DBAccounts extends DBTable
             '", "' . $this->driver->real_escape_string($account->getCurrencyID()) . '", "' .
             $currentUTCDate->format("Y-m-d H:i:s") . '", "' . $this->driver->real_escape_string($account->getCurrentAmount()) . '")';
         if ($this->driver->query($query) === FALSE) {
-            throw new DBAccount\InsertionException($account, $this->name, $this->driver->error_list[0]["error"]);
+            throw new InsertionException($account, $this->name, $this->driver->error_list[0]["error"]);
         }
         $account->setID($this->driver->insert_id);
     }
 
+    /**
+     * @param $account
+     * @throws AccountDuplicationException
+     * @throws CurrencyIDException
+     * @throws UserIDException
+     */
     protected function checkParameters($account): void
     {
-        if ($this->usersTable->checkIfIDExists($account->getUserID()) == false) {
+        if ($this->usersTable->doesUserIDExist($account->getUserID()) == false) {
             throw new UserIDException($account, $this->name);
         }
-        if ($this->currenciesTable->checkIfIDExists($account->getCurrencyID()) == false) {
+        if ($this->currenciesTable->doesCurrencyIDExist($account->getCurrencyID()) == false) {
             throw new CurrencyIDException($account, $this->name);
         }
         if ($this->doesAccountExists($account->getName(), $account->getUserID()) !== false) {
@@ -72,6 +83,16 @@ class DBAccounts extends DBTable
             return true;
         }
         return false;
+    }
+
+    public function deleteAccountFromNameAndUser($accountName, $userID)
+    {
+        if(!$this->doesAccountExists($accountName, $userID)){
+            throw new UndefinedAccountException($accountName, $userID);
+        }
+        $query = "DELETE FROM " . $this->name . " WHERE NAME='" . $this->driver->real_escape_string($accountName) .
+            "' AND USER_ID='".$this->driver->real_escape_string($userID)."'";
+        $this->driver->query($query);
     }
 
     public function getUsersTable()

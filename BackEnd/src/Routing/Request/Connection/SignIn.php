@@ -7,47 +7,69 @@
  */
 namespace BackEnd\Routing\Request\Connection;
 
-use BackEnd\Routing\Request\PostRequest;
+use BackEnd\Database\DBUsers\DBUsers;
+use BackEnd\Routing\Request\MissingParametersException;
+use BackEnd\Routing\Request\Request;
+use BackEnd\User;
 
-class SignIn extends PostRequest
+class SignIn extends Request
 {
-    protected $email = "";
-    protected $password = "";
+    protected $email;
+    protected $password;
+    /** @var User */
+    protected $user;
+    /** @var DBUsers  */
     private $usersTable;
-    public function __construct($usersTable)
+
+    /**
+     * SignIn constructor.
+     * @param $usersTable
+     * @param $user
+     * @param $data
+     */
+    public function __construct($usersTable, $user, $data)
     {
+        $mandatoryFields = ["email", "password"];
+        parent::__construct($data, $mandatoryFields);
         $this->usersTable = $usersTable;
+        $this->user = $user;
     }
 
-    public function init(){
-        parent::init();
-        $missingParameters = array();
-
-        if($this->email == ""){
-            $missingParameters[] = "email";
-        }
-        if($this->password == ""){
-            $missingParameters[] = "password";
-        }
-        if(count($missingParameters) > 0){
-            throw new MissingParametersException($missingParameters, "SignIn");
-        }
-    }
-
-    public function getResponse()
+    public function execute()
     {
-        return new \BackEnd\Routing\Response\Connection\SignIn($this, $this->usersTable);
+        try{
+            $this->checkRequiredParameters();
+            $this->tryConnectingUser();
+            $this->response["STATUS"] = "OK";
+            $this->response["DATA"] = array( "FIRST_NAME" => $this->user->getFirstName(),
+                "LAST_NAME" => $this->user->getLastName(),
+                "USER_ID" => $this->user->getID(),
+                "EMAIL_VALIDATED" => $this->user->getEmail(),
+                "EMAIL" => $this->user->getEmail(),
+                "SESSION_ID" => $this->user->getSessionID());
+        }catch(InvalidCredentialsException | MissingParametersException $exception){
+            $this->response["STATUS"] = "ERROR";
+            $this->response["ERROR_MESSAGE"] = $exception->getMessage();
+        }
+        $this->response = json_encode($this->response);
     }
 
-    public function getEmail(){
-        return $this->email;
-    }
-
-    public function getPassword(){
-        return $this->password;
-    }
-
+    /**
+     * @return DBUsers
+     */
     public function getUsersTable(){
         return $this->usersTable;
+    }
+
+    public function getUser(){
+        return $this->user;
+    }
+
+    protected function tryConnectingUser(): void
+    {
+        $this->user->connect($this->usersTable, $this->email, $this->password);
+        if (!$this->user->isConnected()) {
+            throw new InvalidCredentialsException("SignIn");
+        }
     }
 }

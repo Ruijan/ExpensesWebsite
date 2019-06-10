@@ -9,6 +9,8 @@
 namespace BackEnd\Database;
 require_once ("DBTable.php");
 
+use BackEnd\Database\DBAccounts\CurrencyIDException;
+
 class DBCurrencies extends DBTable
 {
     public function __construct($database)
@@ -29,13 +31,20 @@ class DBCurrencies extends DBTable
         $query = 'INSERT INTO '.$this->name.' (NAME, SHORT_NAME, CURRENT_DOLLARS_CHANGE) VALUES ("'.
             $this->driver->real_escape_string($name).'", "'.$this->driver->real_escape_string($shortName).'", 1)';
         if ($this->driver->query($query) === FALSE) {
-            throw new \Exception("Couldn't insert currency ".$name." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
+            throw new InsertionException("currency",[$name],$this->name,$this->driver->error_list[0]["error"]);
         }
+        return $this->driver->insert_id;
     }
 
     public function getCurrencyFromID($currencyID){
         $query = "SELECT * FROM ".$this->getName()." WHERE ID = '".$this->driver->real_escape_string($currencyID)."'";
         $row = $this->driver->query($query)->fetch_assoc();
         return $row;
+    }
+
+    public function doesCurrencyIDExist($currencyID){
+        $query = "SELECT ID FROM " . $this->getName() . " WHERE ID = " . $this->driver->real_escape_string($currencyID);
+        $result = $this->driver->query($query);
+        return $result->num_rows != 0;
     }
 }

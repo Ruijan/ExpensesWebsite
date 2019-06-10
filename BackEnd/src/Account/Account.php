@@ -20,7 +20,7 @@ class Account
         "user" => NULL,
         "user_id" => NULL
     ];
-    protected $mandatoryFields = ["currency", "name"];
+    protected $mandatoryFields = ["user_id", "name", "currency_id", "current_amount"];
     protected $format = ["id" => "integer",
         "name" => NULL,
         "current_amount" => "float",
@@ -120,7 +120,8 @@ class Account
         return $this->data;
     }
 
-    public function setID($accountID){
+    public function setID($accountID)
+    {
         $this->data["id"] = $accountID;
     }
 

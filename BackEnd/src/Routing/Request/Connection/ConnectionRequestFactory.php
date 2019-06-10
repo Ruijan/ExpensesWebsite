@@ -6,13 +6,11 @@
  * Time: 9:26 PM
  */
 
-namespace BackEnd\Routing\Request;
+namespace BackEnd\Routing\Request\Connection;
+
 use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
-use BackEnd\Routing\Request\PostRequest;
-use BackEnd\Routing\Request\Connection\SignIn;
-use BackEnd\Routing\Request\Connection\SignUp;
-use http\Exception\InvalidArgumentException;
+use BackEnd\User;
 
 class ConnectionRequestFactory
 {
@@ -23,12 +21,12 @@ class ConnectionRequestFactory
     }
 
     public function createRequest($type){
-
+        $postArray = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
         switch($type){
             case "SignIn":
-                return new SignIn($this->database->getTableByName(DBTables::USERS));
+                return new SignIn($this->database->getTableByName(DBTables::USERS), new User(), $postArray);
             case "SignUp":
-                return new SignUp($this->database->getTableByName(DBTables::USERS));
+                return new SignUp($this->database->getTableByName(DBTables::USERS), $postArray);
             default:
                 throw new \InvalidArgumentException("Request type: ".$type." not found.");
         }

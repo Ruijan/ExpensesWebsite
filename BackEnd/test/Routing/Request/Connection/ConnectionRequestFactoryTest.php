@@ -10,12 +10,12 @@ namespace Request;
 
 use BackEnd\Database\DBTables;
 use BackEnd\Routing\Request\Connection\SignUp;
-use BackEnd\Routing\Request\ConnectionRequestFactory;
+use BackEnd\Routing\Request\Connection\ConnectionRequestFactory;
 use BackEnd\Routing\Request\Connection\SignIn;
 use PHPUnit\Framework\TestCase;
 use BackEnd\Database\Database;
 
-class RequestFactoryTest extends TestCase
+class ConnectionRequestFactoryTest extends TestCase
 {
     private $database;
     public function setUp()

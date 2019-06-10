@@ -12,38 +12,65 @@ use PHPUnit\Framework\TestCase;
 class SignInTest extends TestCase
 {
     private $usersTable;
+    private $user;
+    private $data;
+
     public function setUp()
     {
-        $_POST = array("email" => "testEmail@gmail.com", "password" => "13464awd6a43123w");
+        $this->data = array("email" => "testEmail@gmail.com", "password" => "13464awd6a43123w");
         $this->usersTable = $this->getMockBuilder(\BackEnd\Database\DBUsers\DBUsers::class)->disableOriginalConstructor()
             ->setMethods(['areCredentialsValid'])->getMock();
+        $this->user = $this->getMockBuilder(\BackEnd\Database\DBUsers\DBUsers::class)->disableOriginalConstructor()
+            ->setMethods(['isConnected', 'connect', 'getFirstName',
+                'getLastName', 'getID', 'getEmail', 'getSessionID'])->getMock();
     }
 
-    public function testInitialization(){
-        $signInRequest = new SignIn($this->usersTable);
-        $signInRequest->init();
-        $this->assertEquals($_POST["email"], $signInRequest->getEmail());
-        $this->assertEquals($_POST["password"], $signInRequest->getPassword());
-        $this->assertEquals($this->usersTable, $signInRequest->getUsersTable());
+    public function test__construct(){
+        $mandatoryFields = ["email", "password"];
+        $request = new SignIn($this->usersTable, $this->user, $this->data);
+        $this->assertEquals($mandatoryFields, $request->getMandatoryFields());
+        $this->assertEquals($this->usersTable, $request->getUsersTable());
+        $this->assertEquals($this->user, $request->getUser());
     }
 
-    public function testInitializationWithMissingPasswordShouldThrow(){
-        $_POST = array("email" => "testEmail@gmail.com");
-        $signInRequest = new SignIn($this->usersTable);
-        $this->expectException(\Backend\Routing\Request\Connection\MissingParametersException::class);
-        $signInRequest->init();
-    }
-    public function testInitializationWithMissingEmailShouldThrow(){
-        $_POST = array("password" => "dwa486413dwa");
-        $signInRequest = new SignIn($this->usersTable);
-        $this->expectException(\Backend\Routing\Request\Connection\MissingParametersException::class);
-        $signInRequest->init();
+
+    public function testInitializationWithMissingParameters()
+    {
+        $this->data = array();
+        $request = new SignIn($this->usersTable, $this->user, $this->data);
+        $request->execute();
+        $response = json_decode($request->getResponse(), $assoc = true );
+        $this->assertEquals("ERROR", $response["STATUS"]);
+        $this->assertContains("Missing parameter", $response["ERROR_MESSAGE"]);
+        foreach ($request->getMandatoryFields() as $field) {
+            $this->assertContains($field, $response["ERROR_MESSAGE"]);
+        }
     }
 
     public function testGetResponse(){
-        $signInRequest = new SignIn($this->usersTable);
-        $signInRequest->init();
-        $response = $signInRequest->getResponse();
-        $this->assertEquals(\BackEnd\Routing\Response\Connection\SignIn::class, get_class($response));
+        $request = new SignIn($this->usersTable, $this->user, $this->data);
+        $this->user->expects($this->once())
+            ->method('isConnected')
+            ->with()->will($this->returnValue(true));
+        $request->execute();
+        $response = json_decode($request->getResponse(), $assoc = true);
+        if($response["STATUS"] == "ERROR"){
+            $this->assertEquals("", $response["ERROR_MESSAGE"]);
+            $this->assertEquals("OK", $response["STATUS"]);
+        }
+        else{
+            $this->assertEquals("OK", $response["STATUS"]);
+        }    }
+
+    public function testGetResponseWithInvalidUserID()
+    {
+        $request = new SignIn($this->usersTable, $this->user, $this->data);
+        $this->user->expects($this->once())
+            ->method('isConnected')
+            ->with()->will($this->returnValue(false));
+        $request->execute();
+        $response = json_decode($request->getResponse(), $assoc = true);
+        $this->assertEquals("ERROR", $response["STATUS"]);
+        $this->assertContains("Invalid user", $response["ERROR_MESSAGE"]);
     }
 }
