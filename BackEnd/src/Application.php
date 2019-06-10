@@ -12,6 +12,7 @@ use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
 use BackEnd\Routing\Request\Connection\ConnectionRequestFactory;
 use BackEnd\Routing\Request\Account\AccountRequestFactory;
+use BackEnd\Routing\Request\Currency\CurrencyRequestFactory;
 use BackEnd\Routing\ServerProperties;
 use BackEnd\Routing\Router;
 
@@ -51,9 +52,11 @@ class Application
     private function initRouter(){
         $connectionRequestFactory = new ConnectionRequestFactory($this->database);
         $accountRequestFactory = new AccountRequestFactory($this->database);
+        $currencyRquestFactory = new CurrencyRequestFactory($this->database);
         $this->router = new Router(new ServerProperties(),
             ["connection" => $connectionRequestFactory,
-                "account" => $accountRequestFactory]);
+                "account" => $accountRequestFactory,
+                "currency" => $currencyRquestFactory]);
     }
 
     private function getDBParameters(): array{

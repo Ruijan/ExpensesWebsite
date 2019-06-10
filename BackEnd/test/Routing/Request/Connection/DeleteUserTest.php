@@ -35,6 +35,18 @@ class DeleteUserTest extends TestCase
         $this->assertEquals("OK", $response["STATUS"]);
     }
 
+    public function testGetResponseWithInvalidCredentials(){
+        $request = new DeleteUser($this->usersTable, $this->user);
+        $this->usersTable->expects($this->once())
+            ->method('areCredentialsValid')
+            ->with()
+            ->will($this->returnValue(false));
+        $request->execute();
+        $response = json_decode($request->getResponse(), $assoc = true);
+        $this->assertContains("Invalid user", $response["ERROR_MESSAGE"]);
+        $this->assertEquals("ERROR", $response["STATUS"]);
+    }
+
     public function test__construct()
     {
         $mandatoryFields = ["email", "password"];

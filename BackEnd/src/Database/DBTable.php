@@ -8,6 +8,8 @@
 
 namespace BackEnd\Database;
 
+use mysql_xdevapi\Exception;
+
 class DBTable
 {
     protected $name;
@@ -42,7 +44,7 @@ class DBTable
                     $query = "ALTER TABLE ".$this->name." ADD ".$columnName." ".$parameters;
                     $result = $this->driver->query($query);
                     if ($result === FALSE) {
-                        echo $this->driver->error_list[0]["error"];
+                        throw new Exception($this->driver->error_list[0]["error"]);
                     }
                 }
             }
