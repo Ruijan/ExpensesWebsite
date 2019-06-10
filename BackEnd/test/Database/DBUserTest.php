@@ -136,17 +136,6 @@ class DBUserTest extends TableCreationTest
         $this->assertEquals($this->user["SESSION_ID"], $row["SESSION_ID"]);
     }
 
-    public function testUpdateLastConnectionWithWrongDate()
-    {
-        $this->table->addUser($this->user);
-        $this->user["ID"] = 1;
-        $this->user["LAST_CONNECTION"] = "as1564w";
-        $this->user["SESSION_ID"] = bin2hex(random_bytes(16));
-        $this->expectException(\Exception::class);
-        $this->table->updateLastConnection($this->user["ID"], $this->user["LAST_CONNECTION"], $this->user["SESSION_ID"]);
-
-    }
-
     public function testUpdateLastConnectionForWrongUserIDShouldThrow()
     {
         $this->table->addUser($this->user);
