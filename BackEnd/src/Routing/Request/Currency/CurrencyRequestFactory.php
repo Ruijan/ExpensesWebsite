@@ -2,20 +2,18 @@
 /**
  * Created by PhpStorm.
  * User: MSI-GP60
- * Date: 2/2/2019
- * Time: 9:26 PM
+ * Date: 6/9/2019
+ * Time: 6:45 PM
  */
 
-namespace BackEnd\Routing\Request\Connection;
-
-use BackEnd\Database\Database;
+namespace BackEnd\Routing\Request\Currency;
 use BackEnd\Database\DBTables;
-use BackEnd\User;
+use BackEnd\Database\Database;
 
-class ConnectionRequestFactory
+class CurrencyRequestFactory
 {
     private $database;
-    public function __construct(Database $database)
+    public function __construct($database)
     {
         $this->database = $database;
     }
@@ -23,10 +21,9 @@ class ConnectionRequestFactory
     public function createRequest($type){
         $postArray = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
         switch($type){
-            case "SignIn":
-                return new SignIn($this->database->getTableByName(DBTables::USERS), new User(), $postArray);
-            case "SignUp":
-                return new SignUp($this->database->getTableByName(DBTables::USERS), $postArray);
+            case "Create":
+                return new CurrencyCreation($this->database->getTableByName(DBTables::CURRENCIES),
+                    $postArray);
             default:
                 throw new \InvalidArgumentException("Request type: ".$type." not found.");
         }

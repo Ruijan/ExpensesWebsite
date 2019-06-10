@@ -11,6 +11,7 @@ namespace Request;
 use BackEnd\Database\DBTables;
 use BackEnd\Routing\Request\Account\AccountCreation;
 use BackEnd\Routing\Request\Account\AccountRequestFactory;
+use BackEnd\Routing\Request\Account\DeleteAccount;
 use PHPUnit\Framework\TestCase;
 use BackEnd\Database\Database;
 
@@ -37,6 +38,14 @@ class AccountRequestFactoryTest extends TestCase
         $this->assertEquals(AccountCreation::class, get_class($request));
     }
 
+    public function testCreateDeleteAccountRequest(){
+        $this->database->expects($this->exactly(2))
+            ->method('getTableByName')
+            ->withConsecutive([DBTables::ACCOUNTS], [DBTables::USERS]);
+        $factory = new AccountRequestFactory($this->database);
+        $request = $factory->createRequest("Delete");
+        $this->assertEquals(DeleteAccount::class, get_class($request));
+    }
 
     public function testCreateWrongTypeOfRequestShouldThrow(){
         $factory = new AccountRequestFactory($this->database);

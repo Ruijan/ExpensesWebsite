@@ -120,7 +120,8 @@ class Account
         return $this->data;
     }
 
-    public function setID($accountID){
+    public function setID($accountID)
+    {
         $this->data["id"] = $accountID;
     }
 

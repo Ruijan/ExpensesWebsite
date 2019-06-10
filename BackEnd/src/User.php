@@ -9,6 +9,7 @@
 namespace BackEnd;
 
 
+use BackEnd\Database\DBAccounts\DBAccounts;
 use BackEnd\Database\DBUsers\DBUsers;
 
 class User
@@ -25,6 +26,12 @@ class User
     private $accounts = [];
 
 
+    /**
+     * @param DBUsers $userTable
+     * @param $sessionID
+     * @param $userID
+     * @throws \Exception
+     */
     public function connectWithSessionID($userTable, $sessionID, $userID){
         if(!$this->connected and $userTable->isSessionIDValid($sessionID, $userID)){
             $dbUser = $userTable->getUserFromID($userID);
@@ -34,6 +41,12 @@ class User
         }
     }
 
+    /**
+     * @param DBUsers $userTable
+     * @param string $email
+     * @param string $password
+     * @throws \Exception
+     */
     public function connect($userTable, $email, $password){
         if(!$this->connected and $userTable->areCredentialsValid($email, $password)){
             $dbUser = $userTable->getUserFromEmail($email);
@@ -44,12 +57,21 @@ class User
         }
     }
 
+    /**
+     * @param DBUsers $userTable
+     * @param $sessionID
+     * @throws \Exception
+     */
     public function updateLastConnection($userTable, $sessionID){
         $now = new \DateTime("now", new \DateTimeZone("UTC"));
         $now = $now->format("Y-m-d H:i:s");
         $userTable->updateLastConnection($this->id, $now, $sessionID);
     }
 
+    /**
+     * @param DBUsers $userTable
+     * @throws \Exception
+     */
     public function disconnect($userTable){
         $userTable->disconnectUser($this->id);
         $this->connected = false;
@@ -63,6 +85,9 @@ class User
         $this->sessionID = null;
     }
 
+    /**
+     * @param DBAccounts $tableAccounts
+     */
     public function loadAccounts($tableAccounts){
         $this->accounts = $tableAccounts->getAccountsFromUserID($this->id);
     }

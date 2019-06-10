@@ -20,11 +20,14 @@ class AccountRequestFactory
     }
 
     public function createRequest($type){
-
+        $postArray = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
         switch($type){
             case "Create":
                 return new AccountCreation($this->database->getTableByName(DBTables::ACCOUNTS),
-                    $this->database->getTableByName(DBTables::USERS), new User());
+                    $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
+            case "Delete":
+                return new DeleteAccount($this->database->getTableByName(DBTables::ACCOUNTS),
+                    $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
             default:
                 throw new \InvalidArgumentException("Request type: ".$type." not found.");
         }

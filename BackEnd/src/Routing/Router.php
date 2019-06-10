@@ -13,8 +13,8 @@ use BackEnd\Routing\Request\ConnectionRequestFactory;
 
 class Router
 {
+
     private $request;
-    private $response;
     private $serverProperties;
     private $requestFactories;
 
@@ -27,9 +27,7 @@ class Router
     function resolveRoute()
     {
         $this->generateRequest();
-        $this->request->init();
-        $this->response = $this->request->getResponse();
-        $this->response->execute();
+        $this->request->execute();
     }
 
     private function formatRoute($route)
@@ -64,7 +62,7 @@ class Router
     }
 
     public function getResponse(){
-        return $this->response->getAnswer();
+        return $this->request->getResponse();
     }
 
     /**

@@ -13,8 +13,14 @@ use Throwable;
 
 class UndefinedUserID extends \Exception
 {
-    public function __construct(int $expectedPayerID, int $code = 0, Throwable $previous = null)
+    /**
+     * UndefinedUserID constructor.
+     * @param $expectedPayerID
+     * @param int $code
+     * @param Throwable|null $previous
+     */
+    public function __construct($expectedPayerID, int $code = 0, Throwable $previous = null)
     {
-        parent::__construct("Couldn't find payee with ID " . $expectedPayerID . " in DBUsers.", $code, $previous);
+        parent::__construct("Couldn't find user with ID " . $expectedPayerID . " in DBUsers.", $code, $previous);
     }
 }

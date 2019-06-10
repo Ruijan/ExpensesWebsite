@@ -20,7 +20,6 @@ class RouterTest extends TestCase
     private $factories;
     private $router;
     private $request;
-    private $response;
 
     public function setUp()
     {
@@ -29,9 +28,7 @@ class RouterTest extends TestCase
         $connectionRequestFactory = $this->getMockBuilder(ConnectionRequestFactory::class)
             ->disableOriginalConstructor()->setMethods(['createRequest'])->getMock();
         $this->request = $this->getMockBuilder(SignIn::class)
-            ->disableOriginalConstructor()->setMethods(['init', 'getResponse'])->getMock();
-        $this->response = $this->getMockBuilder(BackEnd\Routing\Response\Connection\SignIn::class)
-            ->disableOriginalConstructor()->setMethods(['execute','getAnswer'])->getMock();
+            ->disableOriginalConstructor()->setMethods(['execute', 'getResponse'])->getMock();
         $this->factories = array("connection" => $connectionRequestFactory);
     }
 
@@ -45,10 +42,7 @@ class RouterTest extends TestCase
             ->with()->will($this->returnValue("C:\wamp64\www\Expenses\Website"));
         $this->factories["connection"]->expects($this->once())->method('createRequest')
             ->with()->will($this->returnValue($this->request));
-        $this->request->expects($this->once())->method('init');
-        $this->request->expects($this->once())->method('getResponse')
-            ->with()->will($this->returnValue($this->response));
-        $this->response->expects($this->once())->method('execute');
+        $this->request->expects($this->once())->method('execute');
         $this->router = new Router($this->serverProperties, $this->factories);
         $this->router->resolveRoute();
     }
@@ -59,10 +53,7 @@ class RouterTest extends TestCase
             ->with()->will($this->returnValue("/Expenses/Website/?action=connection/signIn"));
         $this->factories["connection"]->expects($this->once())->method('createRequest')
             ->with()->will($this->returnValue($this->request));
-        $this->request->expects($this->once())->method('init');
-        $this->request->expects($this->once())->method('getResponse')
-            ->with()->will($this->returnValue($this->response));
-        $this->response->expects($this->once())->method('execute');
+        $this->request->expects($this->once())->method('execute');
         $this->router = new Router($this->serverProperties, $this->factories);
         $this->router->resolveRoute();
     }
@@ -109,11 +100,9 @@ class RouterTest extends TestCase
             ->with()->will($this->returnValue("C:\wamp64\www\Expenses\Website"));
         $this->factories["connection"]->expects($this->once())->method('createRequest')
             ->with()->will($this->returnValue($this->request));
-        $this->request->expects($this->once())->method('init');
-        $this->request->expects($this->exactly(1))->method('getResponse')
-            ->with()->will($this->returnValue($this->response));
-        $this->response->expects($this->once())->method('execute');
-        $this->response->expects($this->once())->method('getAnswer')->with()->will($this->returnValue("Answer"));
+        $this->request->expects($this->once())->method('execute');
+        $this->request->expects($this->once())->method('getResponse')
+            ->with()->will($this->returnValue("Answer"));
         $this->router = new Router($this->serverProperties, $this->factories);
         $this->router->resolveRoute();
         $this->assertEquals("Answer", $this->router->getResponse());

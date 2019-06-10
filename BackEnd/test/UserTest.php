@@ -5,7 +5,7 @@
  * Date: 1/20/2019
  * Time: 1:51 PM
  */
-
+namespace BackEnd\tests\Users;
 require_once(str_replace("test", "src", __DIR__."/").'User.php');
 use PHPUnit\Framework\TestCase;
 

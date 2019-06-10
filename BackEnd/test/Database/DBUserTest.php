@@ -12,7 +12,7 @@ use BackEnd\Database\DBUsers\UndefinedUserEmail;
 use BackEnd\Tests\Database\TableCreationTest;
 use BackEnd\Database\DBUsers\DBUsers;
 use BackEnd\Database\DBUsers\UndefinedUserID;
-use BackEnd\Database\DBUsers\InsertionException;
+use BackEnd\Database\InsertionException;
 use BackEnd\Database\DBUsers\EmailValidationException;
 
 class DBUserTest extends TableCreationTest
@@ -115,6 +115,14 @@ class DBUserTest extends TableCreationTest
         $this->assertTrue($this->table->isSessionIDValid($this->user["SESSION_ID"], $this->user["ID"]));
     }
 
+    public function testInvalidSessionID()
+    {
+        $this->table->addUser($this->user);
+        $this->user["ID"] = 1;
+        $this->user["SESSION_ID"] = "123456";
+        $this->assertFalse($this->table->isSessionIDValid($this->user["SESSION_ID"], $this->user["ID"]));
+    }
+
     public function testUpdateLastConnectionForUserID()
     {
         $this->table->addUser($this->user);
@@ -126,6 +134,17 @@ class DBUserTest extends TableCreationTest
         $row = $result->fetch_assoc();
         $this->assertEquals($this->user["LAST_CONNECTION"], $row["LAST_CONNECTION"]);
         $this->assertEquals($this->user["SESSION_ID"], $row["SESSION_ID"]);
+    }
+
+    public function testUpdateLastConnectionWithWrongDate()
+    {
+        $this->table->addUser($this->user);
+        $this->user["ID"] = 1;
+        $this->user["LAST_CONNECTION"] = "as1564w";
+        $this->user["SESSION_ID"] = bin2hex(random_bytes(16));
+        $this->expectException(\Exception::class);
+        $this->table->updateLastConnection($this->user["ID"], $this->user["LAST_CONNECTION"], $this->user["SESSION_ID"]);
+
     }
 
     public function testUpdateLastConnectionForWrongUserIDShouldThrow()
@@ -163,7 +182,7 @@ class DBUserTest extends TableCreationTest
     {
         $this->table->addUser($this->user);
         $expectedPayerID = "Palalal";
-        $this->expectException(\Exception::class);
+        $this->expectException(UndefinedUserID::class);
         $this->table->getUserFromID($expectedPayerID);
     }
 
@@ -177,7 +196,7 @@ class DBUserTest extends TableCreationTest
         unset($expectedUser["PASSWORD"]);
         unset($expectedUser["VALIDATION_ID"]);
         $obtainedUser = $this->table->getUserFromEmail($expectedUser["EMAIL"]);
-        $this->assertArraySubset($expectedUser, $obtainedUser,true);
+        $this->assertArraySubset($expectedUser, $obtainedUser, true);
     }
 
     public function testCheckIfWrongPayerEmailExistShouldThrow()
@@ -187,7 +206,23 @@ class DBUserTest extends TableCreationTest
         $this->table->getUserFromEmail("coucou@gmail.com");
     }
 
-    public function testDisconnectUser(){
+    public function testDeleteUser()
+    {
+        $this->table->addUser($this->user);
+        $this->table->deleteUserFromEmail($this->user["EMAIL"]);
+        $this->expectException(UndefinedUserEmail::class);
+        $this->table->getUserFromEmail($this->user["EMAIL"]);
+    }
+
+    public function testDeleteUserWithWrongEmail()
+    {
+        $this->table->addUser($this->user);
+        $this->expectException(UndefinedUserEmail::class);
+        $this->table->deleteUserFromEmail("123456");
+    }
+
+    public function testDisconnectUser()
+    {
         $this->table->addUser($this->user);
         $this->user["ID"] = 1;
         $this->user["LAST_CONNECTION"] = "2018-01-25 20:05:45";
@@ -198,4 +233,15 @@ class DBUserTest extends TableCreationTest
         $this->assertEquals("", $disconnectedUser["SESSION_ID"]);
     }
 
+    public function testDisconnectUserWithWrongUserID()
+    {
+        $this->table->addUser($this->user);
+        $this->user["ID"] = 1;
+        $this->user["LAST_CONNECTION"] = "2018-01-25 20:05:45";
+        $this->user["SESSION_ID"] = bin2hex(random_bytes(16));
+        $this->table->updateLastConnection($this->user["ID"], $this->user["LAST_CONNECTION"], $this->user["SESSION_ID"]);
+        $this->expectException(UndefinedUserID::class);
+        $this->user["ID"] = 4;
+        $this->table->disconnectUser($this->user["ID"]);
+    }
 }

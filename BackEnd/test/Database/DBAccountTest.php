@@ -9,6 +9,9 @@
 namespace BackEnd\Tests\Database\DBAccount;
 
 use BackEnd\Account\Account;
+use BackEnd\Database\DBAccounts\UndefinedAccountException;
+use BackEnd\Database\DBTable;
+use BackEnd\Database\DBUsers\InsertionException;
 use BackEnd\Tests\Database\TableCreationTest;
 use BackEnd\Database\DBAccounts\DBAccounts;
 use BackEnd\Database\DBAccounts\AccountDuplicationException;
@@ -17,20 +20,25 @@ use BackEnd\Database\DBAccounts\UserIDException;
 
 class DBAccountTest extends TableCreationTest
 {
+    /** @var \BackEnd\Database\DBAccounts\DBAccounts */
+    protected $table;
     private $accountName = "Savings";
     private $currentAmount = 5431;
     private $userID = 11;
     private $currencyID = 2;
+    /** @var \BackEnd\Database\DBUsers\DBUsers */
     private $usersTable;
+    /** @var \BackEnd\Database\DBCurrencies */
     private $currenciesTable;
+    /** @var \BackEnd\Account\Account */
     private $account;
 
     public function setUp()
     {
         $this->usersTable = $this->getMockBuilder(\BackEnd\Database\DBUsers::class)
-            ->disableOriginalConstructor()->setMethods(['checkIfIDExists', 'getUserFromID'])->getMock();
+            ->disableOriginalConstructor()->setMethods(['doesUserIDExist', 'getUserFromID'])->getMock();
         $this->currenciesTable = $this->getMockBuilder(\BackEnd\Database\DBCurrencies::class)
-            ->disableOriginalConstructor()->setMethods(['checkIfIDExists', 'getCurrencyFromID'])->getMock();
+            ->disableOriginalConstructor()->setMethods(['doesCurrencyIDExist', 'getCurrencyFromID'])->getMock();
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "NAME" => "char(50)",
@@ -58,10 +66,7 @@ class DBAccountTest extends TableCreationTest
 
     public function testAddAccount()
     {
-        $this->usersTable->expects($this->once())
-            ->method('checkIfIDExists')->with($this->userID)->will($this->returnValue(true));
-        $this->currenciesTable->expects($this->once())
-            ->method('checkIfIDExists')->with($this->currencyID)->will($this->returnValue(true));
+        $this->expectsExistingUserAndCurrency();
         $this->table->addAccount($this->account);
         $result = $this->driver->query("SELECT * FROM " . $this->name)->fetch_assoc();
         $this->assertEquals($this->accountName, $result["NAME"]);
@@ -70,11 +75,29 @@ class DBAccountTest extends TableCreationTest
         $this->assertEquals(1, $this->account->getTableID());
     }
 
+    protected function expectsExistingUserAndCurrency(): void
+    {
+        $this->expectsExistingUser();
+        $this->expectsExistingCurrency();
+    }
+
+    protected function expectsExistingUser(): void
+    {
+        $this->usersTable->expects($this->once())
+            ->method('doesUserIDExist')->with($this->userID)->will($this->returnValue(true));
+    }
+
+    protected function expectsExistingCurrency(): void
+    {
+        $this->currenciesTable->expects($this->once())
+            ->method('doesCurrencyIDExist')->with($this->currencyID)->will($this->returnValue(true));
+    }
+
     public function testAddAccountWithWrongUserIDShouldThrow()
     {
         $success = false;
         $this->usersTable->expects($this->once())
-            ->method('checkIfIDExists')->with($this->userID)->will($this->returnValue(false));
+            ->method('doesUserIDExist')->with($this->userID)->will($this->returnValue(false));
         try {
             $this->table->addAccount($this->account);
         } catch (UserIDException $e) {
@@ -87,10 +110,9 @@ class DBAccountTest extends TableCreationTest
     public function testAddAccountWithWrongCurrencyIDShouldThrow()
     {
         $success = false;
-        $this->usersTable->expects($this->once())
-            ->method('checkIfIDExists')->with($this->userID)->will($this->returnValue(true));
+        $this->expectsExistingUser();
         $this->currenciesTable->expects($this->once())
-            ->method('checkIfIDExists')->with($this->currencyID)->will($this->returnValue(false));
+            ->method('doesCurrencyIDExist')->with($this->currencyID)->will($this->returnValue(false));
         try {
             $this->table->addAccount($this->account);
         } catch (CurrencyIDException $e) {
@@ -103,9 +125,9 @@ class DBAccountTest extends TableCreationTest
     public function testAddAccountWithExistingName()
     {
         $this->usersTable->expects($this->exactly(2))
-            ->method('checkIfIDExists')->with($this->userID)->will($this->returnValue(true));
+            ->method('doesUserIDExist')->with($this->userID)->will($this->returnValue(true));
         $this->currenciesTable->expects($this->exactly(2))
-            ->method('checkIfIDExists')->with($this->currencyID)->will($this->returnValue(true));
+            ->method('doesCurrencyIDExist')->with($this->currencyID)->will($this->returnValue(true));
         $this->table->addAccount($this->account);
         try {
             $this->table->addAccount($this->account);
@@ -122,12 +144,24 @@ class DBAccountTest extends TableCreationTest
         $this->assertTrue(false);
     }
 
+    public function testDeleteAccountFromNameAndUser()
+    {
+        $this->expectsExistingUserAndCurrency();
+        $this->table->addAccount($this->account);
+        $this->table->deleteAccountFromNameAndUser($this->account->getName(), $this->account->getUserID());
+        $isAlreadyInDB = $this->table->doesAccountExists($this->accountName, $this->userID);
+        $this->assertFalse($isAlreadyInDB);
+    }
+
+    public function testDeleteWrongAccountShouldThrow()
+    {
+        $this->expectException(UndefinedAccountException::class);
+        $this->table->deleteAccountFromNameAndUser($this->account->getName(), $this->account->getUserID());
+    }
+
     public function testIfAccountAlreadyExistsShouldReturnTrue()
     {
-        $this->usersTable->expects($this->once())
-            ->method('checkIfIDExists')->with($this->userID)->will($this->returnValue(true));
-        $this->currenciesTable->expects($this->once())
-            ->method('checkIfIDExists')->with($this->currencyID)->will($this->returnValue(true));
+        $this->expectsExistingUserAndCurrency();
         $this->table->addAccount($this->account);
         $isAlreadyInDB = $this->table->doesAccountExists($this->accountName, $this->userID);
         $this->assertTrue($isAlreadyInDB);
@@ -141,10 +175,7 @@ class DBAccountTest extends TableCreationTest
 
     public function testGetAccountsFromUserID()
     {
-        $this->usersTable->expects($this->once())
-            ->method('checkIfIDExists')->with($this->userID)->will($this->returnValue(true));
-        $this->currenciesTable->expects($this->once())
-            ->method('checkIfIDExists')->with($this->currencyID)->will($this->returnValue(true));
+        $this->expectsExistingUserAndCurrency();
         $this->currenciesTable->expects($this->once())
             ->method('getCurrencyFromID')->with($this->currencyID)->will($this->returnValue(["NAME" => $this->account->getCurrency()]));
         $this->usersTable->expects($this->once())
@@ -154,4 +185,5 @@ class DBAccountTest extends TableCreationTest
         $this->assertEquals(1, count($accounts));
         $this->assertEquals($this->account, $accounts[0]);
     }
+
 }
