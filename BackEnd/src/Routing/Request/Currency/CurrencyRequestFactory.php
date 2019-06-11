@@ -12,6 +12,7 @@ use BackEnd\Database\Database;
 
 class CurrencyRequestFactory
 {
+    /** @var Database */
     private $database;
     public function __construct($database)
     {
@@ -23,6 +24,9 @@ class CurrencyRequestFactory
         switch($type){
             case "Create":
                 return new CurrencyCreation($this->database->getTableByName(DBTables::CURRENCIES),
+                    $postArray);
+            case "Delete":
+                return new DeleteCurrency($this->database->getTableByName(DBTables::CURRENCIES),
                     $postArray);
             default:
                 throw new \InvalidArgumentException("Request type: ".$type." not found.");

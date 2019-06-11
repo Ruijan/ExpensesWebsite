@@ -8,10 +8,11 @@
 
 namespace BackEnd\Tests\Database;
 
-use BackEnd\Database\DBCurrencies;
+use BackEnd\Database\DBCurrencies\DBCurrencies;
+use BackEnd\Database\DBCurrencies\UndefinedCurrencyException;
 use BackEnd\Database\InsertionException;
 
-class DBCurrencyTest extends TableCreationTest
+class DBCurrenciesTest extends TableCreationTest
 {
     protected $currencyName;
     protected $shortCurrencyName;
@@ -70,5 +71,18 @@ class DBCurrencyTest extends TableCreationTest
         $this->table->addCurrency($this->currencyName, $this->shortCurrencyName);
         $currency = $this->table->getCurrencyFromID(1);
         $this->assertEquals($this->currencyName, $currency["NAME"]);
+    }
+
+    public function testDeleteCurrency(){
+        $this->table->addCurrency($this->currencyName, $this->shortCurrencyName);
+        $this->table->deleteCurrency($this->currencyName, $this->shortCurrencyName);
+        $doesCurrencyExist = $this->table->doesCurrencyExist($this->currencyName, $this->shortCurrencyName);
+        $this->assertEquals(false, $doesCurrencyExist);
+    }
+
+    public function testDeleteWrongCurrency(){
+        $this->expectException(UndefinedCurrencyException::class);
+
+        $this->table->deleteCurrency($this->currencyName, $this->shortCurrencyName);
     }
 }

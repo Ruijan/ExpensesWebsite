@@ -6,10 +6,10 @@
  * Time: 10:08 PM
  */
 
-namespace BackEnd\Database;
-require_once ("DBTable.php");
+namespace BackEnd\Database\DBCurrencies;
 
-use BackEnd\Database\DBAccounts\CurrencyIDException;
+use BackEnd\Database\InsertionException;
+use BackEnd\Database\DBTable;
 
 class DBCurrencies extends DBTable
 {
@@ -46,5 +46,22 @@ class DBCurrencies extends DBTable
         $query = "SELECT ID FROM " . $this->getName() . " WHERE ID = " . $this->driver->real_escape_string($currencyID);
         $result = $this->driver->query($query);
         return $result->num_rows != 0;
+    }
+
+    public function doesCurrencyExist($name, $shortName){
+        $query = "SELECT ID FROM " . $this->getName() .
+            " WHERE NAME = '" . $this->driver->real_escape_string($name).
+            "' AND SHORT_NAME='".$this->driver->real_escape_string($shortName)."'";
+        $result = $this->driver->query($query);
+        return $result->num_rows != 0;
+    }
+
+    public function deleteCurrency($name, $shortName){
+        if(!$this->doesCurrencyExist($name, $shortName)){
+            throw new UndefinedCurrencyException($name, $shortName);
+        }
+        $query = "DELETE FROM " . $this->name . " WHERE NAME='" . $this->driver->real_escape_string($name) .
+            "' AND SHORT_NAME='".$this->driver->real_escape_string($shortName)."'";
+        $this->driver->query($query);
     }
 }
