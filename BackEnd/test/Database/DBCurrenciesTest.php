@@ -7,15 +7,18 @@
  */
 
 namespace BackEnd\Tests\Database;
-use BackEnd\Tests\Database\TableCreationTest;
-use BackEnd\Database\DBCurrencies;
 
-class DBCurrencyTest extends TableCreationTest
+use BackEnd\Database\DBCurrencies\DBCurrencies;
+use BackEnd\Database\DBCurrencies\UndefinedCurrencyException;
+use BackEnd\Database\InsertionException;
+
+class DBCurrenciesTest extends TableCreationTest
 {
     protected $currencyName;
     protected $shortCurrencyName;
 
-    public function setUp(){
+    public function setUp()
+    {
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "NAME" => "char(50)",
@@ -31,26 +34,28 @@ class DBCurrencyTest extends TableCreationTest
         $this->table = new DBCurrencies($this->database);
     }
 
-    public function initTable(){
+    public function initTable()
+    {
         $this->table->init();
     }
 
-    public function testAddCurrency(){
+    public function testAddCurrency()
+    {
         $this->table->addCurrency($this->currencyName, $this->shortCurrencyName);
-        $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();
+        $result = $this->driver->query("SELECT * FROM " . $this->name)->fetch_assoc();
         $this->assertEquals($this->currencyName, $result["NAME"]);
         $this->assertEquals($this->shortCurrencyName, $result["SHORT_NAME"]);
     }
 
-    public function testAddCurrencyTwiceShouldThrow(){
+    public function testAddCurrencyTwiceShouldThrow()
+    {
         $count = 0;
         $this->table->addCurrency($this->currencyName, $this->shortCurrencyName);
-        try{
+        try {
             $this->table->addCurrency($this->currencyName, $this->shortCurrencyName);
-        }
-        catch (\Exception $e){
-            $result = $this->driver->query("SELECT * FROM ".$this->name);
-            while($row = $result->fetch_assoc()){
+        } catch (InsertionException $e) {
+            $result = $this->driver->query("SELECT * FROM " . $this->name);
+            while ($row = $result->fetch_assoc()) {
                 $this->assertEquals($this->currencyName, $row["NAME"]);
                 $this->assertEquals($this->shortCurrencyName, $row["SHORT_NAME"]);
                 $count += 1;
@@ -61,9 +66,23 @@ class DBCurrencyTest extends TableCreationTest
         $this->assertEquals(1, $count);
     }
 
-    public function testGetCurrencyFromID(){
+    public function testGetCurrencyFromID()
+    {
         $this->table->addCurrency($this->currencyName, $this->shortCurrencyName);
         $currency = $this->table->getCurrencyFromID(1);
         $this->assertEquals($this->currencyName, $currency["NAME"]);
+    }
+
+    public function testDeleteCurrency(){
+        $this->table->addCurrency($this->currencyName, $this->shortCurrencyName);
+        $this->table->deleteCurrency($this->currencyName, $this->shortCurrencyName);
+        $doesCurrencyExist = $this->table->doesCurrencyExist($this->currencyName, $this->shortCurrencyName);
+        $this->assertEquals(false, $doesCurrencyExist);
+    }
+
+    public function testDeleteWrongCurrency(){
+        $this->expectException(UndefinedCurrencyException::class);
+
+        $this->table->deleteCurrency($this->currencyName, $this->shortCurrencyName);
     }
 }

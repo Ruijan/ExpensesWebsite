@@ -7,10 +7,13 @@
  */
 
 namespace BackEnd\Routing\Request\Connection;
-use BackEnd\Routing\Request\PostRequest;
+use BackEnd\Database\DBUsers\DBUsers;
+use BackEnd\Database\DBUsers\InsertionException;
+use BackEnd\Database\DBUsers\UndefinedUserEmail;
+use BackEnd\Routing\Request\Request;
 use BackEnd\Routing\Request\MissingParametersException;
 
-class SignUp extends PostRequest
+class SignUp extends Request
 {
     protected $email = "";
     protected $password = "";
@@ -19,47 +22,38 @@ class SignUp extends PostRequest
     protected $registeredDate = "";
     protected $lastConnection = "";
     protected $validationID = "";
+    /** @var DBUsers */
     private $usersTable;
 
-    public function __construct($usersTable)
+    public function __construct($usersTable, $data)
     {
+        $mandatoryFields = ["email", "password", "first_name", "last_name"];
+        parent::__construct($data, $mandatoryFields);
         $this->usersTable = $usersTable;
-    }
-
-    public function init(){
-        parent::init();
         $registeredDate = new \DateTime("now", new \DateTimeZone("UTC"));
         $this->registeredDate = $registeredDate->format("Y-m-d H:i:s");
         $this->lastConnection = $this->registeredDate;
         $this->validationID = $registeredDate->getTimestamp();
-        $missingParameters = array();
-
-        if($this->email == ""){
-            $missingParameters[] = "email";
-        }
-        if($this->password == ""){
-            $missingParameters[] = "password";
-        }
-        if($this->firstName == ""){
-            $missingParameters[] = "first_name";
-        }
-        if($this->lastName == ""){
-            $missingParameters[] = "last_name";
-        }
-        if(count($missingParameters) > 0){
-            throw new MissingParametersException($missingParameters, "SignUp");
-        }
     }
 
-    public function getEmail(){
-        return $this->email;
+    public function execute()
+    {
+        try{
+            $this->checkRequiredParameters();
+            $this->tryAddingUser();
+            $addedUser = $this->usersTable->getUserFromEmail($this->email);
+            $this->response["STATUS"] = "OK";
+            $this->response["DATA"] = $addedUser;
+        }catch(InsertionException | MissingParametersException | UndefinedUserEmail $exception){
+            $this->response["STATUS"] = "ERROR";
+            $this->response["ERROR_MESSAGE"] = $exception->getMessage();
+        }
+        $this->response = json_encode($this->response);
     }
 
-    public function getFirstName(){
-        return $this->firstName;
-    }
-    public function getLastName(){
-        return $this->lastName;
+
+    public function getUsersTable(){
+        return $this->usersTable;
     }
 
     public function getRegisteredDate(){
@@ -74,16 +68,19 @@ class SignUp extends PostRequest
         return $this->validationID;
     }
 
-    public function getPassword(){
-        return $this->password;
-    }
-
-    public function getUsersTable(){
-        return $this->usersTable;
-    }
-
-    public function getResponse()
+    /**
+     * @throws InsertionException
+     */
+    protected function tryAddingUser(): void
     {
-        return new \BackEnd\Routing\Response\Connection\SignUp($this, $this->usersTable);
+        $user = ["FIRST_NAME" => $this->firstName,
+            "LAST_NAME" => $this->lastName,
+            "EMAIL" => $this->email,
+            "PASSWORD" => $this->password,
+            "REGISTERED_DATE" => $this->registeredDate,
+            "LAST_CONNECTION" => $this->lastConnection,
+            "VALIDATION_ID" => $this->validationID];
+        $this->usersTable->addUser($user);
     }
+
 }

@@ -44,6 +44,13 @@ abstract class TableCreationTest extends TestCase
         $this->checkTableHeaders();
     }
 
+    public function testInitWithMissingColumn(){
+        $this->checkTableHeaders();
+        $this->driver->query("ALTER TABLE ".$this->name." DROP COLUMN EMAIL");
+        $this->initTable();
+        $this->checkTableHeaders();
+    }
+
     abstract public function createTable();
     abstract public function initTable();
 
@@ -54,7 +61,7 @@ abstract class TableCreationTest extends TestCase
         foreach($keys as $column) {
             $existingColumn[$column] = 0;
         }
-        $this->assertEquals($columns->num_rows, count($this->columns));
+        $this->assertEquals(count($this->columns), $columns->num_rows);
         foreach($columns as $column){
             $this->assertEquals($this->columns[$column["Field"]], $column["Type"]);
             $existingColumn[$column["Field"]] += 1;

@@ -12,7 +12,7 @@ use BackEnd\Database\DBUsers\UndefinedUserEmail;
 use BackEnd\Tests\Database\TableCreationTest;
 use BackEnd\Database\DBUsers\DBUsers;
 use BackEnd\Database\DBUsers\UndefinedUserID;
-use BackEnd\Database\DBUsers\InsertionException;
+use BackEnd\Database\InsertionException;
 use BackEnd\Database\DBUsers\EmailValidationException;
 
 class DBUserTest extends TableCreationTest
@@ -23,7 +23,7 @@ class DBUserTest extends TableCreationTest
         "PASSWORD" => "admin",
         "REGISTERED_DATE" => "",
         "LAST_CONNECTION" => "",
-        "VALIDATION_ID" => '26457894'];
+        "VALIDATION_ID" => '154'];
 
     public function setUp()
     {
@@ -36,7 +36,8 @@ class DBUserTest extends TableCreationTest
             "REGISTERED_DATE" => "datetime",
             "LAST_CONNECTION" => "datetime",
             "VALIDATION_ID" => "int(11)",
-            "EMAIL_VALIDATED" => "bit(1)"];
+            "EMAIL_VALIDATED" => "bit(1)",
+            "SESSION_ID" => "char(50)"];
         $this->name = "payers";
         $this->user["REGISTERED_DATE"] = new \DateTime("now", new \DateTimeZone("UTC"));
         $this->user["REGISTERED_DATE"] = $this->user["REGISTERED_DATE"]->format("Y-m-d H:i:s");
@@ -59,13 +60,6 @@ class DBUserTest extends TableCreationTest
         $result = $this->driver->query("SELECT * FROM " . $this->name)->fetch_assoc();
         $this->assertArraySubset($this->user, $result, true);
     }
-
-    /*public function testAddUserWithWrongRegisteredDate()
-    {
-        $this->user["REGISTERED_DATE"] = 'Julien';
-        $this->expectException(InsertionException::class);
-        $this->table->addUser($this->user);
-    }*/
 
     public function testAddUserTwiceShouldThrow()
     {
@@ -113,41 +107,56 @@ class DBUserTest extends TableCreationTest
         $this->assertFalse($this->table->areCredentialsValid($this->user["EMAIL"], "wrongPassword"));
     }
 
+    public function testValidSessionID()
+    {
+        $this->table->addUser($this->user);
+        $this->user["ID"] = 1;
+        $this->user["SESSION_ID"] = "0";
+        $this->assertTrue($this->table->isSessionIDValid($this->user["SESSION_ID"], $this->user["ID"]));
+    }
+
+    public function testInvalidSessionID()
+    {
+        $this->table->addUser($this->user);
+        $this->user["ID"] = 1;
+        $this->user["SESSION_ID"] = "123456";
+        $this->assertFalse($this->table->isSessionIDValid($this->user["SESSION_ID"], $this->user["ID"]));
+    }
+
     public function testUpdateLastConnectionForUserID()
     {
         $this->table->addUser($this->user);
         $this->user["ID"] = 1;
         $this->user["LAST_CONNECTION"] = "2018-01-25 20:05:45";
-        $this->table->updateLastConnection($this->user["ID"], $this->user["LAST_CONNECTION"]);
-        $result = $this->driver->query("SELECT LAST_CONNECTION FROM " . $this->name . " WHERE ID='" . $this->user["ID"] . "'");
+        $this->user["SESSION_ID"] = bin2hex(random_bytes(16));
+        $this->table->updateLastConnection($this->user["ID"], $this->user["LAST_CONNECTION"], $this->user["SESSION_ID"]);
+        $result = $this->driver->query("SELECT LAST_CONNECTION, SESSION_ID FROM " . $this->name . " WHERE ID='" . $this->user["ID"] . "'");
         $row = $result->fetch_assoc();
         $this->assertEquals($this->user["LAST_CONNECTION"], $row["LAST_CONNECTION"]);
+        $this->assertEquals($this->user["SESSION_ID"], $row["SESSION_ID"]);
     }
-
-    /*public function testUpdateLastConnectionWithWrongDataShouldThrow()
-    {
-        $this->table->addUser($this->user);
-        $this->user["ID"] = 1;
-        $this->user["LAST_CONNECTION"] = "1";
-        $this->expectException(\Exception::class);
-        $this->table->updateLastConnection($this->user["ID"], $this->user["LAST_CONNECTION"]);
-    }*/
 
     public function testUpdateLastConnectionForWrongUserIDShouldThrow()
     {
         $this->table->addUser($this->user);
         $this->user["ID"] = 2;
         $newConnectionDate = "2018-01-25 20:05:45";
+        $this->user["SESSION_ID"] = bin2hex(random_bytes(16));
         $this->expectException(\Exception::class);
-        $this->table->updateLastConnection($this->user["ID"], $newConnectionDate);
+        $this->table->updateLastConnection($this->user["ID"], $newConnectionDate, $this->user["SESSION_ID"]);
     }
 
     public function testGetUserFromID()
     {
         $this->table->addUser($this->user);
-        $this->user["ID"] = '1';
-        $this->user["EMAIL_VALIDATED"] = '0';
-        $this->assertArraySubset($this->table->getUserFromID($this->user["ID"]), $this->user, true);
+        $expectedUser = $this->user;
+        $expectedUser["ID"] = '1';
+        $expectedUser["EMAIL_VALIDATED"] = '0';
+        $expectedUser["SESSION_ID"] = '0';
+        unset($expectedUser["PASSWORD"]);
+        unset($expectedUser["VALIDATION_ID"]);
+        $obtainedUser = $this->table->getUserFromID($expectedUser["ID"]);
+        $this->assertArraySubset($expectedUser, $obtainedUser, true);
     }
 
     public function testGetUserFromWrongIDShouldThrow()
@@ -162,16 +171,21 @@ class DBUserTest extends TableCreationTest
     {
         $this->table->addUser($this->user);
         $expectedPayerID = "Palalal";
-        $this->expectException(\Exception::class);
+        $this->expectException(UndefinedUserID::class);
         $this->table->getUserFromID($expectedPayerID);
     }
 
     public function testGetUserFromEmail()
     {
         $this->table->addUser($this->user);
-        $this->user["ID"] = '1';
-        $this->user["EMAIL_VALIDATED"] = '0';
-        $this->assertArraySubset($this->table->getUserFromEmail($this->user["EMAIL"]), $this->user, true);
+        $expectedUser = $this->user;
+        $expectedUser["ID"] = '1';
+        $expectedUser["EMAIL_VALIDATED"] = '0';
+        $expectedUser["SESSION_ID"] = '0';
+        unset($expectedUser["PASSWORD"]);
+        unset($expectedUser["VALIDATION_ID"]);
+        $obtainedUser = $this->table->getUserFromEmail($expectedUser["EMAIL"]);
+        $this->assertArraySubset($expectedUser, $obtainedUser, true);
     }
 
     public function testCheckIfWrongPayerEmailExistShouldThrow()
@@ -181,4 +195,42 @@ class DBUserTest extends TableCreationTest
         $this->table->getUserFromEmail("coucou@gmail.com");
     }
 
+    public function testDeleteUser()
+    {
+        $this->table->addUser($this->user);
+        $this->table->deleteUserFromEmail($this->user["EMAIL"]);
+        $this->expectException(UndefinedUserEmail::class);
+        $this->table->getUserFromEmail($this->user["EMAIL"]);
+    }
+
+    public function testDeleteUserWithWrongEmail()
+    {
+        $this->table->addUser($this->user);
+        $this->expectException(UndefinedUserEmail::class);
+        $this->table->deleteUserFromEmail("123456");
+    }
+
+    public function testDisconnectUser()
+    {
+        $this->table->addUser($this->user);
+        $this->user["ID"] = 1;
+        $this->user["LAST_CONNECTION"] = "2018-01-25 20:05:45";
+        $this->user["SESSION_ID"] = bin2hex(random_bytes(16));
+        $this->table->updateLastConnection($this->user["ID"], $this->user["LAST_CONNECTION"], $this->user["SESSION_ID"]);
+        $this->table->disconnectUser($this->user["ID"]);
+        $disconnectedUser = $this->table->getUserFromID($this->user["ID"]);
+        $this->assertEquals("", $disconnectedUser["SESSION_ID"]);
+    }
+
+    public function testDisconnectUserWithWrongUserID()
+    {
+        $this->table->addUser($this->user);
+        $this->user["ID"] = 1;
+        $this->user["LAST_CONNECTION"] = "2018-01-25 20:05:45";
+        $this->user["SESSION_ID"] = bin2hex(random_bytes(16));
+        $this->table->updateLastConnection($this->user["ID"], $this->user["LAST_CONNECTION"], $this->user["SESSION_ID"]);
+        $this->expectException(UndefinedUserID::class);
+        $this->user["ID"] = 4;
+        $this->table->disconnectUser($this->user["ID"]);
+    }
 }

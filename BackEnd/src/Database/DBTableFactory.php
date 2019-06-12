@@ -10,13 +10,10 @@ namespace BackEnd\Database;
 use BackEnd\Database\DBCategories\DBCategories;
 use BackEnd\Database\DBSubCategories\DBSubCategories;
 use BackEnd\Database\DBUsers\DBUsers;
-use mysql_xdevapi\Exception;
-use BackEnd\Database\DBCurrencies;
+use BackEnd\Database\DBCurrencies\DBCurrencies;
 use BackEnd\Database\DBExpenses\DBExpenses;
-use BackEnd\Database\DBPayees;
 use BackEnd\Database\DBAccounts\DBAccounts;
 use BackEnd\Database\DBExpenseStates\DBExpenseStates;
-use BackEnd\Database\DBTables;
 
 class DBTableFactory
 {
