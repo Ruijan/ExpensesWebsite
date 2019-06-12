@@ -31,7 +31,7 @@ class DBAccounts extends DBTable
                         USER_ID int(11) NOT NULL,
                         CURRENCY_ID int(11) NOT NULL,
                         ADDED_DATE datetime DEFAULT '2018-01-01 00:00:00',
-                        CURRENT_AMOUNT int(11) DEFAULT 0,
+                        CURRENT_AMOUNT float DEFAULT 0,
                         PRIMARY KEY (ID)";
     }
 
@@ -115,7 +115,6 @@ class DBAccounts extends DBTable
             $row["USER"] = $user["NAME"];
             $row["CURRENCY"] = $currency["NAME"];
             $accounts[] = new Account($row);
-
         }
         return $accounts;
     }

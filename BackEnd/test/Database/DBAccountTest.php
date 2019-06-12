@@ -45,7 +45,7 @@ class DBAccountTest extends TableCreationTest
             "USER_ID" => "int(11)",
             "ADDED_DATE" => "datetime",
             "CURRENCY_ID" => "int(11)",
-            "CURRENT_AMOUNT" => "int(11)"];
+            "CURRENT_AMOUNT" => "float"];
         $this->name = "accounts";
         $currentUTCDate = new \DateTime("now", new \DateTimeZone("UTC"));
         $this->account = new Account(["name" => "Savings", "current_amount" => 5431, "user_id" => 11,
