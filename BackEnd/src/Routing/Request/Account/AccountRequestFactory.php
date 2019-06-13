@@ -28,6 +28,9 @@ class AccountRequestFactory
             case "Delete":
                 return new DeleteAccount($this->database->getTableByName(DBTables::ACCOUNTS),
                     $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
+            case "Retrieve":
+                return new RetrieveAccounts($this->database->getTableByName(DBTables::ACCOUNTS),
+                    $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
             default:
                 throw new \InvalidArgumentException("Request type: ".$type." not found.");
         }
