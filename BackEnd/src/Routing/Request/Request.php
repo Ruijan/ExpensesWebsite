@@ -36,4 +36,12 @@ abstract class Request extends ArrayToPropertiesSetter
     public function getMandatoryFields(){
         return $this->mandatoryFields;
     }
+
+    /**
+     * @param \Exception $exception
+     */
+    public function buildResponseFromException($exception){
+        $this->response["STATUS"] = "ERROR";
+        $this->response["ERROR_MESSAGE"] = $exception->getMessage();
+    }
 }

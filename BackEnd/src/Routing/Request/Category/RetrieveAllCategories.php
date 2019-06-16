@@ -46,8 +46,7 @@ class RetrieveAllCategories extends Request
             }
         }
         catch(MissingParametersException | InvalidSessionException $exception){
-            $this->response["STATUS"] = "ERROR";
-            $this->response["ERROR_MESSAGE"] = $exception->getMessage();
+            $this->buildResponseFromException($exception);
         }
         $this->response = json_encode($this->response);
     }

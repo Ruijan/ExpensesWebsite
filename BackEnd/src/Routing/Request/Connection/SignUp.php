@@ -45,8 +45,7 @@ class SignUp extends Request
             $this->response["STATUS"] = "OK";
             $this->response["DATA"] = $addedUser;
         }catch(InsertionException | MissingParametersException | UndefinedUserEmail $exception){
-            $this->response["STATUS"] = "ERROR";
-            $this->response["ERROR_MESSAGE"] = $exception->getMessage();
+            $this->buildResponseFromException($exception);
         }
         $this->response = json_encode($this->response);
     }

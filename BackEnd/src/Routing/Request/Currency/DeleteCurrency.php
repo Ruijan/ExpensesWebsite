@@ -35,8 +35,7 @@ class DeleteCurrency extends Request
             $this->currencyTable->deleteCurrency($this->name, $this->shortName);
             $this->response["STATUS"] = "OK";
         }catch(UndefinedCurrencyException $exception){
-            $this->response["STATUS"] = "ERROR";
-            $this->response["ERROR_MESSAGE"] = $exception->getMessage();
+            $this->buildResponseFromException($exception);
         }
 
         $this->response = json_encode($this->response);

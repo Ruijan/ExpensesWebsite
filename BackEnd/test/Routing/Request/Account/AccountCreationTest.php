@@ -37,7 +37,7 @@ class AccountCreationTest extends TestCase
     {
         $mandatoryFields = ["name", "session_id", "user_id", "current_amount", "currency_id"];
         $request = $this->createRequest();
-        $this->assertEquals($mandatoryFields, $request->getMandatoryFields());
+        $this->assertTrue( sizeof(array_diff($mandatoryFields, $request->getMandatoryFields())) == 0);
         $this->assertEquals($this->accountsTable, $request->getAccountsTable());
         $this->assertEquals($this->usersTable, $request->getUsersTable());
     }

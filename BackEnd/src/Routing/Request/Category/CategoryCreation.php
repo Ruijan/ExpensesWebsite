@@ -47,9 +47,7 @@ class CategoryCreation extends Request
         }
         catch(MissingParametersException | InvalidSessionException |
         \BackEnd\Database\InsertionException | \Exception $exception){
-            $this->response["STATUS"] = "ERROR";
-            $this->response["ERROR_MESSAGE"] = $exception->getMessage();
-            $this->response["TRACE"] = $exception->getTrace();
+            $this->buildResponseFromException($exception);
         }
         $this->response = json_encode($this->response);
     }

@@ -40,8 +40,7 @@ class DeleteUser extends Request
             $this->response["STATUS"] = "OK";
         }
         catch(MissingParametersException | InvalidCredentialsException | UndefinedUserEmail $exception){
-            $this->response["STATUS"] = "ERROR";
-            $this->response["ERROR_MESSAGE"] = $exception->getMessage();
+            $this->buildResponseFromException($exception);
         }
         $this->response = json_encode($this->response);
     }

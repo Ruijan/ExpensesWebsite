@@ -14,26 +14,19 @@ use BackEnd\Routing\Request\Connection\InvalidSessionException;
 use BackEnd\Routing\Request\Request;
 
 
-class DeleteAccount extends Request
+class DeleteAccount extends AccountRequest
 {
     protected $name;
-    protected $sessionId;
-    protected $userId;
-
-    /** @var \BackEnd\User */
-    protected $user;
-    /** @var DBAccounts */
-    protected $accountsTable;
-    /** @var DBUsers */
-    protected $usersTable;
 
     public function __construct($accountsTable, $usersTable, $user, $data)
     {
-        $mandatoryFields = ["name", "session_id", "user_id"];
-        parent::__construct($data, $mandatoryFields, "DeleteAccounts");
-        $this->accountsTable = $accountsTable;
-        $this->usersTable = $usersTable;
-        $this->user = $user;
+        $mandatoryFields = ["name"];
+        parent::__construct("DeleteAccounts",
+            $mandatoryFields,
+            $accountsTable,
+            $usersTable,
+            $user,
+            $data);
     }
 
     public function execute(){
@@ -47,29 +40,9 @@ class DeleteAccount extends Request
         }
         catch(MissingParametersException | InvalidSessionException |
         UndefinedAccountException $exception){
-            $this->response["STATUS"] = "ERROR";
-            $this->response["ERROR_MESSAGE"] = $exception->getMessage();
+            $this->buildResponseFromException($exception);
         }
         $this->response = json_encode($this->response);
-    }
-
-    public function getAccountsTable(){
-        return $this->accountsTable;
-    }
-
-    public function getUsersTable(){
-        return $this->usersTable;
-    }
-
-    /**
-     * @throws InvalidSessionException
-     */
-    protected function tryConnectingUser(): void
-    {
-        $this->user->connectWithSessionID($this->usersTable, $this->sessionId, $this->userId);
-        if (!$this->user->isConnected()) {
-            throw new InvalidSessionException("DeleteAccount");
-        }
     }
 
     /**

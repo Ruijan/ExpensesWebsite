@@ -35,9 +35,8 @@ class CurrencyCreation extends Request
             $this->response["STATUS"] = "OK";
             $this->response["DATA"] = array("CURRENCY_ID" => $id);
         }
-        catch(\Exception | MissingParametersException $e){
-            $this->response["STATUS"] = "ERROR";
-            $this->response["ERROR_MESSAGE"] = $e->getMessage();
+        catch(\Exception | MissingParametersException $exception){
+            $this->buildResponseFromException($exception);
         }
         $this->response = json_encode($this->response);
     }
