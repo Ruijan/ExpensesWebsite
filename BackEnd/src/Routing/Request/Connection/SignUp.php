@@ -28,7 +28,7 @@ class SignUp extends Request
     public function __construct($usersTable, $data)
     {
         $mandatoryFields = ["email", "password", "first_name", "last_name"];
-        parent::__construct($data, $mandatoryFields);
+        parent::__construct($data, $mandatoryFields, "SignUp");
         $this->usersTable = $usersTable;
         $registeredDate = new \DateTime("now", new \DateTimeZone("UTC"));
         $this->registeredDate = $registeredDate->format("Y-m-d H:i:s");

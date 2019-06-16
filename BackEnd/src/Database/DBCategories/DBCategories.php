@@ -7,9 +7,9 @@
  */
 
 namespace BackEnd\Database\DBCategories;
+use BackEnd\Category;
 use BackEnd\Database\DBTable;
-use BackEnd\Database\DBUsers\DBUsers;
-use BackEnd\Database\DBCategories\InsertionException;
+use BackEnd\Database\InsertionException;
 
 class DBCategories extends DBTable
 {
@@ -32,13 +32,17 @@ class DBCategories extends DBTable
         return $this->usersTable;
     }
 
+    /**
+     * @param Category $category
+     * @throws InsertionException
+     */
     public function addCategory($category){
-        if($this->usersTable->checkIfIDExists($category["USER_ID"]) == false){
-            throw new InsertionException($category, $this->name, "User ID does not exist.");
+        if($this->usersTable->doesUserIDExist($category->getUserID()) == false){
+            throw new InsertionException("category", $category->asDict(), $this->name, "User ID does not exist.");
         }
         $values = [];
         $indexValue = 0;
-        foreach ($category as $value) {
+        foreach ($category->asDict() as $value) {
             $values[$indexValue] = '"'.$this->driver->real_escape_string($value).'"';
             $indexValue += 1;
         }
@@ -46,7 +50,7 @@ class DBCategories extends DBTable
         $query = 'INSERT INTO '.$this->driver->real_escape_string($this->name).
             ' (NAME, USER_ID, ADDED_DATE) VALUES ('.$values.')';
         if ($this->driver->query($query) === FALSE) {
-            throw new InsertionException($category, $this->name, $this->driver->error_list[0]["error"]);
+            throw new InsertionException("category", $category->asDict(), $this->name, $this->driver->error_list[0]["error"]);
         }
     }
 
@@ -54,5 +58,15 @@ class DBCategories extends DBTable
         $query = "SELECT * FROM ".$this->getName()." WHERE ID = '".$this->driver->real_escape_string($categoryID)."'";
         $row = $this->driver->query($query)->fetch_assoc();
         return $row;
+    }
+
+    public function getAllCategories(){
+        $query = "SELECT * FROM ".$this->getName();
+        $result = $this->driver->query($query);
+        $categories = [];
+        while ($result and $row = $result->fetch_assoc()) {
+            $categories[] = $row;
+        }
+        return $categories;
     }
 }

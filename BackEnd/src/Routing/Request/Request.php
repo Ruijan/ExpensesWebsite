@@ -12,9 +12,11 @@ abstract class Request extends ArrayToPropertiesSetter
 {
     protected $response;
     protected $mandatoryFields;
-    public function __construct($data, $mandatoryFields){
+    protected $requestName;
+    public function __construct($data, $mandatoryFields, $requestName){
         parent::__construct($data);
         $this->mandatoryFields = $mandatoryFields;
+        $this->requestName = $requestName;
     }
 
     abstract public function execute();
@@ -23,7 +25,7 @@ abstract class Request extends ArrayToPropertiesSetter
     {
         $missingFields = $this->getMissingFields($this->mandatoryFields);
         if (count($missingFields) > 0) {
-            throw new MissingParametersException($missingFields, "AccountCreation");
+            throw new MissingParametersException($missingFields, $this->requestName);
         }
     }
 

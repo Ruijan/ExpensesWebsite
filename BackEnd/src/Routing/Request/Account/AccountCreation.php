@@ -39,7 +39,7 @@ class AccountCreation extends Request
     public function __construct($accountsTable, $usersTable, $user, $data)
     {
         $mandatoryFields = ["name", "session_id", "user_id", "current_amount", "currency_id"];
-        parent::__construct($data, $mandatoryFields);
+        parent::__construct($data, $mandatoryFields, "AccountCreation");
         $this->accountsTable = $accountsTable;
         $this->usersTable = $usersTable;
         $this->user = $user;

@@ -2,35 +2,34 @@
 /**
  * Created by PhpStorm.
  * User: MSI-GP60
- * Date: 6/12/2019
- * Time: 10:27 PM
+ * Date: 6/16/2019
+ * Time: 10:28 AM
  */
 
-namespace BackEnd\Routing\Request\Account;
-
-use BackEnd\Database\DBAccounts\DBAccounts;
+namespace BackEnd\Routing\Request\Category;
+use BackEnd\Database\DBCategories\DBCategories;
 use BackEnd\Database\DBUsers\DBUsers;
 use BackEnd\Routing\Request\MissingParametersException;
 use BackEnd\Routing\Request\Connection\InvalidSessionException;
 use BackEnd\Routing\Request\Request;
 
-class RetrieveAccounts extends Request
+class RetrieveAllCategories extends Request
 {
     protected $sessionId;
     protected $userId;
 
     /** @var \BackEnd\User */
     protected $user;
-    /** @var DBAccounts */
-    protected $accountsTable;
+    /** @var DBCategories */
+    protected $categoriesTable;
     /** @var DBUsers */
     protected $usersTable;
 
-    public function __construct($accountsTable, $usersTable, $user, $data)
+    public function __construct($categoriesTable, $usersTable, $user, $data)
     {
         $mandatoryFields = ["session_id", "user_id"];
-        parent::__construct($data, $mandatoryFields, "RetrieveAccounts");
-        $this->accountsTable = $accountsTable;
+        parent::__construct($data, $mandatoryFields, "RetrieveCategories");
+        $this->categoriesTable = $categoriesTable;
         $this->usersTable = $usersTable;
         $this->user = $user;
     }
@@ -39,11 +38,11 @@ class RetrieveAccounts extends Request
         try{
             $this->checkRequiredParameters();
             $this->tryConnectingUser();
-            $accounts = $this->accountsTable->getAccountsFromUserID($this->userId);
+            $categories = $this->categoriesTable->getAllCategories();
             $this->response["STATUS"] = "OK";
             $this->response["DATA"] = array();
-            foreach($accounts as $account){
-                $this->response["DATA"][] = $account->asDict();
+            foreach($categories as $category){
+                $this->response["DATA"][] = $category->asDict();
             }
         }
         catch(MissingParametersException | InvalidSessionException $exception){
@@ -53,8 +52,8 @@ class RetrieveAccounts extends Request
         $this->response = json_encode($this->response);
     }
 
-    public function getAccountsTable(){
-        return $this->accountsTable;
+    public function getCategoriesTable(){
+        return $this->categoriesTable;
     }
 
     public function getUsersTable(){
@@ -68,7 +67,7 @@ class RetrieveAccounts extends Request
     {
         $this->user->connectWithSessionID($this->usersTable, $this->sessionId, $this->userId);
         if (!$this->user->isConnected()) {
-            throw new InvalidSessionException("DeleteAccount");
+            throw new InvalidSessionException("RetrieveAllCategories");
         }
     }
 }

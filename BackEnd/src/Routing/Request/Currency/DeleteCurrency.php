@@ -24,7 +24,7 @@ class DeleteCurrency extends Request
     public function __construct($currencyTable, $data)
     {
         $mandatoryFields = ["name", "short_name"];
-        parent::__construct($data, $mandatoryFields);
+        parent::__construct($data, $mandatoryFields, "DeleteCurrency");
         $this->currencyTable = $currencyTable;
     }
 

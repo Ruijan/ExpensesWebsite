@@ -27,7 +27,7 @@ class DeleteUser extends Request
     public function __construct($usersTable, array $data)
     {
         $mandatoryFields = ["email", "password"];
-        parent::__construct($data, $mandatoryFields);
+        parent::__construct($data, $mandatoryFields, "DeleteUser");
         $this->usersTable = $usersTable;
     }
 

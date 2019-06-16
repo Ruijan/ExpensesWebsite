@@ -30,7 +30,7 @@ class SignIn extends Request
     public function __construct($usersTable, $user, $data)
     {
         $mandatoryFields = ["email", "password"];
-        parent::__construct($data, $mandatoryFields);
+        parent::__construct($data, $mandatoryFields, "SignIn");
         $this->usersTable = $usersTable;
         $this->user = $user;
     }

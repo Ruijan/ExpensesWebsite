@@ -23,7 +23,7 @@ class CurrencyCreation extends Request
     public function __construct($currenciesTable, $data)
     {
         $mandatoryFields = ["name", "short_name", "currency_dollars_change"];
-        parent::__construct($data, $mandatoryFields);
+        parent::__construct($data, $mandatoryFields, "CurrencyCreation");
         $this->currenciesTable = $currenciesTable;
     }
 

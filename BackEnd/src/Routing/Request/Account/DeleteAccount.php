@@ -30,7 +30,7 @@ class DeleteAccount extends Request
     public function __construct($accountsTable, $usersTable, $user, $data)
     {
         $mandatoryFields = ["name", "session_id", "user_id"];
-        parent::__construct($data, $mandatoryFields);
+        parent::__construct($data, $mandatoryFields, "DeleteAccounts");
         $this->accountsTable = $accountsTable;
         $this->usersTable = $usersTable;
         $this->user = $user;

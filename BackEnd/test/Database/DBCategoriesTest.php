@@ -7,25 +7,30 @@
  */
 
 namespace BackEnd\Tests\Database;
+use BackEnd\Category;
 use BackEnd\Tests\Database\TableCreationTest;
-use BackEnd\Database\DBUsers;
+use BackEnd\Database\DBUsers\DBUsers;
 use BackEnd\Database\DBCategories\DBCategories;
-use BackEnd\Database\DBCategories\InsertionException;
+use BackEnd\Database\InsertionException;
 
 class DBCategoriesTest extends TableCreationTest
 {
     private $usersTable;
-    private $category = ["NAME" => "Food", "USER_ID" => "1", "ADDED_DATE" => ""];
+    private $category;
+    private $categoryDict = ["NAME" => "Food", "USER_ID" => "1", "ADDED_DATE" => ""];
     public function setUp(){
-        $this->usersTable = $this->getMockBuilder(DBUsers::class)->disableOriginalConstructor()->setMethods(['checkIfIDExists'])->getMock();
+        $this->usersTable = $this->getMockBuilder(DBUsers::class)->disableOriginalConstructor()
+            ->setMethods(['doesUserIDExist'])->getMock();
+        $this->category = $this->getMockBuilder(Category::class)->disableOriginalConstructor()
+            ->setMethods(['getUserID', 'asDict'])->getMock();
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "NAME" => "char(50)",
             "USER_ID" => "int(11)",
             "ADDED_DATE" => "datetime"];
         $this->name = "categories";
-        $this->category["ADDED_DATE"] = new \DateTime("now", new \DateTimeZone("UTC"));
-        $this->category["ADDED_DATE"] = $this->category["ADDED_DATE"]->format("Y-m-d H:i:s");
+        $this->categoryDict["ADDED_DATE"] = new \DateTime("now", new \DateTimeZone("UTC"));
+        $this->categoryDict["ADDED_DATE"] = $this->categoryDict["ADDED_DATE"]->format("Y-m-d H:i:s");
     }
 
     public function createTable()
@@ -39,16 +44,24 @@ class DBCategoriesTest extends TableCreationTest
     }
 
     public function testAddCategory(){
+        $this->category->expects($this->once())->method("getUserID")
+            ->will($this->returnValue($this->categoryDict["USER_ID"]));
+        $this->category->expects($this->once())->method("asDict")
+            ->will($this->returnValue($this->categoryDict));
         $this->usersTable->expects($this->once())
-            ->method('checkIfIDExists')->with($this->category["USER_ID"])->will($this->returnValue(true));
+            ->method('doesUserIDExist')->with($this->categoryDict["USER_ID"])->will($this->returnValue(true));
         $this->table->addCategory($this->category);
         $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();
-        $this->assertArraySubset($this->category, $result, true);
+        $this->assertArraySubset($this->categoryDict, $result, true);
     }
 
     public function testAddCategoryWithWrongPayerIDShouldThrow(){
+        $this->category->expects($this->once())->method("getUserID")
+            ->will($this->returnValue($this->categoryDict["USER_ID"]));
+        $this->category->expects($this->once())->method("asDict")
+            ->will($this->returnValue($this->categoryDict));
         $this->usersTable->expects($this->once())
-            ->method('checkIfIDExists')->with($this->category["USER_ID"])->will($this->returnValue(false));
+            ->method('doesUserIDExist')->with($this->categoryDict["USER_ID"])->will($this->returnValue(false));
         try{
             $this->table->addCategory($this->category);
         }
@@ -60,8 +73,12 @@ class DBCategoriesTest extends TableCreationTest
     }
 
     public function testAddCategoryTwiceShouldThrow(){
+        $this->category->expects($this->exactly(2))->method("getUserID")
+            ->will($this->returnValue($this->categoryDict["USER_ID"]));
+        $this->category->expects($this->exactly(3))->method("asDict")
+            ->will($this->returnValue($this->categoryDict));
         $this->usersTable->expects($this->exactly(2))
-            ->method('checkIfIDExists')->with($this->category["USER_ID"])->will($this->returnValue(true));
+            ->method('doesUserIDExist')->with($this->categoryDict["USER_ID"])->will($this->returnValue(true));
         $this->table->addCategory($this->category);
         try{
             $this->table->addCategory($this->category);
@@ -78,17 +95,33 @@ class DBCategoriesTest extends TableCreationTest
         $count = 0;
         $result = $this->driver->query("SELECT * FROM " . $this->name);
         while ($row = $result->fetch_assoc()) {
-            $this->assertArraySubset($this->category, $row, true);
+            $this->assertArraySubset($this->categoryDict, $row, true);
             $count += 1;
         }
         $this->assertEquals($expectedNbRow, $count);
     }
 
     public function testGetCategoryFromID(){
+        $this->category->expects($this->once())->method("getUserID")
+            ->will($this->returnValue($this->categoryDict["USER_ID"]));
+        $this->category->expects($this->once())->method("asDict")
+            ->will($this->returnValue($this->categoryDict));
         $this->usersTable->expects($this->once())
-            ->method('checkIfIDExists')->with($this->category["USER_ID"])->will($this->returnValue(true));
+            ->method('doesUserIDExist')->with($this->categoryDict["USER_ID"])->will($this->returnValue(true));
         $this->table->addCategory($this->category);
         $category = $this->table->getCategoryFromID(1);
-        $this->assertEquals($this->category["NAME"] , $category["NAME"]);
+        $this->assertEquals($this->categoryDict["NAME"] , $category["NAME"]);
+    }
+
+    public function testGetAllCategories(){
+        $this->category->expects($this->once())->method("getUserID")
+            ->will($this->returnValue($this->categoryDict["USER_ID"]));
+        $this->category->expects($this->once())->method("asDict")
+            ->will($this->returnValue($this->categoryDict));
+        $this->usersTable->expects($this->once())
+            ->method('doesUserIDExist')->with($this->categoryDict["USER_ID"])->will($this->returnValue(true));
+        $this->table->addCategory($this->category);
+        $categories = $this->table->getAllCategories();
+        $this->assertEquals($this->categoryDict["NAME"] , $categories[0]["NAME"]);
     }
 }
