@@ -30,7 +30,7 @@ class SignIn extends Request
     public function __construct($usersTable, $user, $data)
     {
         $mandatoryFields = ["email", "password"];
-        parent::__construct($data, $mandatoryFields);
+        parent::__construct($data, $mandatoryFields, "SignIn");
         $this->usersTable = $usersTable;
         $this->user = $user;
     }
@@ -48,8 +48,7 @@ class SignIn extends Request
                 "EMAIL" => $this->user->getEmail(),
                 "SESSION_ID" => $this->user->getSessionID());
         }catch(InvalidCredentialsException | MissingParametersException $exception){
-            $this->response["STATUS"] = "ERROR";
-            $this->response["ERROR_MESSAGE"] = $exception->getMessage();
+            $this->buildResponseFromException($exception);
         }
         $this->response = json_encode($this->response);
     }

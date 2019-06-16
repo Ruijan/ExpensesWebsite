@@ -2,54 +2,42 @@
 /**
  * Created by PhpStorm.
  * User: MSI-GP60
- * Date: 5/13/2019
- * Time: 9:50 PM
+ * Date: 6/15/2019
+ * Time: 12:42 PM
  */
 
-namespace BackEnd\Tests\Routing\Request\Account;
-
+use BackEnd\Routing\Request\Category\CategoryCreation;
 use PHPUnit\Framework\TestCase;
-use BackEnd\Routing\Request\Account\AccountCreation;
 
-class AccountCreationTest extends TestCase
+class CategoryCreationTest extends TestCase
 {
     private $usersTable;
-    private $accountsTable;
+    private $categoriesTable;
     private $user;
-    private $account;
+    private $category;
 
     public function setUp()
     {
-        $this->account = array("name" => "Current",
-            "currency_id" => 5,
-            "current_amount" => "4061.68",
+        $this->category = array("name" => "Food",
             "user_id" => 453,
             "session_id" => "1234567891234567");
         $this->usersTable = $this->getMockBuilder(\BackEnd\Database\DBUsers\DBUsers::class)->disableOriginalConstructor()
             ->setMethods(['isUserSessionKeyValid'])->getMock();
-        $this->accountsTable = $this->getMockBuilder(\BackEnd\Database\DBAccounts\DBAccounts::class)->disableOriginalConstructor()
-            ->setMethods(['addAccount'])->getMock();
+        $this->categoriesTable = $this->getMockBuilder(\BackEnd\Database\DBCategories\DBCategories::class)->disableOriginalConstructor()
+            ->setMethods(['addCategory'])->getMock();
         $this->user = $this->getMockBuilder(\BackEnd\Database\DBUsers\DBUsers::class)->disableOriginalConstructor()
             ->setMethods(['isConnected', 'connectWithSessionID'])->getMock();
     }
-
     public function test__construct()
     {
-        $mandatoryFields = ["name", "session_id", "user_id", "current_amount", "currency_id"];
+        $mandatoryFields = ["name", "session_id", "user_id"];
         $request = $this->createRequest();
-        $this->assertTrue( sizeof(array_diff($mandatoryFields, $request->getMandatoryFields())) == 0);
-        $this->assertEquals($this->accountsTable, $request->getAccountsTable());
+        $this->assertEquals($mandatoryFields, $request->getMandatoryFields());
+        $this->assertEquals($this->categoriesTable, $request->getCategoriesTable());
         $this->assertEquals($this->usersTable, $request->getUsersTable());
     }
 
-    protected function createRequest()
-    {
-        $accountCreationRequest = new AccountCreation($this->accountsTable, $this->usersTable, $this->user, $this->account);
-        return $accountCreationRequest;
-    }
-
-
-    public function testGetResponse()
+    public function testExecute()
     {
         $request = $this->createRequest();
         $this->user->expects($this->once())
@@ -57,9 +45,9 @@ class AccountCreationTest extends TestCase
             ->with()->will($this->returnValue(true));
         $this->user->expects($this->once())
             ->method('connectWithSessionID')
-            ->with($this->usersTable, $this->account["session_id"], $this->account["user_id"]);
-        $this->accountsTable->expects($this->once())
-            ->method('addAccount');
+            ->with($this->usersTable, $this->category["session_id"], $this->category["user_id"]);
+        $this->categoriesTable->expects($this->once())
+            ->method('addCategory');
         $request->execute();
         $response = json_decode($request->getResponse(), $assoc = true);
         $this->assertEquals("OK", $response["STATUS"]);
@@ -80,7 +68,7 @@ class AccountCreationTest extends TestCase
 
     public function testInitializationWithMissingParameters()
     {
-        $this->account = array();
+        $this->category = array();
         $request = $this->createRequest();
         $request->execute();
         $response = json_decode($request->getResponse(), $assoc = true );
@@ -90,4 +78,11 @@ class AccountCreationTest extends TestCase
             $this->assertContains($field, $response["ERROR_MESSAGE"]);
         }
     }
+
+    protected function createRequest()
+    {
+        $request = new CategoryCreation($this->categoriesTable, $this->usersTable, $this->user, $this->category);
+        return $request;
+    }
+
 }

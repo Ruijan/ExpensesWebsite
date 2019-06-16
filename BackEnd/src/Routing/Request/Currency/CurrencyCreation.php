@@ -23,7 +23,7 @@ class CurrencyCreation extends Request
     public function __construct($currenciesTable, $data)
     {
         $mandatoryFields = ["name", "short_name", "currency_dollars_change"];
-        parent::__construct($data, $mandatoryFields);
+        parent::__construct($data, $mandatoryFields, "CurrencyCreation");
         $this->currenciesTable = $currenciesTable;
     }
 
@@ -35,9 +35,8 @@ class CurrencyCreation extends Request
             $this->response["STATUS"] = "OK";
             $this->response["DATA"] = array("CURRENCY_ID" => $id);
         }
-        catch(\Exception | MissingParametersException $e){
-            $this->response["STATUS"] = "ERROR";
-            $this->response["ERROR_MESSAGE"] = $e->getMessage();
+        catch(\Exception | MissingParametersException $exception){
+            $this->buildResponseFromException($exception);
         }
         $this->response = json_encode($this->response);
     }
