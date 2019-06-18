@@ -8,7 +8,7 @@
 
 namespace BackEnd\Database\DBSubCategories;
 use BackEnd\Database\DBTable;
-use BackEnd\Database\DBSubCategories\InsertionException;
+use BackEnd\Database\InsertionException;
 
 class DBSubCategories extends DBTable
 {
@@ -40,10 +40,12 @@ class DBSubCategories extends DBTable
 
     public function addSubCategory($subCategory){
         if($this->dbPayers->checkIfIDExists($subCategory["USER_ID"]) == false){
-            throw new InsertionException($subCategory, $this->name, "Payer ID does not exist.");
+            throw new InsertionException("SubCategory",
+                $subCategory, $this->name, "Payer ID does not exist.");
         }
         if($this->dbCategories->checkIfCategoryIDExists($subCategory["PARENT_ID"]) == false){
-            throw new InsertionException($subCategory, $this->name, "Parent Category ID does not exist.");
+            throw new InsertionException("SubCategory",
+                $subCategory, $this->name, "Parent Category ID does not exist.");
         }
         $values = [];
         $indexValue = 0;

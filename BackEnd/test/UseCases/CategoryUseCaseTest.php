@@ -8,7 +8,7 @@
 
 namespace BackEnd\Tests\UseCases;
 
-use BackEnd\Routing\Request\Category\CategoryCreation;
+use BackEnd\Routing\Request\Category\SubCategoryCreation;
 use PHPUnit\Framework\TestCase;
 use BackEnd\Application;
 use BackEnd\Database\Database;
@@ -64,7 +64,7 @@ class CategoryUseCaseTest extends TestCase
     }
 
     public function createCategory($data){
-        $request = new CategoryCreation($this->db->getTableByName(DBTables::CATEGORIES),
+        $request = new SubCategoryCreation($this->db->getTableByName(DBTables::CATEGORIES),
             $this->db->getTableByName(DBTables::USERS),
             new User(),
             $data);

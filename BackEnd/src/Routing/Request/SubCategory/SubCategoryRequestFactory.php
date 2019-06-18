@@ -13,7 +13,7 @@ use BackEnd\Database\DBTables;
 use BackEnd\User;
 
 
-class CategoryRequestFactory
+class SubCategoryRequestFactory
 {
     /** @var Database */
     private $database;

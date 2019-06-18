@@ -12,7 +12,7 @@ use \BackEnd\Routing\Request\Category\SubCategoryCreation;
 use BackEnd\Database\DBTables;
 use BackEnd\Database\Database;
 
-class CategoryRequestFactoryTest extends TestCase
+class SubCategoryRequestFactoryTest extends TestCase
 {
     private $database;
 

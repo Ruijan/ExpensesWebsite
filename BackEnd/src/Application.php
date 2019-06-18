@@ -10,7 +10,7 @@ namespace BackEnd;
 use BackEnd\Database\DBTableFactory;
 use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
-use BackEnd\Routing\Request\Category\CategoryRequestFactory;
+use BackEnd\Routing\Request\Category\SubCategoryRequestFactory;
 use BackEnd\Routing\Request\Connection\ConnectionRequestFactory;
 use BackEnd\Routing\Request\Account\AccountRequestFactory;
 use BackEnd\Routing\Request\Currency\CurrencyRequestFactory;
@@ -56,7 +56,7 @@ class Application
         $connectionRequestFactory = new ConnectionRequestFactory($this->database);
         $accountRequestFactory = new AccountRequestFactory($this->database);
         $currencyRequestFactory = new CurrencyRequestFactory($this->database);
-        $categoryRequestFactory = new CategoryRequestFactory($this->database);
+        $categoryRequestFactory = new SubCategoryRequestFactory($this->database);
         $this->router = new Router(new ServerProperties(),
             ["connection" => $connectionRequestFactory,
                 "account" => $accountRequestFactory,

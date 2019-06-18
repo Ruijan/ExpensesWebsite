@@ -13,7 +13,7 @@ use BackEnd\Database\DBUsers\DBUsers;
 use BackEnd\Database\DBCategories\DBCategories;
 use BackEnd\User;
 
-class RetrieveAllCategoriesTest extends TestCase
+class RetrieveAllSubCategoriesTest extends TestCase
 {
     protected $categoriesTable;
     protected $usersTable;
