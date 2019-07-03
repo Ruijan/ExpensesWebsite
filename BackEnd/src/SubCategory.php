@@ -11,6 +11,7 @@ namespace BackEnd;
 
 class SubCategory
 {
+    protected $id;
     protected $name;
     protected $userID;
     protected $addedDate;
@@ -24,7 +25,10 @@ class SubCategory
     }
 
     public function asDict(){
-        return array("name" => $this->name,
+        return array(
+            "id" => $this->id,
+            "name" => $this->name,
+            "parent_id" => $this->parentID,
             "user_id" => $this->userID,
             "added_date" => $this->addedDate);
     }
@@ -37,7 +41,15 @@ class SubCategory
         return $this->userID;
     }
 
+    public function getParentID(){
+        return $this->parentID;
+    }
+
     public function getAddedDate(){
         return $this->addedDate;
+    }
+
+    public function setID(){
+        return $this->id;
     }
 }

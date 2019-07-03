@@ -22,6 +22,7 @@ class CategoryCreation extends Request
     protected $userId;
     /** @var DBCategories */
     protected $categoriesTable;
+    /** @var  Category*/
     protected $category;
     /** @var User */
     protected $user;
@@ -43,7 +44,7 @@ class CategoryCreation extends Request
             $this->tryConnectingUser();
             $this->tryAddingCategory();
             $this->response["STATUS"] = "OK";
-            $this->response["DATA"] = $this->category;
+            $this->response["DATA"] = $this->category->asDict();
         }
         catch(MissingParametersException | InvalidSessionException |
         \BackEnd\Database\InsertionException | \Exception $exception){

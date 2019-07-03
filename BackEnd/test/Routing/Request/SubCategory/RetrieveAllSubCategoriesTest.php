@@ -6,30 +6,30 @@
  * Time: 7:29 PM
  */
 
-use BackEnd\Routing\Request\Category\RetrieveAllSubCategories;
+use BackEnd\Routing\Request\SubCategory\RetrieveAllSubCategories;
 use PHPUnit\Framework\TestCase;
-use BackEnd\Category;
+use BackEnd\SubCategory;
 use BackEnd\Database\DBUsers\DBUsers;
-use BackEnd\Database\DBCategories\DBCategories;
+use BackEnd\Database\DBSubCategories\DBSubCategories;
 use BackEnd\User;
 
 class RetrieveAllSubCategoriesTest extends TestCase
 {
-    protected $categoriesTable;
+    protected $subCategoriesTable;
     protected $usersTable;
     protected $user;
     protected $data;
-    protected $category;
+    protected $subCategory;
 
     public function setUp(){
-        $this->category = $this->getMockBuilder(Category::class)->disableOriginalConstructor()
+        $this->subCategory = $this->getMockBuilder(SubCategory::class)->disableOriginalConstructor()
             ->setMethods(['asDict'])->getMock();
         $this->data = array("user_id" => 453,
             "session_id" => "1234567891234567");
         $this->usersTable = $this->getMockBuilder(DBUsers::class)->disableOriginalConstructor()
             ->setMethods(['isUserSessionKeyValid'])->getMock();
-        $this->categoriesTable = $this->getMockBuilder(DBCategories::class)->disableOriginalConstructor()
-            ->setMethods(['getAllCategories'])->getMock();
+        $this->subCategoriesTable = $this->getMockBuilder(DBSubCategories::class)->disableOriginalConstructor()
+            ->setMethods(['getAllSubCategories'])->getMock();
         $this->user = $this->getMockBuilder(User::class)->disableOriginalConstructor()
             ->setMethods(['isConnected', 'connectWithSessionID'])->getMock();
     }
@@ -38,7 +38,7 @@ class RetrieveAllSubCategoriesTest extends TestCase
         $mandatoryFields = ["session_id", "user_id"];
         $request = $this->createRequest();
         $this->assertEquals($mandatoryFields, $request->getMandatoryFields());
-        $this->assertEquals($this->categoriesTable, $request->getCategoriesTable());
+        $this->assertEquals($this->subCategoriesTable, $request->getCategoriesTable());
         $this->assertEquals($this->usersTable, $request->getUsersTable());
     }
 
@@ -56,12 +56,12 @@ class RetrieveAllSubCategoriesTest extends TestCase
         $this->user->expects($this->once())
             ->method('connectWithSessionID')
             ->with($this->usersTable, $this->data["session_id"], $this->data["user_id"]);
-        $this->category->expects($this->once())
+        $this->subCategory->expects($this->once())
             ->method('asDict')
             ->with()->will($this->returnValue($category));
-        $this->categoriesTable->expects($this->once())
-            ->method('getAllCategories')
-            ->with()->will($this->returnValue(array($this->category)));
+        $this->subCategoriesTable->expects($this->once())
+            ->method('getAllSubCategories')
+            ->with()->will($this->returnValue(array($this->subCategory)));
         $request->execute();
         $response = json_decode($request->getResponse(), $assoc = true);
         if($response["STATUS"] == "ERROR"){
@@ -99,7 +99,7 @@ class RetrieveAllSubCategoriesTest extends TestCase
     }
 
     protected function createRequest(){
-        $request = new RetrieveAllSubCategories($this->categoriesTable, $this->usersTable, $this->user, $this->data);
+        $request = new RetrieveAllSubCategories($this->subCategoriesTable, $this->usersTable, $this->user, $this->data);
         return $request;
     }
 }

@@ -27,7 +27,7 @@ class SubCategoryCreation extends Request
     protected $categoriesTable;
     /** @var DBSubCategories */
     protected $subCategoriesTable;
-    protected $category;
+    protected $subCategory;
     /** @var User */
     protected $user;
     /** @var DBUsers */
@@ -49,7 +49,7 @@ class SubCategoryCreation extends Request
             $this->tryConnectingUser();
             $this->tryAddingSubCategory();
             $this->response["STATUS"] = "OK";
-            $this->response["DATA"] = $this->category;
+            $this->response["DATA"] = $this->subCategory->asDict();
         }
         catch(MissingParametersException | InvalidSessionException |
         \BackEnd\Database\InsertionException  $exception){
@@ -88,8 +88,8 @@ class SubCategoryCreation extends Request
     {
         $addedDate = new \DateTime("now", new \DateTimeZone("UTC"));
         $addedDate = $addedDate->format("Y-m-d H:i:s");
-        $this->category = new SubCategory($this->name, $this->parentId, $this->userId, $addedDate);
+        $this->subCategory = new SubCategory($this->name, $this->parentId, $this->userId, $addedDate);
 
-        $this->subCategoriesTable->addSubCategory($this->category);
+        $this->subCategoriesTable->addSubCategory($this->subCategory);
     }
 }

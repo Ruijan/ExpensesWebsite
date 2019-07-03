@@ -6,7 +6,7 @@
  * Time: 12:42 PM
  */
 
-use BackEnd\Routing\Request\Category\SubCategoryCreation;
+use BackEnd\Routing\Request\Category\CategoryCreation;
 use PHPUnit\Framework\TestCase;
 
 class CategoryCreationTest extends TestCase
@@ -81,7 +81,7 @@ class CategoryCreationTest extends TestCase
 
     protected function createRequest()
     {
-        $request = new SubCategoryCreation($this->categoriesTable, $this->usersTable, $this->user, $this->category);
+        $request = new CategoryCreation($this->categoriesTable, $this->usersTable, $this->user, $this->category);
         return $request;
     }
 

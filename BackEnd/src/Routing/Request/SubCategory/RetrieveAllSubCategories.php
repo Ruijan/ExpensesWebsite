@@ -6,8 +6,9 @@
  * Time: 10:28 AM
  */
 
-namespace BackEnd\Routing\Request\Category;
+namespace BackEnd\Routing\Request\SubCategory;
 use BackEnd\Database\DBCategories\DBCategories;
+use BackEnd\Database\DBSubCategories\DBSubCategories;
 use BackEnd\Database\DBUsers\DBUsers;
 use BackEnd\Routing\Request\MissingParametersException;
 use BackEnd\Routing\Request\Connection\InvalidSessionException;
@@ -20,18 +21,15 @@ class RetrieveAllSubCategories extends Request
 
     /** @var \BackEnd\User */
     protected $user;
-    /** @var DBCategories */
-    protected $categoriesTable;
     /** @var DBSubCategories */
     protected $subCategoriesTable;
     /** @var DBUsers */
     protected $usersTable;
 
-    public function __construct($subCategoriesTable, $categoriesTable, $usersTable, $user, $data)
+    public function __construct($subCategoriesTable, $usersTable, $user, $data)
     {
         $mandatoryFields = ["session_id", "user_id"];
         parent::__construct($data, $mandatoryFields, "RetrieveSubCategories");
-        $this->categoriesTable = $categoriesTable;
         $this->subCategoriesTable = $subCategoriesTable;
         $this->usersTable = $usersTable;
         $this->user = $user;
@@ -41,11 +39,11 @@ class RetrieveAllSubCategories extends Request
         try{
             $this->checkRequiredParameters();
             $this->tryConnectingUser();
-            $categories = $this->categoriesTable->getAllCategories();
+            $subCategories = $this->subCategoriesTable->getAllSubCategories();
             $this->response["STATUS"] = "OK";
             $this->response["DATA"] = array();
-            foreach($categories as $category){
-                $this->response["DATA"][] = $category->asDict();
+            foreach($subCategories as $subCategory){
+                $this->response["DATA"][] = $subCategory->asDict();
             }
         }
         catch(MissingParametersException | InvalidSessionException $exception){
@@ -55,7 +53,7 @@ class RetrieveAllSubCategories extends Request
     }
 
     public function getCategoriesTable(){
-        return $this->categoriesTable;
+        return $this->subCategoriesTable;
     }
 
     public function getUsersTable(){

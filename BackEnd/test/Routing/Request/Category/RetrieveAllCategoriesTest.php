@@ -6,7 +6,7 @@
  * Time: 7:29 PM
  */
 
-use BackEnd\Routing\Request\Category\RetrieveAllSubCategories;
+use BackEnd\Routing\Request\Category\RetrieveAllCategories;
 use PHPUnit\Framework\TestCase;
 use BackEnd\Category;
 use BackEnd\Database\DBUsers\DBUsers;
@@ -99,7 +99,7 @@ class RetrieveAllCategoriesTest extends TestCase
     }
 
     protected function createRequest(){
-        $request = new RetrieveAllSubCategories($this->categoriesTable, $this->usersTable, $this->user, $this->data);
+        $request = new RetrieveAllCategories($this->categoriesTable, $this->usersTable, $this->user, $this->data);
         return $request;
     }
 }

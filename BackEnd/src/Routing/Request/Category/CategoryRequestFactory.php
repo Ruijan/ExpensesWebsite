@@ -28,7 +28,10 @@ class CategoryRequestFactory
         $postArray = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
         switch ($type) {
             case "Create":
-                return new SubCategoryCreation($this->database->getTableByName(DBTables::CATEGORIES),
+                return new CategoryCreation($this->database->getTableByName(DBTables::CATEGORIES),
+                    $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
+            case "RetrieveAll":
+                return new RetrieveAllCategories($this->database->getTableByName(DBTables::CATEGORIES),
                     $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
             default:
                 throw new \InvalidArgumentException("Request type: " . $type . " not found.");
