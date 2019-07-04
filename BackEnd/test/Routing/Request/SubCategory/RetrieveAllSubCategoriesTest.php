@@ -38,7 +38,7 @@ class RetrieveAllSubCategoriesTest extends TestCase
         $mandatoryFields = ["session_id", "user_id"];
         $request = $this->createRequest();
         $this->assertEquals($mandatoryFields, $request->getMandatoryFields());
-        $this->assertEquals($this->subCategoriesTable, $request->getCategoriesTable());
+        $this->assertEquals($this->subCategoriesTable, $request->getSubCategoriesTable());
         $this->assertEquals($this->usersTable, $request->getUsersTable());
     }
 

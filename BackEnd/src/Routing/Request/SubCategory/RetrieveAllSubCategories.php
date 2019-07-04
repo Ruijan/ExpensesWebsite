@@ -52,10 +52,6 @@ class RetrieveAllSubCategories extends Request
         $this->response = json_encode($this->response);
     }
 
-    public function getCategoriesTable(){
-        return $this->subCategoriesTable;
-    }
-
     public function getUsersTable(){
         return $this->usersTable;
     }

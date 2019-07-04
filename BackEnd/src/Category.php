@@ -30,10 +30,6 @@ class Category
             "added_date" => $this->addedDate);
     }
 
-    public function asPrintableDict(){
-
-    }
-
     public function getName(){
         return $this->name;
     }
