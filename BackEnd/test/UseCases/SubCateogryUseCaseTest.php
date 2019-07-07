@@ -8,26 +8,28 @@
 
 namespace BackEnd\Tests\UseCases;
 
-use BackEnd\Routing\Request\Category\CategoryCreation;
-use BackEnd\Routing\Request\SubCategory\SubCategoryCreation;
-use BackEnd\Routing\Request\SubCategory\RetrieveAllSubCategories;
-use PHPUnit\Framework\TestCase;
 use BackEnd\Application;
 use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
+use BackEnd\Routing\Request\Category\CategoryCreation;
+use BackEnd\Routing\Request\SubCategory\RetrieveAllSubCategories;
+use BackEnd\Routing\Request\SubCategory\SubCategoryCreation;
 use BackEnd\User;
+use PHPUnit\Framework\TestCase;
 
 class SubCateogryUseCaseTest extends TestCase
 {
     /** @var Database */
     private $db;
 
-    public function setUp(){
+    public function setUp()
+    {
         $app = new Application();
         $this->db = $app->getDatabase();
     }
 
-    public function testSubCategoryPipeline(){
+    public function testSubCategoryPipeline()
+    {
         $user = array("email" => "test@example.com",
             "password" => "12345678",
             "first_name" => "juju",
@@ -57,7 +59,8 @@ class SubCateogryUseCaseTest extends TestCase
         $this->assertEquals("OK", $answerUserDeletion["STATUS"]);
     }
 
-    private function signUp($data){
+    private function signUp($data)
+    {
         $request = new \BackEnd\Routing\Request\Connection\SignUp(
             $this->db->getTableByName(DBTables::USERS),
             $data);
@@ -65,7 +68,8 @@ class SubCateogryUseCaseTest extends TestCase
         return json_decode($request->getResponse(), true);
     }
 
-    private function signIn($data){
+    private function signIn($data)
+    {
         $request = new \BackEnd\Routing\Request\Connection\SignIn(
             $this->db->getTableByName(DBTables::USERS),
             new User(),
@@ -74,7 +78,8 @@ class SubCateogryUseCaseTest extends TestCase
         return json_decode($request->getResponse(), true);
     }
 
-    public function createCategory($data){
+    public function createCategory($data)
+    {
         $request = new CategoryCreation($this->db->getTableByName(DBTables::CATEGORIES),
             $this->db->getTableByName(DBTables::USERS),
             new User(),
@@ -83,7 +88,8 @@ class SubCateogryUseCaseTest extends TestCase
         return json_decode($request->getResponse(), true);
     }
 
-    public function createSubCategory($data){
+    public function createSubCategory($data)
+    {
         $request = new SubCategoryCreation($this->db->getTableByName(DBTables::SUBCATEGORIES),
             $this->db->getTableByName(DBTables::CATEGORIES),
             $this->db->getTableByName(DBTables::USERS),
@@ -93,7 +99,8 @@ class SubCateogryUseCaseTest extends TestCase
         return json_decode($request->getResponse(), true);
     }
 
-    public function retrieveAllSubCategories($data){
+    public function retrieveAllSubCategories($data)
+    {
         $request = new RetrieveAllSubCategories($this->db->getTableByName(DBTables::SUBCATEGORIES),
             $this->db->getTableByName(DBTables::USERS),
             new User(),
@@ -102,7 +109,8 @@ class SubCateogryUseCaseTest extends TestCase
         return json_decode($request->getResponse(), true);
     }
 
-    private function deleteUser($data){
+    private function deleteUser($data)
+    {
         $request = new \BackEnd\Routing\Request\Connection\DeleteUser(
             $this->db->getTableByName(DBTables::USERS),
             $data);

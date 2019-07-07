@@ -9,47 +9,31 @@
 namespace BackEnd;
 
 
-class SubCategory
+class SubCategory extends Category
 {
-    protected $id;
-    protected $name;
-    protected $userID;
-    protected $addedDate;
-    protected $parentID;
+    protected $subCategoryID;
 
-    public function __construct($name, $parentID, $userID, $addedDate){
-        $this->name = $name;
-        $this->parentID = $parentID;
-        $this->userID = $userID;
-        $this->addedDate = $addedDate;
+    public function __construct($name, $subCategoryID, $userID, $addedDate){
+        parent::__construct($name, $userID, $addedDate);
+        $this->subCategoryID = $subCategoryID;
     }
 
     public function asDict(){
         return array(
-            "id" => $this->id,
+            "id" => $this->subCategoryID,
             "name" => $this->name,
-            "parent_id" => $this->parentID,
+            "parent_id" => $this->categoryID,
             "user_id" => $this->userID,
             "added_date" => $this->addedDate);
     }
 
-    public function getName(){
-        return $this->name;
-    }
-
-    public function getUserID(){
-        return $this->userID;
-    }
-
     public function getParentID(){
-        return $this->parentID;
+        return $this->subCategoryID;
     }
 
-    public function getAddedDate(){
-        return $this->addedDate;
+    public function setID($subCategoryID)
+    {
+        $this->subCategoryID = $subCategoryID;
     }
 
-    public function setID(){
-        return $this->id;
-    }
 }
