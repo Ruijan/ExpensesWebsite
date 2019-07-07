@@ -6,33 +6,38 @@
  * Time: 10:29 PM
  */
 
-namespace BackEnd\Routing\Request\Category;
+namespace BackEnd\Routing\Request\SubCategory;
 use BackEnd\Category;
 use BackEnd\Database\DBCategories\DBCategories;
+use BackEnd\Database\DBSubCategories\DBSubCategories;
 use BackEnd\Database\DBUsers\DBUsers;
 use BackEnd\Routing\Request\Request;
 use BackEnd\Routing\Request\Connection\InvalidSessionException;
 use BackEnd\Routing\Request\MissingParametersException;
+use BackEnd\SubCategory;
 use BackEnd\User;
 
-class CategoryCreation extends Request
+class SubCategoryCreation extends Request
 {
     protected $name;
+    protected $parentId;
     protected $sessionId;
     protected $userId;
     /** @var DBCategories */
     protected $categoriesTable;
-    /** @var  Category*/
-    protected $category;
+    /** @var DBSubCategories */
+    protected $subCategoriesTable;
+    protected $subCategory;
     /** @var User */
     protected $user;
     /** @var DBUsers */
     protected $usersTable;
-    public function __construct($categoriesTable, $usersTable, $user, $data)
+    public function __construct($subCategoriesTable, $categoriesTable, $usersTable, $user, $data)
     {
-        $mandatoryFields = ["name", "session_id", "user_id"];
-        parent::__construct($data, $mandatoryFields, "CategoryCreation");
+        $mandatoryFields = ["name", "parent_id", "session_id", "user_id"];
+        parent::__construct($data, $mandatoryFields, "SubCategoryCreation");
         $this->categoriesTable = $categoriesTable;
+        $this->subCategoriesTable = $subCategoriesTable;
         $this->usersTable = $usersTable;
         $this->user = $user;
     }
@@ -40,17 +45,21 @@ class CategoryCreation extends Request
     public function execute(): void{
         $this->response = [];
         try{
-            $this->checkRequiredParameters("CategoryCreation");
+            $this->checkRequiredParameters();
             $this->tryConnectingUser();
-            $this->tryAddingCategory();
+            $this->tryAddingSubCategory();
             $this->response["STATUS"] = "OK";
-            $this->response["DATA"] = $this->category->asDict();
+            $this->response["DATA"] = $this->subCategory->asDict();
         }
         catch(MissingParametersException | InvalidSessionException |
-        \BackEnd\Database\InsertionException | \Exception $exception){
+        \BackEnd\Database\InsertionException  $exception){
             $this->buildResponseFromException($exception);
         }
         $this->response = json_encode($this->response);
+    }
+
+    public function getSubCategoriesTable(){
+        return $this->subCategoriesTable;
     }
 
     public function getCategoriesTable(){
@@ -68,19 +77,19 @@ class CategoryCreation extends Request
     {
         $this->user->connectWithSessionID($this->usersTable, $this->sessionId, $this->userId);
         if (!$this->user->isConnected()) {
-            throw new InvalidSessionException("CategoryCreation");
+            throw new InvalidSessionException($this->requestName);
         }
     }
 
     /**
      * @throws \BackEnd\Database\InsertionException
      */
-    protected function tryAddingCategory(): void
+    protected function tryAddingSubCategory(): void
     {
         $addedDate = new \DateTime("now", new \DateTimeZone("UTC"));
         $addedDate = $addedDate->format("Y-m-d H:i:s");
-        $this->category = new Category($this->name, $this->userId, $addedDate);
+        $this->subCategory = new SubCategory($this->name, $this->parentId, $this->userId, $addedDate);
 
-        $this->categoriesTable->addCategory($this->category);
+        $this->subCategoriesTable->addSubCategory($this->subCategory);
     }
 }

@@ -132,7 +132,9 @@ class DBUserTest extends TableCreationTest
         $this->table->updateLastConnection($this->user["ID"], $this->user["LAST_CONNECTION"], $this->user["SESSION_ID"]);
         $result = $this->driver->query("SELECT LAST_CONNECTION, SESSION_ID FROM " . $this->name . " WHERE ID='" . $this->user["ID"] . "'");
         $row = $result->fetch_assoc();
-        $this->assertEquals($this->user["LAST_CONNECTION"], $row["LAST_CONNECTION"]);
+        $expectedDate = \DateTime::createFromFormat('Y-m-d H:i:s', $this->user["LAST_CONNECTION"]);
+        $returnedDate = \DateTime::createFromFormat('Y-m-d H:i:s', $row["LAST_CONNECTION"]);
+        $this->assertTrue($expectedDate->diff($returnedDate)->s <= 1);
         $this->assertEquals($this->user["SESSION_ID"], $row["SESSION_ID"]);
     }
 

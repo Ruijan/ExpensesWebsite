@@ -11,6 +11,7 @@ namespace BackEnd;
 
 class Category
 {
+    protected $categoryID;
     protected $name;
     protected $userID;
     protected $addedDate;
@@ -22,7 +23,9 @@ class Category
     }
 
     public function asDict(){
-        return array("name" => $this->name,
+        return array(
+            "category_id" => $this->categoryID,
+            "name" => $this->name,
             "user_id" => $this->userID,
             "added_date" => $this->addedDate);
     }
@@ -37,5 +40,9 @@ class Category
 
     public function getAddedDate(){
         return $this->addedDate;
+    }
+
+    public function setID($categoryID){
+        $this->categoryID = $categoryID;
     }
 }

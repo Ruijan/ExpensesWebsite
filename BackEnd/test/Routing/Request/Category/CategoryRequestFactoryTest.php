@@ -31,6 +31,16 @@ class CategoryRequestFactoryTest extends TestCase
         $this->assertEquals(CategoryCreation::class, get_class($request));
     }
 
+    public function testCreateRetrieveAllCategoriesRequest()
+    {
+        $this->database->expects($this->exactly(2))
+            ->method('getTableByName')
+            ->withConsecutive([DBTables::CATEGORIES], [DBTables::USERS]);
+        $factory = new CategoryRequestFactory($this->database);
+        $request = $factory->createRequest("RetrieveAll");
+        $this->assertEquals(\BackEnd\Routing\Request\Category\RetrieveAllCategories::class, get_class($request));
+    }
+
     public function test__construct()
     {
         $factory = new CategoryRequestFactory($this->database);

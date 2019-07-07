@@ -11,6 +11,7 @@ use BackEnd\Database\DBTableFactory;
 use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
 use BackEnd\Routing\Request\Category\CategoryRequestFactory;
+use BackEnd\Routing\Request\SubCategory\SubCategoryRequestFactory;
 use BackEnd\Routing\Request\Connection\ConnectionRequestFactory;
 use BackEnd\Routing\Request\Account\AccountRequestFactory;
 use BackEnd\Routing\Request\Currency\CurrencyRequestFactory;
@@ -57,11 +58,13 @@ class Application
         $accountRequestFactory = new AccountRequestFactory($this->database);
         $currencyRequestFactory = new CurrencyRequestFactory($this->database);
         $categoryRequestFactory = new CategoryRequestFactory($this->database);
+        $subCategoryRequestFactory = new SubCategoryRequestFactory($this->database);
         $this->router = new Router(new ServerProperties(),
             ["connection" => $connectionRequestFactory,
                 "account" => $accountRequestFactory,
                 "currency" => $currencyRequestFactory,
-                "category" => $categoryRequestFactory]);
+                "category" => $categoryRequestFactory,
+                "sub_category" => $subCategoryRequestFactory]);
     }
 
     private function getDBParameters(): array{

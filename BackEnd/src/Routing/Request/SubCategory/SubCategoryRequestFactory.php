@@ -6,14 +6,15 @@
  * Time: 9:42 AM
  */
 
-namespace BackEnd\Routing\Request\Category;
+namespace BackEnd\Routing\Request\SubCategory;
 
 use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
 use BackEnd\User;
+use BackEnd\Routing\Request\SubCategory\SubCategoryCreation;
 
 
-class CategoryRequestFactory
+class SubCategoryRequestFactory
 {
     /** @var Database */
     private $database;
@@ -28,12 +29,14 @@ class CategoryRequestFactory
         $postArray = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
         switch ($type) {
             case "Create":
-                return new CategoryCreation($this->database->getTableByName(DBTables::CATEGORIES),
+                return new SubCategoryCreation($this->database->getTableByName(DBTables::SUBCATEGORIES),
+                    $this->database->getTableByName(DBTables::CATEGORIES),
                     $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
-            case "RetrieveAll":
-                return new RetrieveAllCategories($this->database->getTableByName(DBTables::CATEGORIES),
-                    $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
-            default:
+                case "RetrieveAll":
+                    return new RetrieveAllSubCategories($this->database->getTableByName(DBTables::SUBCATEGORIES),
+                        $this->database->getTableByName(DBTables::CATEGORIES),
+                        $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
+                default:
                 throw new \InvalidArgumentException("Request type: " . $type . " not found.");
         }
     }

@@ -22,7 +22,7 @@ class DBCategoriesTest extends TableCreationTest
         $this->usersTable = $this->getMockBuilder(DBUsers::class)->disableOriginalConstructor()
             ->setMethods(['doesUserIDExist'])->getMock();
         $this->category = $this->getMockBuilder(Category::class)->disableOriginalConstructor()
-            ->setMethods(['getUserID', 'asDict'])->getMock();
+            ->setMethods(['getUserID', 'getName', 'getAddedDate', 'asDict'])->getMock();
         parent::setUp();
         $this->columns = ["ID" => "int(11)",
             "NAME" => "char(50)",
@@ -44,10 +44,7 @@ class DBCategoriesTest extends TableCreationTest
     }
 
     public function testAddCategory(){
-        $this->category->expects($this->once())->method("getUserID")
-            ->will($this->returnValue($this->categoryDict["USER_ID"]));
-        $this->category->expects($this->once())->method("asDict")
-            ->will($this->returnValue($this->categoryDict));
+        $this->expectsSuccessfullCategoryInsertion();
         $this->usersTable->expects($this->once())
             ->method('doesUserIDExist')->with($this->categoryDict["USER_ID"])->will($this->returnValue(true));
         $this->table->addCategory($this->category);
@@ -56,7 +53,7 @@ class DBCategoriesTest extends TableCreationTest
     }
 
     public function testAddCategoryWithWrongPayerIDShouldThrow(){
-        $this->category->expects($this->once())->method("getUserID")
+        $this->category->expects($this->exactly(1))->method("getUserID")
             ->will($this->returnValue($this->categoryDict["USER_ID"]));
         $this->category->expects($this->once())->method("asDict")
             ->will($this->returnValue($this->categoryDict));
@@ -73,10 +70,14 @@ class DBCategoriesTest extends TableCreationTest
     }
 
     public function testAddCategoryTwiceShouldThrow(){
-        $this->category->expects($this->exactly(2))->method("getUserID")
+        $this->category->expects($this->exactly(4))->method("getUserID")
             ->will($this->returnValue($this->categoryDict["USER_ID"]));
-        $this->category->expects($this->exactly(3))->method("asDict")
+        $this->category->expects($this->exactly(1))->method("asDict")
             ->will($this->returnValue($this->categoryDict));
+        $this->category->expects($this->exactly(2))->method("getAddedDate")
+            ->will($this->returnValue($this->categoryDict["ADDED_DATE"]));
+        $this->category->expects($this->exactly(2))->method("getName")
+            ->will($this->returnValue($this->categoryDict["NAME"]));
         $this->usersTable->expects($this->exactly(2))
             ->method('doesUserIDExist')->with($this->categoryDict["USER_ID"])->will($this->returnValue(true));
         $this->table->addCategory($this->category);
@@ -102,10 +103,7 @@ class DBCategoriesTest extends TableCreationTest
     }
 
     public function testGetCategoryFromID(){
-        $this->category->expects($this->once())->method("getUserID")
-            ->will($this->returnValue($this->categoryDict["USER_ID"]));
-        $this->category->expects($this->once())->method("asDict")
-            ->will($this->returnValue($this->categoryDict));
+        $this->expectsSuccessfullCategoryInsertion();
         $this->usersTable->expects($this->once())
             ->method('doesUserIDExist')->with($this->categoryDict["USER_ID"])->will($this->returnValue(true));
         $this->table->addCategory($this->category);
@@ -114,14 +112,21 @@ class DBCategoriesTest extends TableCreationTest
     }
 
     public function testGetAllCategories(){
-        $this->category->expects($this->once())->method("getUserID")
-            ->will($this->returnValue($this->categoryDict["USER_ID"]));
-        $this->category->expects($this->once())->method("asDict")
-            ->will($this->returnValue($this->categoryDict));
+        $this->expectsSuccessfullCategoryInsertion();
         $this->usersTable->expects($this->once())
             ->method('doesUserIDExist')->with($this->categoryDict["USER_ID"])->will($this->returnValue(true));
         $this->table->addCategory($this->category);
         $categories = $this->table->getAllCategories();
-        $this->assertEquals($this->categoryDict["NAME"] , $categories[0]["NAME"]);
+        $this->assertEquals($this->categoryDict["NAME"] , $categories[0]->getName());
+    }
+
+    protected function expectsSuccessfullCategoryInsertion(): void
+    {
+        $this->category->expects($this->exactly(2))->method("getUserID")
+            ->will($this->returnValue($this->categoryDict["USER_ID"]));
+        $this->category->expects($this->exactly(1))->method("getAddedDate")
+            ->will($this->returnValue($this->categoryDict["ADDED_DATE"]));
+        $this->category->expects($this->exactly(1))->method("getName")
+            ->will($this->returnValue($this->categoryDict["NAME"]));
     }
 }
