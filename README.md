@@ -40,7 +40,9 @@ $result = file_get_contents($url, false, $context);
 *   Creation: `account/Create`. Required: `user_id` (int), `user_key` (int), `name` (string), `currency_id` (int), `current_amount` (float)
 *   Creation: `account/Retrieve`. Required: `user_id` (int), `user_key` (int), `id` (int)
 *   Creation: `account/RetrieveAll`. Required: `user_id` (int), `user_key` (int)
-
+### Categories
+*   Creation: `category/Create`. Required: `name`(string), `session_id`(int), `user_id`(int)
+*   Creation: `category/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
 ## Install
 
 ### Prerequisites
