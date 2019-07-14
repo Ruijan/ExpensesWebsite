@@ -13,7 +13,7 @@ use Throwable;
 
 class InsertionException extends \Exception
 {
-    public function __construct($elementName, $element, string $tableName, string $reason,  int $code = 0, Throwable $previous = null)
+    public function __construct(string $elementName, $element, string $tableName, string $reason,  int $code = 0, Throwable $previous = null)
     {
         $message = "Couldn't insert " . $elementName . " " . implode(" ,", $element) .
             " in " . $tableName.

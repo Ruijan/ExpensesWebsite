@@ -8,8 +8,8 @@
 
 namespace BackEnd\Tests\Database;
 
-use Backend\Database\DBExpenseStates\InsertionException;
-use BackEnd\Tests\Database\TableCreationTest;
+use BackEnd\Database\DBExpenseStates\UndefinedExpenseStateID;
+use Backend\Database\InsertionException;
 use BackEnd\Database\DBExpenseStates\DBExpenseStates;
 
 class DBExpenseStatesTest extends TableCreationTest
@@ -52,5 +52,24 @@ class DBExpenseStatesTest extends TableCreationTest
         $this->table->addState($this->stateName);
         $state = $this->table->getExpenseStateFromID(1);
         $this->assertEquals($this->stateName, $state["NAME"]);
+    }
+
+    public function testCheckIfIDExistShouldThrow(){
+        $this->expectException(UndefinedExpenseStateID::class);
+        $state = $this->table->checkIfIDExists(1);
+    }
+
+    public function testDeleteExpenseState(){
+        $this->table->addState($this->stateName);
+        $this->table->deleteState(1);
+        $state = $this->table->getExpenseStateFromID(1);
+        $this->assertEquals(NULL, $state);
+    }
+
+    public function testGetAllStates(){
+        $this->table->addState($this->stateName);
+        $this->table->addState("LOCKED");
+        $states = $this->table->getAllExpenseStates();
+        $this->assertEquals(2, sizeof($states));
     }
 }

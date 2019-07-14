@@ -2,19 +2,16 @@
 /**
  * Created by PhpStorm.
  * User: MSI-GP60
- * Date: 6/16/2019
- * Time: 9:42 AM
+ * Date: 7/14/2019
+ * Time: 9:07 PM
  */
 
-namespace BackEnd\Routing\Request\SubCategory;
-
+namespace BackEnd\Routing\Request\ExpenseState;
 use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
 use BackEnd\User;
-use BackEnd\Routing\Request\SubCategory\SubCategoryCreation;
 
-
-class SubCategoryRequestFactory
+class ExpenseStateRequestFactory
 {
     /** @var Database */
     private $database;
@@ -29,14 +26,13 @@ class SubCategoryRequestFactory
         $postArray = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
         switch ($type) {
             case "Create":
-                return new SubCategoryCreation($this->database->getTableByName(DBTables::SUBCATEGORIES),
-                    $this->database->getTableByName(DBTables::CATEGORIES),
+                return new ExpenseStateCreation($this->database->getTableByName(DBTables::EXPENSES_STATES),
                     $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
             case "RetrieveAll":
-                return new RetrieveAllSubCategories($this->database->getTableByName(DBTables::SUBCATEGORIES),
+                return new RetrieveAllExpenseStates($this->database->getTableByName(DBTables::EXPENSES_STATES),
                     $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
             case "Delete":
-                return new DeleteSubCategory($this->database->getTableByName(DBTables::SUBCATEGORIES), $postArray);
+                return new DeleteExpenseState($this->database->getTableByName(DBTables::EXPENSES_STATES), $postArray);
             default:
                 throw new \InvalidArgumentException("Request type: " . $type . " not found.");
         }
