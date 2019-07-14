@@ -66,6 +66,7 @@ class DBSubCategories extends DBTable
         if ($this->driver->query($query) === FALSE) {
             throw new InsertionException("SubCategory", $subCategory->asDict(), $this->name, $this->driver->error_list[0]["error"]);
         }
+        $subCategory->setID($this->driver->insert_id);
     }
 
     public function getSubCategoryFromID($subCategoryID)

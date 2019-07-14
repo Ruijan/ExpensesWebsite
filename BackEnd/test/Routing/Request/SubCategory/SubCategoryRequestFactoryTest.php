@@ -35,12 +35,22 @@ class SubCategoryRequestFactoryTest extends TestCase
 
     public function testCreateRetrieveAllCategoriesRequest()
     {
-        $this->database->expects($this->exactly(3))
+        $this->database->expects($this->exactly(2))
             ->method('getTableByName')
-            ->withConsecutive([DBTables::SUBCATEGORIES], [DBTables::CATEGORIES], [DBTables::USERS]);
+            ->withConsecutive([DBTables::SUBCATEGORIES], [DBTables::USERS]);
         $factory = new SubCategoryRequestFactory($this->database);
         $request = $factory->createRequest("RetrieveAll");
         $this->assertEquals(\BackEnd\Routing\Request\SubCategory\RetrieveAllSubCategories::class, get_class($request));
+    }
+
+    public function testCreateDeleteSubCategoryRequest()
+    {
+        $this->database->expects($this->exactly(1))
+            ->method('getTableByName')
+            ->with(DBTables::SUBCATEGORIES);
+        $factory = new SubCategoryRequestFactory($this->database);
+        $request = $factory->createRequest("Delete");
+        $this->assertEquals(\BackEnd\Routing\Request\SubCategory\DeleteSubCategory::class, get_class($request));
     }
 
 

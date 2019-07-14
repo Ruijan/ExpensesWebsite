@@ -8,8 +8,7 @@
 
 namespace BackEnd\Tests\Database;
 
-use Backend\Database\DBExpenseStates\InsertionException;
-use BackEnd\Tests\Database\TableCreationTest;
+use Backend\Database\InsertionException;
 use BackEnd\Database\DBExpenseStates\DBExpenseStates;
 
 class DBExpenseStatesTest extends TableCreationTest

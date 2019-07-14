@@ -12,12 +12,13 @@ use BackEnd\Application;
 use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
 use BackEnd\Routing\Request\Category\CategoryCreation;
+use BackEnd\Routing\Request\SubCategory\DeleteSubCategory;
 use BackEnd\Routing\Request\SubCategory\RetrieveAllSubCategories;
 use BackEnd\Routing\Request\SubCategory\SubCategoryCreation;
 use BackEnd\User;
 use PHPUnit\Framework\TestCase;
 
-class SubCateogryUseCaseTest extends TestCase
+class SubCategoryUseCaseTest extends TestCase
 {
     /** @var Database */
     private $db;
@@ -55,6 +56,9 @@ class SubCateogryUseCaseTest extends TestCase
         $answerSubCategoriesRetrieval = $this->retrieveAllSubCategories($session);
         $this->assertEquals("OK", $answerSubCategoriesRetrieval["STATUS"]);
         $this->assertEquals($answerSubCategoryCreation["DATA"], $answerSubCategoriesRetrieval["DATA"][0]);
+        $subCategory["category_id"] = $answerSubCategoryCreation["DATA"]["id"];
+        $answerSubCategoryDeletion = $this->deleteSubCategory($subCategory);
+        $this->assertEquals("OK", $answerSubCategoryDeletion["STATUS"]);
         $answerUserDeletion = $this->deleteUser($user);
         $this->assertEquals("OK", $answerUserDeletion["STATUS"]);
     }
@@ -104,6 +108,15 @@ class SubCateogryUseCaseTest extends TestCase
         $request = new RetrieveAllSubCategories($this->db->getTableByName(DBTables::SUBCATEGORIES),
             $this->db->getTableByName(DBTables::USERS),
             new User(),
+            $data);
+        $request->execute();
+        return json_decode($request->getResponse(), true);
+    }
+
+    private function deleteSubCategory($data)
+    {
+        $request = new DeleteSubCategory(
+            $this->db->getTableByName(DBTables::SUBCATEGORIES),
             $data);
         $request->execute();
         return json_decode($request->getResponse(), true);
