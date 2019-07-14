@@ -9,7 +9,7 @@
 namespace BackEnd\Database\DBExpenseStates;
 
 use BackEnd\Database\DBTable;
-use BackEnd\Database\DBExpenseStates\InsertionException;
+use BackEnd\Database\InsertionException;
 
 class DBExpenseStates extends DBTable
 {
@@ -24,13 +24,17 @@ class DBExpenseStates extends DBTable
                         NAME char(50) NOT NULL UNIQUE";
     }
 
+    /**
+     * @param $name
+     * @throws \BackEnd\Database\DBExpenseStates\InsertionException
+     */
     public function addState($name)
     {
         $this->checkParameters($name);
         $query = 'INSERT INTO ' . $this->name . ' (NAME) VALUES ("' .
             $this->driver->real_escape_string($name) . '")';
         if ($this->driver->query($query) === FALSE) {
-            throw new InsertionException($name, $this->name, $this->driver->error);
+            throw new InsertionException("expense", $name, $this->name, $this->driver->error);
         }
     }
 
@@ -40,7 +44,7 @@ class DBExpenseStates extends DBTable
             $this->driver->real_escape_string($name) . '"';
         $results = $this->driver->query($query);
         if ($results->num_rows == 1) {
-            throw new InsertionException($name, $this->name, "State name already exists.");
+            throw new InsertionException("expense", $name, $this->name, "State name already exists.");
         }
     }
 

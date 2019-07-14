@@ -7,7 +7,6 @@
  */
 
 namespace BackEnd\Routing\Request\SubCategory;
-use BackEnd\Category;
 use BackEnd\Database\DBCategories\DBCategories;
 use BackEnd\Database\DBSubCategories\DBSubCategories;
 use BackEnd\Database\DBUsers\DBUsers;
