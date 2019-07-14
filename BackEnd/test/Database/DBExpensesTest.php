@@ -120,16 +120,6 @@ class DBExpensesTest extends TableCreationTest
         $this->assertEquals(1, $nbExpenses);
     }
 
-    /*public function testAddExpenseWithWrongExpenseDateShouldThrow()
-    {
-        $this->expenseArray["expense_date"] = 'Julien';
-        $this->expense->expects($this->once())
-            ->method('asArray')
-            ->with()->will($this->returnValue($this->expenseArray));
-        $this->expectException(InsertionException::class);
-        $this->table->addExpense($this->expense);
-    }*/
-
     public function testAddExpenseWithNoID()
     {
         $noIDExpense = [];
