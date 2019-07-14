@@ -148,4 +148,19 @@ class DBSubCategoriesTest extends TableCreationTest
         $subCategory = $this->table->getSubCategoryFromID(1);
         $this->assertEquals($this->subCategoryArray["NAME"], $subCategory["NAME"]);
     }
+
+    public function testDeleteSubCategory(){
+        $this->expectsSuccessfullSubCategoryInsertion();
+        $this->table->addSubCategory($this->subCategory);
+        $this->table->deleteSubCategory(1);
+        $subCategory = $this->table->getSubCategoryFromID(1);
+        $this->assertNull($subCategory);
+    }
+
+    public function testDeleteSubCategoryWithWrongIDShouldThrow(){
+        $this->expectsSuccessfullSubCategoryInsertion();
+        $this->table->addSubCategory($this->subCategory);
+        $this->expectException(InvalidCategoryException::class);
+        $this->table->deleteSubCategory(2);
+    }
 }
