@@ -13,6 +13,7 @@ use BackEnd\Database\DBSubCategories\DBSubCategories;
 use \BackEnd\Database\InsertionException;
 use BackEnd\Database\DBUsers;
 use BackEnd\Database\DBCategories;
+use BackEnd\Database\DBSubCategories\UndefinedSubCategoryID;
 
 class DBSubCategoriesTest extends TableCreationTest
 {
@@ -160,7 +161,7 @@ class DBSubCategoriesTest extends TableCreationTest
     public function testDeleteSubCategoryWithWrongIDShouldThrow(){
         $this->expectsSuccessfullSubCategoryInsertion();
         $this->table->addSubCategory($this->subCategory);
-        $this->expectException(InvalidCategoryException::class);
+        $this->expectException(UndefinedSubCategoryID::class);
         $this->table->deleteSubCategory(2);
     }
 }
