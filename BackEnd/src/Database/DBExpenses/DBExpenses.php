@@ -7,7 +7,12 @@
  */
 
 namespace BackEnd\Database\DBExpenses;
+use BackEnd\Database\DBCategories\DBCategories;
+use BackEnd\Database\DBCurrencies\DBCurrencies;
+use BackEnd\Database\DBExpenseStates\DBExpenseStates;
+use BackEnd\Database\DBSubCategories\DBSubCategories;
 use BackEnd\Database\DBTables;
+use BackEnd\Database\DBUsers\DBUsers;
 use mysql_xdevapi\Exception;
 
 use BackEnd\Database\DBTable;
@@ -28,10 +33,15 @@ class DBExpenses extends DBTable
         "AMOUNT" => "double",
         "CURRENCY_ID" => "integer",
         "STATE_ID" => "integer"];
+    /** @var DBCategories */
     private $categoriesTable;
+    /** @var DBSubCategories */
     private $subCategoriesTable;
+    /** @var DBUsers */
     private $payeesTable;
+    /** @var DBCurrencies */
     private $currenciesTable;
+    /** @var DBExpenseStates */
     private $statesTable;
     public function __construct($database){
         parent::__construct($database, "expenses");
