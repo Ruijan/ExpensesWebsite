@@ -37,12 +37,25 @@ $result = file_get_contents($url, false, $context);
 *   SignUp: `connection/SignUp`. Required: `email` (string), `password` (string), `first_name` (string), `last_name` (string)
 
 ### Accounts
-*   Creation: `account/Create`. Required: `user_id` (int), `user_key` (int), `name` (string), `currency_id` (int), `current_amount` (float)
-*   Creation: `account/Retrieve`. Required: `user_id` (int), `user_key` (int), `id` (int)
-*   Creation: `account/RetrieveAll`. Required: `user_id` (int), `user_key` (int)
+*   Creation: `account/Create`. Required: `user_id` (int), `session_id` (int), `name` (string), `currency_id` (int), `current_amount` (float)
+*   Retrieve one belonging to user: `account/Retrieve`. Required: `user_id` (int), `session_id` (int), `id` (int)
+*   Retrieve all belonging to user: `account/RetrieveAll`. Required: `user_id` (int), `session_id` (int)
+*   Delete: `account/Delete`. Required:  `category_id`(int), `session_id`(int), `user_id`(int)
+
 ### Categories
 *   Creation: `category/Create`. Required: `name`(string), `session_id`(int), `user_id`(int)
-*   Creation: `category/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
+*   Retrieve all existing categories: `category/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
+
+### SubCategories
+*   Creation: `subcategory/Create`. Required: `name`(string),  `parent_id`(int), `session_id`(int), `user_id`(int)
+*   Retrieve all existing sub categories: `subcategory/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
+*   Delete: `subcategory/Delete`. Required:  `category_id`(int)
+
+### ExpenseStates
+*   Creation: `expensesstate/Create`. Required: `name`(string),   `session_id`(int), `user_id`(int)
+*   Retrieve all existing sub categories: `expensesstate/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
+*   Delete: `expensesstate/Delete`. Required:  `state_id`(int)
+
 ## Install
 
 ### Prerequisites
