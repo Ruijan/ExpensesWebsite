@@ -37,23 +37,6 @@ class CurrencyUseCaseTest extends TestCase
         $this->assertEquals("OK", $answerCurrencyDeletion["STATUS"]);
     }
 
-    private function signUp($data){
-        $request = new \BackEnd\Routing\Request\Connection\SignUp(
-            $this->db->getTableByName(DBTables::USERS),
-            $data);
-        $request->execute();
-        return json_decode($request->getResponse(), true);
-    }
-
-    private function signIn($data){
-        $request = new \BackEnd\Routing\Request\Connection\SignIn(
-            $this->db->getTableByName(DBTables::USERS),
-            new User(),
-            $data);
-        $request->execute();
-        return json_decode($request->getResponse(), true);
-    }
-
     public function createCurrency($data){
         $request = new CurrencyCreation($this->db->getTableByName(DBTables::CURRENCIES),
             $data);
