@@ -8,35 +8,37 @@
 
 namespace BackEnd\Routing\Request\ExpenseState;
 
-
-use BackEnd\Routing\Request\Request;
 use BackEnd\Database\DBExpenseStates\DBExpenseStates;
-use BackEnd\Routing\Request\MissingParametersException;
 use BackEnd\Database\DBExpenseStates\UndefinedExpenseStateID;
+use BackEnd\Routing\Request\ConnectedRequest;
 
-class DeleteExpenseState extends Request
+class DeleteExpenseState extends ConnectedRequest
 {
     /** @var DBExpenseStates */
     protected $expenseStatesTable;
     protected $stateId;
 
-    public function __construct($expenseStatesTable, $data)
+    public function __construct($expenseStatesTable, $usersTable, $user, $data)
     {
         $mandatoryFields = ["state_id"];
-        parent::__construct($data, $mandatoryFields, "DeleteExpenseState");
+        parent::__construct("DeleteExpenseState", $mandatoryFields, $usersTable, $user, $data);
         $this->expenseStatesTable = $expenseStatesTable;
     }
 
     public function execute()
     {
-        try {
-            $this->checkRequiredParameters();
-            $this->expenseStatesTable->deleteState($this->stateId);
-            $this->response["STATUS"] = "OK";
-        } catch (MissingParametersException | UndefinedExpenseStateID $exception) {
-            $this->buildResponseFromException($exception);
+        parent::execute();
+        if ($this->valid) {
+            $this->response = [];
+            try {
+                $this->expenseStatesTable->deleteState($this->stateId);
+                $this->response["STATUS"] = "OK";
+            } catch (UndefinedExpenseStateID $exception) {
+                $this->valid = false;
+                $this->buildResponseFromException($exception);
+            }
+            $this->response = json_encode($this->response);
         }
-        $this->response = json_encode($this->response);
     }
 
     public function getExpenseStatesTable()

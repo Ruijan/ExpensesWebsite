@@ -8,12 +8,12 @@
 
 namespace BackEnd\Database;
 
-use mysql_xdevapi\Exception;
-
 class DBTable
 {
     protected $name;
+    /** @var Database */
     protected $database;
+    /** @var \mysqli */
     protected $driver;
     public function __construct($database, $name)
     {
@@ -49,6 +49,16 @@ class DBTable
                 }
             }
         }
+    }
+
+    public function retrieveAllRows(){
+        $query = "SELECT * FROM ".$this->name;
+        $result = $this->driver->query($query);
+        $rows = [];
+        while ($result and $row = $result->fetch_assoc()) {
+            $rows[] = $row;
+        }
+        return $rows;
     }
 
     public function getDatabase(){

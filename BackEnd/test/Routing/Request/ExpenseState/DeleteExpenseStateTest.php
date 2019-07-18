@@ -7,35 +7,40 @@
  */
 
 use BackEnd\Routing\Request\ExpenseState\DeleteExpenseState;
-use PHPUnit\Framework\TestCase;
+use BackEnd\Tests\Routing\Request\ConnectedRequestTest;
 use \BackEnd\Database\DBExpenseStates\DBExpenseStates;
 
-class DeleteExpenseStateTest extends TestCase
+class DeleteExpenseStateTest extends \BackEnd\Tests\Routing\Request\ConnectedRequestTest
 {
     /** @var DBExpenseStates */
     private $expenseStatesTable;
-    private $expenseState;
     public function setUp(){
-        $this->expenseState = array("state_id" => 2);
+        $this->data = array("state_id" => 2);
+        parent::setUp();
         $this->expenseStatesTable = $this->getMockBuilder(DBExpenseStates::class)->disableOriginalConstructor()
             ->setMethods(['deleteState'])->getMock();
     }
 
     public function test__construct(){
-        $mandatoryFields = ["state_id"];
-        $request = $this->createRequest();
-        $this->assertEquals($mandatoryFields, $request->getMandatoryFields());
-        $this->assertEquals($this->expenseStatesTable, $request->getExpenseStatesTable());
+        $this->mandatoryFields[] = "state_id";
+        parent::test__construct();
+        $this->assertEquals($this->expenseStatesTable, $this->request->getExpenseStatesTable());
     }
 
-    public function testGetResponse(){
-        $request = $this->createRequest();
+    public function testExecute(){
+        $this->createRequest();
         $this->expenseStatesTable->expects($this->once())
             ->method('deleteState')
-            ->with($this->expenseState["state_id"]);
+            ->with($this->data["state_id"]);
+        $this->user->expects($this->once())
+            ->method('isConnected')
+            ->with()->will($this->returnValue(true));
+        $this->user->expects($this->once())
+            ->method('connectWithSessionID')
+            ->with($this->usersTable, $this->data["session_id"], $this->data["user_id"]);
 
-        $request->execute();
-        $response = json_decode($request->getResponse(), $assoc = true);
+        $this->request->execute();
+        $response = json_decode($this->request->getResponse(), $assoc = true);
         if($response["STATUS"] == "ERROR"){
             $this->assertEquals("", $response["ERROR_MESSAGE"]);
             $this->assertEquals("OK", $response["STATUS"]);
@@ -45,23 +50,7 @@ class DeleteExpenseStateTest extends TestCase
         }
     }
 
-    public function testInitializationWithMissingParameters()
-    {
-        $this->expenseState = array();
-        $request = $this->createRequest();
-        $request->execute();
-        $response = json_decode($request->getResponse(), $assoc = true );
-        $this->assertEquals("ERROR", $response["STATUS"]);
-        $this->assertContains("Missing parameter", $response["ERROR_MESSAGE"]);
-        foreach ($request->getMandatoryFields() as $field) {
-            $this->assertContains($field, $response["ERROR_MESSAGE"]);
-        }
-    }
-
-    /**
-     * @return DeleteExpenseState
-     */
     protected function createRequest(){
-        return new DeleteExpenseState($this->expenseStatesTable, $this->expenseState);
+        $this->request = new DeleteExpenseState($this->expenseStatesTable, $this->usersTable, $this->user, $this->data);
     }
 }

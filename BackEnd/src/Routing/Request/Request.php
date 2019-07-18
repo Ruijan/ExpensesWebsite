@@ -13,6 +13,8 @@ abstract class Request extends ArrayToPropertiesSetter
     protected $response;
     protected $mandatoryFields;
     protected $requestName;
+    protected $valid = True;
+
     public function __construct($data, $mandatoryFields, $requestName){
         parent::__construct($data);
         $this->mandatoryFields = $mandatoryFields;
