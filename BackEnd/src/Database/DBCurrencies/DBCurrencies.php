@@ -56,6 +56,16 @@ class DBCurrencies extends DBTable
         return $result->num_rows != 0;
     }
 
+    public function getAllCurrencies(){
+        $query = "SELECT * FROM ".$this->getName();
+        $result = $this->driver->query($query);
+        $currencies = [];
+        while ($result and $row = $result->fetch_assoc()) {
+            $currencies[] = $row;
+        }
+        return $currencies;
+    }
+
     public function deleteCurrency($name, $shortName){
         if(!$this->doesCurrencyExist($name, $shortName)){
             throw new UndefinedCurrencyException($name, $shortName);

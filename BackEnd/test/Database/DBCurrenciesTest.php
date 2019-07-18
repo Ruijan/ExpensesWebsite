@@ -85,4 +85,11 @@ class DBCurrenciesTest extends TableCreationTest
 
         $this->table->deleteCurrency($this->currencyName, $this->shortCurrencyName);
     }
+
+    public function testGetAllStates(){
+        $this->table->addCurrency($this->currencyName, $this->shortCurrencyName);
+        $this->table->addCurrency("Euros", "EUR");
+        $currencies = $this->table->getAllCurrencies();
+        $this->assertEquals(2, sizeof($currencies));
+    }
 }
