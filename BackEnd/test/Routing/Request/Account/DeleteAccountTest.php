@@ -9,51 +9,38 @@
 namespace BackEnd\Tests\Routing\Request\Account;
 
 use BackEnd\Routing\Request\Account\DeleteAccount;
+use BackEnd\Tests\Routing\Request\ConnectedRequestTest;
 use PHPUnit\Framework\TestCase;
 
-class DeleteAccountTest extends TestCase
+class DeleteAccountTest extends ConnectedRequestTest
 {
-    private $usersTable;
     private $accountsTable;
-    private $user;
-    private $account;
 
     public function setUp(){
-        $this->account = array("name" => "Current",
-            "user_id" => 453,
-            "session_id" => "1234567891234567");
-        $this->usersTable = $this->getMockBuilder(\BackEnd\Database\DBUsers\DBUsers::class)->disableOriginalConstructor()
-            ->setMethods(['isUserSessionKeyValid'])->getMock();
+
+        $this->mandatoryFields[] = "name";
+        $this->data = array("name" => "Current");
+            parent::setUp();
         $this->accountsTable = $this->getMockBuilder(\BackEnd\Database\DBAccounts\DBAccounts::class)->disableOriginalConstructor()
             ->setMethods(['doesAccountExists', 'deleteAccountFromNameAndUser'])->getMock();
-        $this->user = $this->getMockBuilder(\BackEnd\Database\DBUsers\DBUsers::class)->disableOriginalConstructor()
-            ->setMethods(['isConnected', 'connectWithSessionID'])->getMock();
     }
 
 
     public function test__construct(){
-        $mandatoryFields = ["name", "session_id", "user_id"];
-        $request = $this->createRequest();
-        $this->assertEquals($mandatoryFields, $request->getMandatoryFields());
-        $this->assertEquals($this->accountsTable, $request->getAccountsTable());
-        $this->assertEquals($this->usersTable, $request->getUsersTable());
+        parent::test__construct();
+        $this->assertEquals($this->accountsTable, $this->request->getAccountsTable());
     }
 
     public function testGetResponse(){
-        $request = $this->createRequest();
-        $this->user->expects($this->once())
-            ->method('isConnected')
-            ->with()->will($this->returnValue(true));
-        $this->user->expects($this->once())
-            ->method('connectWithSessionID')
-            ->with($this->usersTable, $this->account["session_id"], $this->account["user_id"]);
+        $this->createRequest();
+        $this->connectSuccessfullyUser();
         $this->accountsTable->expects($this->once())
             ->method('doesAccountExists')
-            ->with($this->account["name"], $this->account["user_id"])->will($this->returnValue(true));
+            ->with($this->data["name"], $this->data["user_id"])->will($this->returnValue(true));
         $this->accountsTable->expects($this->once())
-            ->method('deleteAccountFromNameAndUser')->with($this->account["name"], $this->account["user_id"]);
-        $request->execute();
-        $response = json_decode($request->getResponse(), $assoc = true);
+            ->method('deleteAccountFromNameAndUser')->with($this->data["name"], $this->data["user_id"]);
+        $this->request->execute();
+        $response = json_decode($this->request->getResponse(), $assoc = true);
         if($response["STATUS"] == "ERROR"){
             $this->assertEquals("", $response["ERROR_MESSAGE"]);
             $this->assertEquals("OK", $response["STATUS"]);
@@ -93,7 +80,7 @@ class DeleteAccountTest extends TestCase
 
     public function testInitializationWithMissingParameters()
     {
-        $this->account = array();
+        $this->data = array();
         $request = $this->createRequest();
         $request->execute();
         $response = json_decode($request->getResponse(), $assoc = true );
@@ -105,7 +92,7 @@ class DeleteAccountTest extends TestCase
     }
 
     protected function createRequest(){
-        $deleteAccountRequest = new DeleteAccount($this->accountsTable, $this->usersTable, $this->user, $this->account);
+        $deleteAccountRequest = new DeleteAccount($this->accountsTable, $this->usersTable, $this->user, $this->data);
         return $deleteAccountRequest;
     }
 }
