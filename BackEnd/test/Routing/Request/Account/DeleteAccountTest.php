@@ -10,28 +10,30 @@ namespace BackEnd\Tests\Routing\Request\Account;
 
 use BackEnd\Routing\Request\Account\DeleteAccount;
 use BackEnd\Tests\Routing\Request\ConnectedRequestTest;
-use PHPUnit\Framework\TestCase;
 
 class DeleteAccountTest extends ConnectedRequestTest
 {
     private $accountsTable;
 
-    public function setUp(){
+    public function setUp()
+    {
 
         $this->mandatoryFields[] = "name";
         $this->data = array("name" => "Current");
-            parent::setUp();
+        parent::setUp();
         $this->accountsTable = $this->getMockBuilder(\BackEnd\Database\DBAccounts\DBAccounts::class)->disableOriginalConstructor()
             ->setMethods(['doesAccountExists', 'deleteAccountFromNameAndUser'])->getMock();
     }
 
 
-    public function test__construct(){
+    public function test__construct()
+    {
         parent::test__construct();
         $this->assertEquals($this->accountsTable, $this->request->getAccountsTable());
     }
 
-    public function testGetResponse(){
+    public function testGetResponse()
+    {
         $this->createRequest();
         $this->connectSuccessfullyUser();
         $this->accountsTable->expects($this->once())
@@ -41,16 +43,22 @@ class DeleteAccountTest extends ConnectedRequestTest
             ->method('deleteAccountFromNameAndUser')->with($this->data["name"], $this->data["user_id"]);
         $this->request->execute();
         $response = json_decode($this->request->getResponse(), $assoc = true);
-        if($response["STATUS"] == "ERROR"){
+        if ($response["STATUS"] == "ERROR") {
             $this->assertEquals("", $response["ERROR_MESSAGE"]);
             $this->assertEquals("OK", $response["STATUS"]);
-        }
-        else{
+        } else {
             $this->assertEquals("OK", $response["STATUS"]);
         }
     }
 
-    public function testGetResponseWithInvalidSession(){
+    protected function createRequest()
+    {
+        $deleteAccountRequest = new DeleteAccount($this->accountsTable, $this->usersTable, $this->user, $this->data);
+        return $deleteAccountRequest;
+    }
+
+    public function testGetResponseWithInvalidSession()
+    {
         $request = $this->createRequest();
         $this->user->expects($this->once())
             ->method('isConnected')
@@ -62,7 +70,8 @@ class DeleteAccountTest extends ConnectedRequestTest
         $this->assertEquals("ERROR", $response["STATUS"]);
     }
 
-    public function testGetResponseWithInvalidAccount(){
+    public function testGetResponseWithInvalidAccount()
+    {
         $request = $this->createRequest();
         $this->user->expects($this->once())
             ->method('isConnected')
@@ -83,16 +92,11 @@ class DeleteAccountTest extends ConnectedRequestTest
         $this->data = array();
         $request = $this->createRequest();
         $request->execute();
-        $response = json_decode($request->getResponse(), $assoc = true );
+        $response = json_decode($request->getResponse(), $assoc = true);
         $this->assertEquals("ERROR", $response["STATUS"]);
         $this->assertContains("Missing parameter", $response["ERROR_MESSAGE"]);
         foreach ($request->getMandatoryFields() as $field) {
             $this->assertContains($field, $response["ERROR_MESSAGE"]);
         }
-    }
-
-    protected function createRequest(){
-        $deleteAccountRequest = new DeleteAccount($this->accountsTable, $this->usersTable, $this->user, $this->data);
-        return $deleteAccountRequest;
     }
 }

@@ -22,7 +22,7 @@ class AccountCreationTest extends ConnectedRequestTest
             "currency_id" => 5,
             "current_amount" => "4061.68");
         parent::setUp();
-        $this->mandatoryFields = array_merge($this->mandatoryFields,["name", "current_amount", "currency_id"]);
+        $this->mandatoryFields = array_merge($this->mandatoryFields, ["name", "current_amount", "currency_id"]);
         $this->accountsTable = $this->getMockBuilder(DBAccounts::class)->disableOriginalConstructor()
             ->setMethods(['addAccount'])->getMock();
     }
@@ -34,12 +34,6 @@ class AccountCreationTest extends ConnectedRequestTest
         $this->assertEquals($this->accountsTable, $this->request->getAccountsTable());
     }
 
-    protected function createRequest()
-    {
-        $this->request = new AccountCreation($this->accountsTable, $this->usersTable, $this->user, $this->data);
-    }
-
-
     public function testGetResponse()
     {
         $this->createRequest();
@@ -49,5 +43,10 @@ class AccountCreationTest extends ConnectedRequestTest
         $this->request->execute();
         $response = json_decode($this->request->getResponse(), $assoc = true);
         $this->assertEquals("OK", $response["STATUS"]);
+    }
+
+    protected function createRequest()
+    {
+        $this->request = new AccountCreation($this->accountsTable, $this->usersTable, $this->user, $this->data);
     }
 }
