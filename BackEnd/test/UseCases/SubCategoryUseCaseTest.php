@@ -117,6 +117,8 @@ class SubCategoryUseCaseTest extends TestCase
     {
         $request = new DeleteSubCategory(
             $this->db->getTableByName(DBTables::SUBCATEGORIES),
+            $this->db->getTableByName(DBTables::USERS),
+            new User(),
             $data);
         $request->execute();
         return json_decode($request->getResponse(), true);

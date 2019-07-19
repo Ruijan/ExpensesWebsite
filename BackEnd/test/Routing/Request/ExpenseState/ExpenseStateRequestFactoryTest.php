@@ -25,6 +25,9 @@ class ExpenseStateRequestFactoryTest extends TestCase
 
     public function testCreateExpenseStateCreationRequest()
     {
+        $this->database->expects($this->exactly(2))
+            ->method('getTableByName')
+            ->withConsecutive([DBTables::EXPENSES_STATES], [DBTables::USERS]);
         $factory = $this->createSuccessfulFactory();
         $request = $factory->createRequest("Create");
         $this->assertEquals(ExpenseStateCreation::class, get_class($request));
@@ -32,6 +35,9 @@ class ExpenseStateRequestFactoryTest extends TestCase
 
     public function testCreateRetrieveAllExpenseStatesRequest()
     {
+        $this->database->expects($this->exactly(2))
+            ->method('getTableByName')
+            ->withConsecutive([DBTables::EXPENSES_STATES], [DBTables::USERS]);
         $factory = $this->createSuccessfulFactory();
         $request = $factory->createRequest("RetrieveAll");
         $this->assertEquals(RetrieveAllExpenseStates::class, get_class($request));
@@ -39,9 +45,9 @@ class ExpenseStateRequestFactoryTest extends TestCase
 
     public function testCreateDeleteExpenseStateRequest()
     {
-        $this->database->expects($this->exactly(1))
+        $this->database->expects($this->exactly(2))
             ->method('getTableByName')
-            ->with(DBTables::EXPENSES_STATES);
+            ->withConsecutive([DBTables::EXPENSES_STATES], [DBTables::USERS]);
         $factory = new ExpenseStateRequestFactory($this->database);
         $request = $factory->createRequest("Delete");
         $this->assertEquals(DeleteExpenseState::class, get_class($request));

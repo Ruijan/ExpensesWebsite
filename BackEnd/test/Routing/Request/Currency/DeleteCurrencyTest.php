@@ -55,6 +55,7 @@ class DeleteCurrencyTest extends ConnectedRequestTest
 
     public function testExecuteWithInvalidCurrency(){
         $this->createRequest();
+        $this->connectSuccessfullyUser();
         $this->currencyTable->expects($this->once())
             ->method('doesCurrencyExist')
             ->with()

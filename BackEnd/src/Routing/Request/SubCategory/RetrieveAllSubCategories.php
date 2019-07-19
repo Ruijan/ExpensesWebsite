@@ -23,7 +23,7 @@ class RetrieveAllSubCategories extends ConnectedRequest
 
     public function __construct($subCategoriesTable, $usersTable, $user, $data)
     {
-        $mandatoryFields = ["session_id", "user_id"];
+        $mandatoryFields = [];
         parent::__construct("RetrieveSubCategories", $mandatoryFields, $usersTable, $user, $data);
         $this->subCategoriesTable = $subCategoriesTable;
     }

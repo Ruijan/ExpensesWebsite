@@ -32,7 +32,8 @@ class ExpenseStateRequestFactory
                 return new RetrieveAllExpenseStates($this->database->getTableByName(DBTables::EXPENSES_STATES),
                     $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
             case "Delete":
-                return new DeleteExpenseState($this->database->getTableByName(DBTables::EXPENSES_STATES), $postArray);
+                return new DeleteExpenseState($this->database->getTableByName(DBTables::EXPENSES_STATES),
+                    $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
             default:
                 throw new \InvalidArgumentException("Request type: " . $type . " not found.");
         }

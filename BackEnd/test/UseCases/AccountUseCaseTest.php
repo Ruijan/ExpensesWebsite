@@ -36,7 +36,9 @@ class AccountUseCaseTest extends TestCase
         $this->assertEquals("OK", $answerSignIn["STATUS"]);
         $currency = array("name" => "euro",
             "short_name" => "EUR",
-            "currency_dollars_change" => 1.12);
+            "currency_dollars_change" => 1.12,
+            'session_id' => $answerSignIn["DATA"]["SESSION_ID"],
+            'user_id' => $answerSignIn["DATA"]["USER_ID"]);
         $answerCurrencyCreation = $this->createCurrency($currency);
         $this->assertEquals("OK", $answerCurrencyCreation["STATUS"]);
         $account = array('name' => 'Current',
@@ -79,6 +81,8 @@ class AccountUseCaseTest extends TestCase
     private function createCurrency($data){
         $request = new \BackEnd\Routing\Request\Currency\CurrencyCreation(
             $this->db->getTableByName(DBTables::CURRENCIES),
+            $this->db->getTableByName(DBTables::USERS),
+            new User(),
             $data);
         $request->execute();
         return json_decode($request->getResponse(), true);

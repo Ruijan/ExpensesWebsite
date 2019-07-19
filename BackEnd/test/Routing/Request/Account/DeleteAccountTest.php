@@ -17,10 +17,9 @@ class DeleteAccountTest extends ConnectedRequestTest
 
     public function setUp()
     {
-
-        $this->mandatoryFields[] = "name";
         $this->data = array("name" => "Current");
         parent::setUp();
+        $this->mandatoryFields[] = "name";
         $this->accountsTable = $this->getMockBuilder(\BackEnd\Database\DBAccounts\DBAccounts::class)->disableOriginalConstructor()
             ->setMethods(['doesAccountExists', 'deleteAccountFromNameAndUser'])->getMock();
     }
@@ -53,26 +52,12 @@ class DeleteAccountTest extends ConnectedRequestTest
 
     protected function createRequest()
     {
-        $deleteAccountRequest = new DeleteAccount($this->accountsTable, $this->usersTable, $this->user, $this->data);
-        return $deleteAccountRequest;
-    }
-
-    public function testGetResponseWithInvalidSession()
-    {
-        $request = $this->createRequest();
-        $this->user->expects($this->once())
-            ->method('isConnected')
-            ->with()
-            ->will($this->returnValue(false));
-        $request->execute();
-        $response = json_decode($request->getResponse(), $assoc = true);
-        $this->assertContains("Invalid user", $response["ERROR_MESSAGE"]);
-        $this->assertEquals("ERROR", $response["STATUS"]);
+        $this->request = new DeleteAccount($this->accountsTable, $this->usersTable, $this->user, $this->data);
     }
 
     public function testGetResponseWithInvalidAccount()
     {
-        $request = $this->createRequest();
+        $this->createRequest();
         $this->user->expects($this->once())
             ->method('isConnected')
             ->with()
@@ -81,22 +66,9 @@ class DeleteAccountTest extends ConnectedRequestTest
             ->method('doesAccountExists')
             ->with()
             ->will($this->returnValue(false));
-        $request->execute();
-        $response = json_decode($request->getResponse(), $assoc = true);
+        $this->request->execute();
+        $response = json_decode($this->request->getResponse(), $assoc = true);
         $this->assertContains("account with Name", $response["ERROR_MESSAGE"]);
         $this->assertEquals("ERROR", $response["STATUS"]);
-    }
-
-    public function testInitializationWithMissingParameters()
-    {
-        $this->data = array();
-        $request = $this->createRequest();
-        $request->execute();
-        $response = json_decode($request->getResponse(), $assoc = true);
-        $this->assertEquals("ERROR", $response["STATUS"]);
-        $this->assertContains("Missing parameter", $response["ERROR_MESSAGE"]);
-        foreach ($request->getMandatoryFields() as $field) {
-            $this->assertContains($field, $response["ERROR_MESSAGE"]);
-        }
     }
 }
