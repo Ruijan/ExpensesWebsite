@@ -51,16 +51,6 @@ class DBTable
         }
     }
 
-    public function retrieveAllRows(){
-        $query = "SELECT * FROM ".$this->name;
-        $result = $this->driver->query($query);
-        $rows = [];
-        while ($result and $row = $result->fetch_assoc()) {
-            $rows[] = $row;
-        }
-        return $rows;
-    }
-
     public function getDatabase(){
         return $this->database;
     }
