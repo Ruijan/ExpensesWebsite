@@ -39,6 +39,18 @@ class ExpenseStateCreationTest extends \BackEnd\Tests\Routing\Request\ConnectedR
         $this->assertEquals("OK", $response["STATUS"]);
     }
 
+    public function testExecuteFails(){
+        $this->createRequest();
+        $this->connectSuccessfullyUser();
+        $exception = new \BackEnd\Database\InsertionException("", ["name"], "plop", "plop");
+        $this->expenseStatesTable->expects($this->once())
+            ->method('addState')
+            ->will($this->throwException($exception));
+        $this->request->execute();
+        $response = json_decode($this->request->getResponse(), $assoc = true);
+        $this->assertEquals("ERROR", $response["STATUS"]);
+    }
+
     protected function createRequest()
     {
         $this->request = new ExpenseStateCreation($this->expenseStatesTable, $this->usersTable, $this->user, $this->data);

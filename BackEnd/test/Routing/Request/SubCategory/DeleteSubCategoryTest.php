@@ -43,6 +43,18 @@ class DeleteSubCategoryTest extends ConnectedRequestTest
         }
     }
 
+    public function testExecuteFails(){
+        $this->createRequest();
+        $this->connectSuccessfullyUser();
+        $exception = new \BackEnd\Database\DBSubCategories\UndefinedSubCategoryID(5);
+        $this->subCategoryTable->expects($this->once())
+            ->method('deleteSubCategory')->with($this->data["category_id"])
+            ->will($this->throwException($exception));
+        $this->request->execute();
+        $response = json_decode($this->request->getResponse(), $assoc = true);
+        $this->assertEquals("ERROR", $response["STATUS"]);
+    }
+
     protected function createRequest(){
         $this->request = new DeleteSubCategory($this->subCategoryTable, $this->usersTable, $this->user, $this->data);
     }

@@ -44,6 +44,18 @@ class SubCategoryCreationTest extends ConnectedRequestTest
         $this->assertEquals("OK", $response["STATUS"]);
     }
 
+    public function testExecuteFails(){
+        $this->createRequest();
+        $this->connectSuccessfullyUser();
+        $exception = new \BackEnd\Database\InsertionException("", ["name"], "plop", "plop");
+        $this->subCategoriesTable->expects($this->once())
+            ->method('addSubCategory')
+            ->will($this->throwException($exception));
+        $this->request->execute();
+        $response = json_decode($this->request->getResponse(), $assoc = true);
+        $this->assertEquals("ERROR", $response["STATUS"]);
+    }
+
     protected function createRequest()
     {
         $this->request = new SubCategoryCreation($this->subCategoriesTable, $this->categoriesTable, $this->usersTable, $this->user, $this->data);

@@ -45,6 +45,18 @@ class DeleteExpenseStateTest extends ConnectedRequestTest
         }
     }
 
+    public function testExecuteFails(){
+        $this->createRequest();
+        $this->connectSuccessfullyUser();
+        $exception = new \BackEnd\Database\DBExpenseStates\UndefinedExpenseStateID(5);
+        $this->expenseStatesTable->expects($this->once())
+            ->method('deleteState')->with($this->data["state_id"])
+            ->will($this->throwException($exception));
+        $this->request->execute();
+        $response = json_decode($this->request->getResponse(), $assoc = true);
+        $this->assertEquals("ERROR", $response["STATUS"]);
+    }
+
     protected function createRequest(){
         $this->request = new DeleteExpenseState($this->expenseStatesTable, $this->usersTable, $this->user, $this->data);
     }

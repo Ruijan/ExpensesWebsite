@@ -10,7 +10,7 @@ namespace BackEnd\Routing\Request\Currency;
 
 use BackEnd\Database\DBCurrencies\DBCurrencies;
 use BackEnd\Routing\Request\ConnectedRequest;
-use BackEnd\Routing\Request\MissingParametersException;
+use BackEnd\Database\InsertionException;
 
 class CurrencyCreation extends ConnectedRequest
 {
@@ -37,7 +37,7 @@ class CurrencyCreation extends ConnectedRequest
                 $id = $this->currenciesTable->addCurrency($this->name, $this->shortName);
                 $this->response["STATUS"] = "OK";
                 $this->response["DATA"] = array("CURRENCY_ID" => $id);
-            } catch (\Exception | MissingParametersException $exception) {
+            } catch (InsertionException $exception) {
                 $this->buildResponseFromException($exception);
             }
             $this->response = json_encode($this->response);

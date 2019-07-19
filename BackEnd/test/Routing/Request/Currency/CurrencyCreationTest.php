@@ -50,6 +50,18 @@ class CurrencyCreationTest extends ConnectedRequestTest
         }
     }
 
+    public function testExecuteFails(){
+        $this->createRequest();
+        $this->connectSuccessfullyUser();
+        $exception = new \BackEnd\Database\InsertionException("", ["name"], "plop", "plop");
+        $this->currenciesTable->expects($this->once())
+            ->method('addCurrency')->with($this->data["name"], $this->data["short_name"])
+            ->will($this->throwException($exception));
+        $this->request->execute();
+        $response = json_decode($this->request->getResponse(), $assoc = true);
+        $this->assertEquals("ERROR", $response["STATUS"]);
+    }
+
     protected function createRequest()
     {
         $this->request = new CurrencyCreation($this->currenciesTable, $this->usersTable, $this->user, $this->data);
