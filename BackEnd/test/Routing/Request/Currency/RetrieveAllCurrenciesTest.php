@@ -32,7 +32,6 @@ class RetrieveAllCurrenciesTest extends TestCase
     public function testExecute()
     {
         $request = $this->createRequest();
-
         $this->currenciesTable->expects($this->once())
             ->method('getAllCurrencies')
             ->with()->will($this->returnValue(array($this->currency)));

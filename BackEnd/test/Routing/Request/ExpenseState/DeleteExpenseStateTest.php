@@ -10,7 +10,7 @@ use BackEnd\Routing\Request\ExpenseState\DeleteExpenseState;
 use BackEnd\Tests\Routing\Request\ConnectedRequestTest;
 use \BackEnd\Database\DBExpenseStates\DBExpenseStates;
 
-class DeleteExpenseStateTest extends \BackEnd\Tests\Routing\Request\ConnectedRequestTest
+class DeleteExpenseStateTest extends ConnectedRequestTest
 {
     /** @var DBExpenseStates */
     private $expenseStatesTable;
@@ -32,12 +32,7 @@ class DeleteExpenseStateTest extends \BackEnd\Tests\Routing\Request\ConnectedReq
         $this->expenseStatesTable->expects($this->once())
             ->method('deleteState')
             ->with($this->data["state_id"]);
-        $this->user->expects($this->once())
-            ->method('isConnected')
-            ->with()->will($this->returnValue(true));
-        $this->user->expects($this->once())
-            ->method('connectWithSessionID')
-            ->with($this->usersTable, $this->data["session_id"], $this->data["user_id"]);
+        $this->connectSuccessfullyUser();
 
         $this->request->execute();
         $response = json_decode($this->request->getResponse(), $assoc = true);

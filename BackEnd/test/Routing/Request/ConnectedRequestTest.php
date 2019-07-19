@@ -51,4 +51,13 @@ abstract class ConnectedRequestTest extends RequestTest
         $this->assertEquals("ERROR", $response["STATUS"]);
         $this->assertContains("Invalid user session", $response["ERROR_MESSAGE"]);
     }
+
+    public function connectSuccessfullyUser(){
+        $this->user->expects($this->once())
+            ->method('isConnected')
+            ->with()->will($this->returnValue(true));
+        $this->user->expects($this->once())
+            ->method('connectWithSessionID')
+            ->with($this->usersTable, $this->data["session_id"], $this->data["user_id"]);
+    }
 }

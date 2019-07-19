@@ -31,12 +31,7 @@ class ExpenseStateCreationTest extends \BackEnd\Tests\Routing\Request\ConnectedR
     public function testExecute()
     {
         $this->createRequest();
-        $this->user->expects($this->once())
-            ->method('isConnected')
-            ->with()->will($this->returnValue(true));
-        $this->user->expects($this->once())
-            ->method('connectWithSessionID')
-            ->with($this->usersTable, $this->data["session_id"], $this->data["user_id"]);
+        $this->connectSuccessfullyUser();
         $this->expenseStatesTable->expects($this->once())
             ->method('addState');
         $this->request->execute();

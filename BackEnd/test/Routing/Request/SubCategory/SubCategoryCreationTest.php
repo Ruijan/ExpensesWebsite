@@ -36,12 +36,7 @@ class SubCategoryCreationTest extends ConnectedRequestTest
     public function testExecute()
     {
         $this->createRequest();
-        $this->user->expects($this->once())
-            ->method('isConnected')
-            ->with()->will($this->returnValue(true));
-        $this->user->expects($this->once())
-            ->method('connectWithSessionID')
-            ->with($this->usersTable, $this->data["session_id"], $this->data["user_id"]);
+        $this->connectSuccessfullyUser();
         $this->subCategoriesTable->expects($this->once())
             ->method('addSubCategory');
         $this->request->execute();

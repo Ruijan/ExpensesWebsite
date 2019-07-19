@@ -8,39 +8,42 @@
 
 namespace BackEnd\Tests\Request;
 
-use BackEnd\Database\DBCurrencies;
+use BackEnd\Database\DBCurrencies\DBCurrencies;
 use BackEnd\Routing\Request\Currency\DeleteCurrency;
-use PHPUnit\Framework\TestCase;
+use BackEnd\Tests\Routing\Request\ConnectedRequestTest;
 
-class DeleteCurrencyTest extends TestCase
+class DeleteCurrencyTest extends ConnectedRequestTest
 {
-    /** @var DBCurrencies\DBCurrencies */
+    /** @var DBCurrencies */
     private $currencyTable;
-    private $currency;
     public function setUp(){
-        $this->currency = array("name" => "Euros",
+        $this->data = array("name" => "Euros",
             "short_name" => "EUR");
+        parent::setUp();
+
+        $this->mandatoryFields[] = "name";
+        $this->mandatoryFields[] = "short_name";
         $this->currencyTable = $this->getMockBuilder(DBCurrencies::class)->disableOriginalConstructor()
             ->setMethods(['deleteCurrency', "doesCurrencyExist"])->getMock();
     }
 
     public function test__construct(){
-        $mandatoryFields = ["name", "short_name"];
-        $request = $this->createRequest();
-        $this->assertEquals($mandatoryFields, $request->getMandatoryFields());
-        $this->assertEquals($this->currencyTable, $request->getCurrencyTable());
+
+        parent::test__construct();
+        $this->assertEquals($this->currencyTable, $this->request->getCurrencyTable());
     }
 
-    public function testGetResponse(){
-        $request = $this->createRequest();
+    public function testExecute(){
+        $this->createRequest();
+        $this->connectSuccessfullyUser();
         $this->currencyTable->expects($this->once())
             ->method('deleteCurrency')
-            ->with($this->currency["name"], $this->currency["short_name"]);
+            ->with($this->data["name"], $this->data["short_name"]);
         $this->currencyTable->expects($this->once())
             ->method('doesCurrencyExist')
             ->with()->will($this->returnValue(true));
-        $request->execute();
-        $response = json_decode($request->getResponse(), $assoc = true);
+        $this->request->execute();
+        $response = json_decode($this->request->getResponse(), $assoc = true);
         if($response["STATUS"] == "ERROR"){
             $this->assertEquals("", $response["ERROR_MESSAGE"]);
             $this->assertEquals("OK", $response["STATUS"]);
@@ -50,20 +53,19 @@ class DeleteCurrencyTest extends TestCase
         }
     }
 
-    public function testGetResponseWithInvalidCurrency(){
-        $request = $this->createRequest();
+    public function testExecuteWithInvalidCurrency(){
+        $this->createRequest();
         $this->currencyTable->expects($this->once())
             ->method('doesCurrencyExist')
             ->with()
             ->will($this->returnValue(false));
-        $request->execute();
-        $response = json_decode($request->getResponse(), $assoc = true);
+        $this->request->execute();
+        $response = json_decode($this->request->getResponse(), $assoc = true);
         $this->assertEquals("ERROR", $response["STATUS"]);
         $this->assertContains("currency with Name", $response["ERROR_MESSAGE"]);
     }
 
     protected function createRequest(){
-        $deleteAccountRequest = new DeleteCurrency($this->currencyTable, $this->currency);
-        return $deleteAccountRequest;
+        $this->request = new DeleteCurrency($this->currencyTable, $this->usersTable, $this->user, $this->data);
     }
 }
