@@ -10,6 +10,7 @@ namespace BackEnd\Tests\UseCases;
 
 use BackEnd\Routing\Request\Currency\CurrencyCreation;
 use BackEnd\Routing\Request\Currency\DeleteCurrency;
+use BackEnd\Routing\Request\Currency\RetrieveAllCurrencies;
 use PHPUnit\Framework\TestCase;
 use BackEnd\Application;
 use BackEnd\Database\Database;
@@ -26,28 +27,59 @@ class CurrencyUseCaseTest extends TestCase
         $this->db = $app->getDatabase();
     }
 
-    public function testAccountPipeline()
+    public function testCurrencyPipeline()
     {
         $currency = array("name" => "Dollar",
             "short_name" => "USD",
             'currency_dollars_change' => 1);
+        $user = array("email" => "test@example.com",
+            "password" => "12345678",
+            "first_name" => "juju",
+            "last_name" => "david");
+
+        $answerSignUp = $this->signUp($user);
+        $this->assertEquals("OK", $answerSignUp["STATUS"]);
+        $answerSignIn = $this->signIn($user);
+        $this->assertEquals("OK", $answerSignIn["STATUS"]);
+        $currency = array_merge($currency, array('session_id' => $answerSignIn["DATA"]["SESSION_ID"],
+            'user_id' => $answerSignIn["DATA"]["USER_ID"]));
         $answerCurrencyCreation = $this->createCurrency($currency);
         $this->assertEquals("OK", $answerCurrencyCreation["STATUS"]);
         $answerCurrencyDeletion = $this->deleteCurrency($currency);
         $this->assertEquals("OK", $answerCurrencyDeletion["STATUS"]);
     }
 
+    private function signUp($data)
+    {
+        $request = new \BackEnd\Routing\Request\Connection\SignUp(
+            $this->db->getTableByName(DBTables::USERS),
+            $data);
+        $request->execute();
+        return json_decode($request->getResponse(), true);
+    }
+
+    private function signIn($data)
+    {
+        $request = new \BackEnd\Routing\Request\Connection\SignIn(
+            $this->db->getTableByName(DBTables::USERS),
+            new User(),
+            $data);
+        $request->execute();
+        return json_decode($request->getResponse(), true);
+    }
+
+
     public function createCurrency($data){
         $request = new CurrencyCreation($this->db->getTableByName(DBTables::CURRENCIES),
+            $this->db->getTableByName(DBTables::USERS),
+            new User(),
             $data);
         $request->execute();
         return json_decode($request->getResponse(), true);
     }
 
     public function retrieveAllCurrencies($data){
-        $request = new RetrieveAllCategories($this->db->getTableByName(DBTables::CATEGORIES),
-            $this->db->getTableByName(DBTables::USERS),
-            new User(),
+        $request = new RetrieveAllCurrencies($this->db->getTableByName(DBTables::CURRENCIES),
             $data);
         $request->execute();
         return json_decode($request->getResponse(), true);
@@ -56,6 +88,8 @@ class CurrencyUseCaseTest extends TestCase
     private function deleteCurrency($data){
         $request = new DeleteCurrency(
             $this->db->getTableByName(DBTables::CURRENCIES),
+            $this->db->getTableByName(DBTables::USERS),
+            new User(),
             $data);
         $request->execute();
         return json_decode($request->getResponse(), true);

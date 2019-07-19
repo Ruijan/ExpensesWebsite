@@ -36,7 +36,8 @@ class SubCategoryRequestFactory
                 return new RetrieveAllSubCategories($this->database->getTableByName(DBTables::SUBCATEGORIES),
                     $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
             case "Delete":
-                return new DeleteSubCategory($this->database->getTableByName(DBTables::SUBCATEGORIES), $postArray);
+                return new DeleteSubCategory($this->database->getTableByName(DBTables::SUBCATEGORIES),
+                    $this->database->getTableByName(DBTables::USERS), new User(),$postArray);
             default:
                 throw new \InvalidArgumentException("Request type: " . $type . " not found.");
         }

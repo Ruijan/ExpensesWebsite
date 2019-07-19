@@ -8,12 +8,12 @@
 
 namespace BackEnd\Database;
 
-use mysql_xdevapi\Exception;
-
 class DBTable
 {
     protected $name;
+    /** @var Database */
     protected $database;
+    /** @var \mysqli */
     protected $driver;
     public function __construct($database, $name)
     {

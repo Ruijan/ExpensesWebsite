@@ -9,6 +9,7 @@
 namespace BackEnd\Routing\Request\Currency;
 use BackEnd\Database\DBTables;
 use BackEnd\Database\Database;
+use BackEnd\User;
 
 class CurrencyRequestFactory
 {
@@ -24,10 +25,16 @@ class CurrencyRequestFactory
         switch($type){
             case "Create":
                 return new CurrencyCreation($this->database->getTableByName(DBTables::CURRENCIES),
+                    $this->database->getTableByName(DBTables::USERS),
+                    new User(),
                     $postArray);
             case "Delete":
                 return new DeleteCurrency($this->database->getTableByName(DBTables::CURRENCIES),
+                    $this->database->getTableByName(DBTables::USERS),
+                    new User(),
                     $postArray);
+            case "RetrieveAll":
+                return new RetrieveAllCurrencies($this->database->getTableByName(DBTables::CURRENCIES), $postArray);
             default:
                 throw new \InvalidArgumentException("Request type: ".$type." not found.");
         }

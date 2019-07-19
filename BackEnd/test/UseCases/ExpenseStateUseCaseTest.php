@@ -95,6 +95,8 @@ class ExpenseStateUseCaseTest extends TestCase
     {
         $request = new DeleteExpenseState(
             $this->db->getTableByName(DBTables::EXPENSES_STATES),
+            $this->db->getTableByName(DBTables::USERS),
+            new User(),
             $data);
         $request->execute();
         return json_decode($request->getResponse(), true);

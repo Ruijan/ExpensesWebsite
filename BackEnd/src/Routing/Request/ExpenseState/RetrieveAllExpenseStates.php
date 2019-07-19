@@ -10,60 +10,32 @@ namespace BackEnd\Routing\Request\ExpenseState;
 
 
 use BackEnd\Database\DBExpenseStates\DBExpenseStates;
-use BackEnd\Database\DBUsers\DBUsers;
-use BackEnd\Routing\Request\Request;
-use BackEnd\Routing\Request\Connection\InvalidSessionException;
-use BackEnd\Routing\Request\MissingParametersException;
+use BackEnd\Routing\Request\ConnectedRequest;
 
-class RetrieveAllExpenseStates extends Request
+class RetrieveAllExpenseStates extends ConnectedRequest
 {
-    protected $sessionId;
-    protected $userId;
-
-    /** @var \BackEnd\User */
-    protected $user;
     /** @var DBExpenseStates */
     protected $expenseStatesTable;
-    /** @var DBUsers */
-    protected $usersTable;
 
     public function __construct($subCategoriesTable, $usersTable, $user, $data)
     {
-        $mandatoryFields = ["session_id", "user_id"];
-        parent::__construct($data, $mandatoryFields, "RetrieveExpenseStates");
+        parent::__construct("RetrieveExpenseStates", [], $usersTable, $user, $data);
         $this->expenseStatesTable = $subCategoriesTable;
-        $this->usersTable = $usersTable;
-        $this->user = $user;
     }
 
-    public function execute(){
-        try{
-            $this->checkRequiredParameters();
-            $this->tryConnectingUser();
+    public function execute()
+    {
+        parent::execute();
+        if ($this->valid) {
+            $this->response = [];
             $this->response["DATA"] = $this->expenseStatesTable->getAllExpenseStates();
             $this->response["STATUS"] = "OK";
+            $this->response = json_encode($this->response);
         }
-        catch(MissingParametersException | InvalidSessionException $exception){
-            $this->buildResponseFromException($exception);
-        }
-        $this->response = json_encode($this->response);
     }
 
-    public function getUsersTable(){
-        return $this->usersTable;
-    }
-
-    public function getExpenseStatesTable(){
-        return $this->expenseStatesTable;
-    }
-    /**
-     * @throws InvalidSessionException
-     */
-    protected function tryConnectingUser(): void
+    public function getExpenseStatesTable()
     {
-        $this->user->connectWithSessionID($this->usersTable, $this->sessionId, $this->userId);
-        if (!$this->user->isConnected()) {
-            throw new InvalidSessionException($this->requestName);
-        }
+        return $this->expenseStatesTable;
     }
 }

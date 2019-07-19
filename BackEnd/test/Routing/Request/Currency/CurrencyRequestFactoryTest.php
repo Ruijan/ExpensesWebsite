@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use BackEnd\Database\DBTables;
 use BackEnd\Routing\Request\Currency\CurrencyCreation;
 use \BackEnd\Routing\Request\Currency\DeleteCurrency;
+use \BackEnd\Routing\Request\Currency\RetrieveAllCurrencies;
 
 class CurrencyRequestFactoryTest extends TestCase
 {
@@ -29,20 +30,29 @@ class CurrencyRequestFactoryTest extends TestCase
     }
 
     public function testCreateCurrencyCreationRequest(){
-        $this->database->expects($this->once())
+        $this->database->expects($this->exactly(2))
             ->method('getTableByName')
-            ->with(DBTables::CURRENCIES);
+            ->withConsecutive([DBTables::CURRENCIES], [DBTables::USERS]);
         $factory = new CurrencyRequestFactory($this->database);
         $request = $factory->createRequest("Create");
         $this->assertEquals(CurrencyCreation::class, get_class($request));
     }
     public function testCreateCurrencyDeleteRequest(){
-        $this->database->expects($this->once())
+        $this->database->expects($this->exactly(2))
             ->method('getTableByName')
-            ->with(DBTables::CURRENCIES);
+            ->withConsecutive([DBTables::CURRENCIES], [DBTables::USERS]);
         $factory = new CurrencyRequestFactory($this->database);
         $request = $factory->createRequest("Delete");
         $this->assertEquals(DeleteCurrency::class, get_class($request));
+    }
+
+    public function testCreateRetrieveAllRequest(){
+        $this->database->expects($this->exactly(1))
+            ->method('getTableByName')
+            ->with(DBTables::CURRENCIES);
+        $factory = new CurrencyRequestFactory($this->database);
+        $request = $factory->createRequest("RetrieveAll");
+        $this->assertEquals(RetrieveAllCurrencies::class, get_class($request));
     }
 
     public function testCreateWrongTypeOfRequestShouldThrow(){

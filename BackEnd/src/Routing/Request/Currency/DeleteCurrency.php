@@ -11,9 +11,10 @@ namespace BackEnd\Routing\Request\Currency;
 
 use BackEnd\Database\DBCurrencies\DBCurrencies;
 use BackEnd\Database\DBCurrencies\UndefinedCurrencyException;
+use BackEnd\Routing\Request\ConnectedRequest;
 use BackEnd\Routing\Request\Request;
 
-class DeleteCurrency extends Request
+class DeleteCurrency extends ConnectedRequest
 {
     protected $name;
     protected $shortName;
@@ -21,24 +22,29 @@ class DeleteCurrency extends Request
     /** @var DBCurrencies */
     protected $currencyTable;
 
-    public function __construct($currencyTable, $data)
+    public function __construct($currencyTable, $usersTable, $user, $data)
     {
         $mandatoryFields = ["name", "short_name"];
-        parent::__construct($data, $mandatoryFields, "DeleteCurrency");
+        parent::__construct("DeleteCurrency", $mandatoryFields, $usersTable, $user, $data);
         $this->currencyTable = $currencyTable;
     }
 
     public function execute()
     {
-        try{
-            $this->checkIfCurrencyExists();
-            $this->currencyTable->deleteCurrency($this->name, $this->shortName);
-            $this->response["STATUS"] = "OK";
-        }catch(UndefinedCurrencyException $exception){
-            $this->buildResponseFromException($exception);
+        parent::execute();
+        if($this->valid){
+            $this->response = [];
+            try{
+                $this->checkIfCurrencyExists();
+                $this->currencyTable->deleteCurrency($this->name, $this->shortName);
+                $this->response["STATUS"] = "OK";
+            }catch(UndefinedCurrencyException $exception){
+                $this->buildResponseFromException($exception);
+            }
+
+            $this->response = json_encode($this->response);
         }
 
-        $this->response = json_encode($this->response);
     }
 
     public function getCurrencyTable(){

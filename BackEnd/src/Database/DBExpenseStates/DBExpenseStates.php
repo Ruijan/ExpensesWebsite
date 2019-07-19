@@ -61,6 +61,10 @@ class DBExpenseStates extends DBTable
         return $expenseStates;
     }
 
+    /**
+     * @param $stateID
+     * @throws UndefinedExpenseStateID
+     */
     public function deleteState($stateID){
         $this->checkIfIDExists($stateID);
         $query = "DELETE FROM " . $this->name . " WHERE ID='" . $this->driver->real_escape_string($stateID) . "'";

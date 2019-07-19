@@ -26,7 +26,7 @@ class CategoryUseCaseTest extends TestCase
         $this->db = $app->getDatabase();
     }
 
-    public function testAccountPipeline()
+    public function testCategoryPipeline()
     {
         $user = array("email" => "test@example.com",
             "password" => "12345678",
