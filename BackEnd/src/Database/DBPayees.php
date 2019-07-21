@@ -31,6 +31,7 @@ class DBPayees extends DBTable
         if ($this->driver->query($query) === FALSE) {
             throw new \Exception("Couldn't insert payee ".$name." in ".$this->name.". Reason: ".$this->driver->error_list[0]["error"]);
         }
+        return $this->driver->insert_id();
     }
 
     public function checkIfPayeeExists($expectedPayeeID){
