@@ -6,8 +6,7 @@
  * Time: 9:13 PM
  */
 namespace BackEnd\Tests\Database;
-use BackEnd\Tests\Database\TableCreationTest;
-use BackEnd\Database\DBPayees;
+use BackEnd\Database\DBPayees\DBPayees;
 
 class DBPayeeTest extends TableCreationTest
 {
@@ -79,5 +78,17 @@ class DBPayeeTest extends TableCreationTest
         $this->table->addPayee($this->payeeName);
         $payee = $this->table->getPayeeFromID(1);
         $this->assertEquals($this->payeeName, $payee["NAME"]);
+    }
+
+    public function testDoesPayeeIDExist(){
+        $exists = $this->table->doesPayeeIDExist(1);
+        $this->assertFalse($exists);
+    }
+
+    public function testGetAllPayees(){
+        $this->table->addPayee($this->payeeName);
+        $this->table->addPayee("Coop");
+        $states = $this->table->getAllPayees();
+        $this->assertEquals(2, sizeof($states));
     }
 }

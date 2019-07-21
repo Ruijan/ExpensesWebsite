@@ -14,6 +14,7 @@ use BackEnd\Database\DBCurrencies\DBCurrencies;
 use BackEnd\Database\DBExpenses\DBExpenses;
 use BackEnd\Database\DBAccounts\DBAccounts;
 use BackEnd\Database\DBExpenseStates\DBExpenseStates;
+use BackEnd\Database\DBPayees\DBPayees;
 
 class DBTableFactory
 {
