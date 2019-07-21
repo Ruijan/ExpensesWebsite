@@ -17,10 +17,10 @@ class RetrieveAllExpenseStates extends ConnectedRequest
     /** @var DBExpenseStates */
     protected $expenseStatesTable;
 
-    public function __construct($subCategoriesTable, $usersTable, $user, $data)
+    public function __construct($expenseStatesTable, $usersTable, $user, $data)
     {
         parent::__construct("RetrieveExpenseStates", [], $usersTable, $user, $data);
-        $this->expenseStatesTable = $subCategoriesTable;
+        $this->expenseStatesTable = $expenseStatesTable;
     }
 
     public function execute()

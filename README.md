@@ -42,19 +42,30 @@ $result = file_get_contents($url, false, $context);
 *   Retrieve all belonging to user: `account/RetrieveAll`. Required: `user_id` (int), `session_id` (int)
 *   Delete: `account/Delete`. Required:  `category_id`(int), `session_id`(int), `user_id`(int)
 
+### Currencies
+*   Creation: `currency/Create`. Required: `name`(string),  `short_name`(string), `session_id`(int), `user_id`(int)
+*   Retrieve all existing sub categories: `currency/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
+*   Delete: `currency/Delete`. Required:   `name`(string),  `short_name`(string), `user_id` (int), `session_id` (int)
+
 ### Categories
 *   Creation: `category/Create`. Required: `name`(string), `session_id`(int), `user_id`(int)
 *   Retrieve all existing categories: `category/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
 
 ### SubCategories
-*   Creation: `subcategory/Create`. Required: `name`(string),  `parent_id`(int), `session_id`(int), `user_id`(int)
-*   Retrieve all existing sub categories: `subcategory/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
-*   Delete: `subcategory/Delete`. Required:  `category_id`(int)
+*   Creation: `sub_category/Create`. Required: `name`(string),  `parent_id`(int), `session_id`(int), `user_id`(int)
+*   Retrieve all existing sub categories: `sub_category/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
+*   Delete: `sub_category/Delete`. Required:  `category_id`(int), `user_id` (int), `session_id` (int)
 
 ### ExpenseStates
-*   Creation: `expensesstate/Create`. Required: `name`(string),   `session_id`(int), `user_id`(int)
-*   Retrieve all existing sub categories: `expensesstate/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
-*   Delete: `expensesstate/Delete`. Required:  `state_id`(int)
+*   Creation: `expenses_state/Create`. Required: `name`(string),   `session_id`(int), `user_id`(int)
+*   Retrieve all existing sub categories: `expenses_state/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
+*   Delete: `expenses_state/Delete`. Required:  `state_id`(int), `user_id` (int), `session_id` (int)
+
+### Payees
+*   Creation: `payee/Create`. Required: `name`(string),  `session_id`(int), `user_id`(int)
+*   Retrieve all existing sub categories: `payee/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
+*   Delete: `payee/Delete`. Required:  `payee_id`(int), `user_id` (int), `session_id` (int)
+
 
 ## Install
 
