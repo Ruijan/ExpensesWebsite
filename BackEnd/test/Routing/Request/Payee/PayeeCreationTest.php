@@ -38,6 +38,18 @@ class PayeeCreationTest extends ConnectedRequestTest
         $this->assertEquals("OK", $response["STATUS"]);
     }
 
+    public function testCreationFailedShouldReturnErrorStatus(){
+        $this->createRequest();
+        $this->connectSuccessfullyUser();
+        $exception = new \BackEnd\Database\InsertionException("", ["name"], "plop", "plop");
+        $this->payeesTable->expects($this->once())
+            ->method('addPayee')
+            ->will($this->throwException($exception));
+        $this->request->execute();
+        $response = json_decode($this->request->getResponse(), $assoc = true);
+        $this->assertEquals("ERROR", $response["STATUS"]);
+    }
+
     protected function createRequest()
     {
         $this->request = new PayeeCreation($this->payeesTable, $this->usersTable, $this->user, $this->data);
