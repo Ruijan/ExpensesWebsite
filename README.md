@@ -14,8 +14,7 @@ Prod server: heroku
 
 To send a request:
 Request: `connection/SignIn`
-Beta: `heroku.com/request`
-Current: `heroku.com/BackEnd/index.php?action=request`
+Current: `https://pixelnos-ledger-api.herokuapp.com/BackEnd/index.php?action=request`
 
 Example in PHP:
 ```php
