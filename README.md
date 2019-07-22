@@ -9,8 +9,8 @@
 ## How To
 ### Introduction
 Every request is a HTTP request. It can be a GET or a POST request. 
-Dev server: heroku
-Prod server: heroku
+Dev server: https://pixelnos-ledger-api.herokuapp.com
+Prod server: https://pixelnos-ledger-api.herokuapp.com
 
 To send a request:
 Request: `connection/SignIn`
@@ -18,7 +18,7 @@ Current: `https://pixelnos-ledger-api.herokuapp.com/BackEnd/index.php?action=req
 
 Example in PHP:
 ```php
-$url = 'heroku.com/BackEnd/index.php?action=connection/SignIn';
+$url = 'https://pixelnos-ledger-api.herokuapp.com/BackEnd/index.php?action=connection/SignIn';
 $data = array('email' => 'example@host.com', 'password' => '123456789');
 $options = array(
     'http' => array(
