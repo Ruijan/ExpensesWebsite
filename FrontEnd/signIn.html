@@ -1,20 +1,24 @@
 <html>
-  <head>
-      <meta charset="utf-8">
-          <title>Sign In</title>
-          <link rel="stylesheet" href="style.css"
-  </head>
-  <body>
-    <h1 class="titleFont">Sign In</h1>
-    <div>
-        <label for="email">Email:</label>
-        <input name="email" id="email" type="email"
-            placeholder="Email" required
-        <br>
-        <label for="password">Password:</label>
-        <input name="password" id="password" type="password"
-            placeholder="Password" pattern=".{5,10}"
-            required title="Password must be between 5 to 10 characters">
-    </div>
-  </body>
+    <head>
+        <meta charset="utf-8">
+            <title>Sign In</title>
+            <link rel="stylesheet" href="style.css">
+            <link href="https://fonts.googleapis.com/css?family=Josefin+Slab|Sigmar+One&display=swap" rel="stylesheet">  </head>
+
+    </head>
+    <body>
+        <h1 class="titleFont">Sign In</h1>
+        <form>
+            <div>
+                <label for="email">Email:</label>
+                <input name="email" id="email" type="email"
+                    placeholder="Email" required>
+            <br>
+                <label for="password">Password:</label>
+                <input name="password" id="password" type="password"
+                    placeholder="Password" pattern=".{5,10}"
+                    required title="Password must be between 5 to 10 characters">
+            </div>
+        </form>
+    </body>
 </html>
