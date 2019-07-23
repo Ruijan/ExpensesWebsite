@@ -13,13 +13,10 @@ use BackEnd\Database\DBExpenseStates\DBExpenseStates;
 use BackEnd\Database\DBSubCategories\DBSubCategories;
 use BackEnd\Database\DBTables;
 use BackEnd\Database\DBUsers\DBUsers;
-use mysql_xdevapi\Exception;
 
 use BackEnd\Database\DBTable;
 use BackEnd\Expense;
-use BackEnd\Database\DBExpenses\WrongTypeKeyException;
-use BackEnd\Database\DBExpenses\InsertionKeyException;
-use BackEnd\Database\DBExpenses\InsertionException;
+use BackEnd\Database\InsertionException;
 
 class DBExpenses extends DBTable
 {
@@ -66,9 +63,15 @@ class DBExpenses extends DBTable
             PRIMARY KEY  (ID)";
     }
 
+    /**
+     * @param $expense
+     * @throws InsertionException
+     * @return int insertion id
+     */
     public function addExpense($expense){
         $query = $this->getInsertExpenseQuery($expense);
         $this->tryAddingExpense($query);
+        return $this->driver->insert_id;
     }
 
     protected function getInsertExpenseQuery($expense): string
@@ -81,6 +84,10 @@ class DBExpenses extends DBTable
         return $query;
     }
 
+    /**
+     * @param string $query
+     * @throws InsertionException
+     */
     protected function tryAddingExpense(string $query): void
     {
         $resultQuery = $this->driver->query($query);

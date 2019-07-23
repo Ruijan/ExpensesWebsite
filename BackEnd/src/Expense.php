@@ -8,9 +8,6 @@
 
 namespace BackEnd;
 
-
-use mysql_xdevapi\Exception;
-
 class Expense
 {
     protected $data = ["id" => NULL,
@@ -29,7 +26,7 @@ class Expense
         "state" => NULL,
         "state_id" => NULL
         ];
-    protected $format = ["id" => "integer",
+    static public $format = ["id" => "integer",
         "expense_date" => NULL,
         "location" => NULL,
         "account_id" => "integer",
@@ -73,9 +70,9 @@ class Expense
     protected function formatData(): void
     {
         foreach ($this->data as $key => $value) {
-            if ($this->format[$key] == "integer") {
+            if (Expense::$format[$key] == "integer") {
                 $this->data[$key] = (int)$value;
-            } elseif ($this->format[$key] == "float") {
+            } elseif (Expense::$format[$key] == "float") {
                 $this->data[$key] = (float)$value;
             }
         }
