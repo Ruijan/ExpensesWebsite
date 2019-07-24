@@ -27,7 +27,7 @@ class CategoryRequestFactoryTest extends TestCase
             ->method('getTableByName')
             ->withConsecutive([DBTables::CATEGORIES], [DBTables::USERS]);
         $factory = new CategoryRequestFactory($this->database);
-        $request = $factory->createRequest("Create");
+        $request = $factory->createRequest("Create", array());
         $this->assertEquals(CategoryCreation::class, get_class($request));
     }
 
@@ -37,7 +37,7 @@ class CategoryRequestFactoryTest extends TestCase
             ->method('getTableByName')
             ->withConsecutive([DBTables::CATEGORIES], [DBTables::USERS]);
         $factory = new CategoryRequestFactory($this->database);
-        $request = $factory->createRequest("RetrieveAll");
+        $request = $factory->createRequest("RetrieveAll", array());
         $this->assertEquals(\BackEnd\Routing\Request\Category\RetrieveAllCategories::class, get_class($request));
     }
 
@@ -50,6 +50,6 @@ class CategoryRequestFactoryTest extends TestCase
     public function testCreateWrongTypeOfRequestShouldThrow(){
         $factory = new CategoryRequestFactory($this->database);
         $this->expectException(\InvalidArgumentException::class);
-        $request = $factory->createRequest("Tutut");
+        $request = $factory->createRequest("Tutut", array());
     }
 }

@@ -8,26 +8,24 @@
 
 namespace BackEnd\Tests\UseCases;
 
-use BackEnd\Routing\Request\Currency\CurrencyCreation;
-use BackEnd\Routing\Request\Currency\DeleteCurrency;
-use BackEnd\Routing\Request\Currency\RetrieveAllCurrencies;
-use PHPUnit\Framework\TestCase;
-use BackEnd\Application;
-use BackEnd\Database\Database;
-use BackEnd\Database\DBTables;
-use BackEnd\User;
+use BackEnd\Routing\Request\Currency\CurrencyRequestFactory;
 
-class CurrencyUseCaseTest extends TestCase
+use BackEnd\Routing\Request\Connection\ConnectionRequestFactory;
+
+class CurrencyUseCaseTest extends UseCaseTest
 {
-    /** @var Database */
-    private $db;
+    /** @var CurrencyRequestFactory */
+    private $currencyRequestFactory;
+    /** @var ConnectionRequestFactory */
+    private $userRequestFactory;
 
     public function setUp(){
-        $app = new Application();
-        $this->db = $app->getDatabase();
+        parent::setUp();
+        $this->userRequestFactory = new ConnectionRequestFactory($this->db);
+        $this->currencyRequestFactory = new CurrencyRequestFactory($this->db);
     }
 
-    public function testCurrencyPipeline()
+    public function testPipelineExecution()
     {
         $currency = array("name" => "Dollar",
             "short_name" => "USD",
@@ -37,66 +35,17 @@ class CurrencyUseCaseTest extends TestCase
             "first_name" => "juju",
             "last_name" => "david");
 
-        $answerSignUp = $this->signUp($user);
-        $this->assertEquals("OK", $answerSignUp["STATUS"]);
-        $answerSignIn = $this->signIn($user);
-        $this->assertEquals("OK", $answerSignIn["STATUS"]);
+        $answerSignUp = $this->getResponseFromRequest("SignUp", $this->userRequestFactory, $user);
+        $this->assertResponseStatus($answerSignUp);
+        $answerSignIn = $this->getResponseFromRequest("SignIn", $this->userRequestFactory, $user);
+        $this->assertResponseStatus($answerSignIn);
         $currency = array_merge($currency, array('session_id' => $answerSignIn["DATA"]["SESSION_ID"],
             'user_id' => $answerSignIn["DATA"]["USER_ID"]));
-        $answerCurrencyCreation = $this->createCurrency($currency);
-        $this->assertEquals("OK", $answerCurrencyCreation["STATUS"]);
-        $answerCurrencyDeletion = $this->deleteCurrency($currency);
-        $this->assertEquals("OK", $answerCurrencyDeletion["STATUS"]);
-    }
-
-    private function signUp($data)
-    {
-        $request = new \BackEnd\Routing\Request\Connection\SignUp(
-            $this->db->getTableByName(DBTables::USERS),
-            $data);
-        $request->execute();
-        return json_decode($request->getResponse(), true);
-    }
-
-    private function signIn($data)
-    {
-        $request = new \BackEnd\Routing\Request\Connection\SignIn(
-            $this->db->getTableByName(DBTables::USERS),
-            new User(),
-            $data);
-        $request->execute();
-        return json_decode($request->getResponse(), true);
-    }
-
-
-    public function createCurrency($data){
-        $request = new CurrencyCreation($this->db->getTableByName(DBTables::CURRENCIES),
-            $this->db->getTableByName(DBTables::USERS),
-            new User(),
-            $data);
-        $request->execute();
-        return json_decode($request->getResponse(), true);
-    }
-
-    public function retrieveAllCurrencies($data){
-        $request = new RetrieveAllCurrencies($this->db->getTableByName(DBTables::CURRENCIES),
-            $data);
-        $request->execute();
-        return json_decode($request->getResponse(), true);
-    }
-
-    private function deleteCurrency($data){
-        $request = new DeleteCurrency(
-            $this->db->getTableByName(DBTables::CURRENCIES),
-            $this->db->getTableByName(DBTables::USERS),
-            new User(),
-            $data);
-        $request->execute();
-        return json_decode($request->getResponse(), true);
-    }
-
-    public function tearDown()
-    {
-        $this->db->dropDatabase();
+        $answerCurrencyCreation = $this->getResponseFromRequest("Create", $this->currencyRequestFactory, $currency);
+        $this->assertResponseStatus($answerCurrencyCreation);
+        $answerCurrencyDeletion = $this->getResponseFromRequest("Delete", $this->currencyRequestFactory, $currency);
+        $this->assertResponseStatus($answerCurrencyDeletion);
+        $answerUserDeletion = $this->getResponseFromRequest("Delete", $this->userRequestFactory, $user);
+        $this->assertResponseStatus($answerUserDeletion);
     }
 }

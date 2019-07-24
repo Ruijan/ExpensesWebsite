@@ -29,7 +29,7 @@ class ExpenseStateRequestFactoryTest extends TestCase
             ->method('getTableByName')
             ->withConsecutive([DBTables::EXPENSES_STATES], [DBTables::USERS]);
         $factory = $this->createSuccessfulFactory();
-        $request = $factory->createRequest("Create");
+        $request = $factory->createRequest("Create", array());
         $this->assertEquals(ExpenseStateCreation::class, get_class($request));
     }
 
@@ -39,7 +39,7 @@ class ExpenseStateRequestFactoryTest extends TestCase
             ->method('getTableByName')
             ->withConsecutive([DBTables::EXPENSES_STATES], [DBTables::USERS]);
         $factory = $this->createSuccessfulFactory();
-        $request = $factory->createRequest("RetrieveAll");
+        $request = $factory->createRequest("RetrieveAll", array());
         $this->assertEquals(RetrieveAllExpenseStates::class, get_class($request));
     }
 
@@ -49,7 +49,7 @@ class ExpenseStateRequestFactoryTest extends TestCase
             ->method('getTableByName')
             ->withConsecutive([DBTables::EXPENSES_STATES], [DBTables::USERS]);
         $factory = new ExpenseStateRequestFactory($this->database);
-        $request = $factory->createRequest("Delete");
+        $request = $factory->createRequest("Delete", array());
         $this->assertEquals(DeleteExpenseState::class, get_class($request));
     }
 
@@ -62,7 +62,7 @@ class ExpenseStateRequestFactoryTest extends TestCase
     public function testCreateWrongTypeOfRequestShouldThrow(){
         $factory = new ExpenseStateRequestFactory($this->database);
         $this->expectException(\InvalidArgumentException::class);
-        $request = $factory->createRequest("Tutut");
+        $request = $factory->createRequest("Tutut", array());
     }
 
     /**

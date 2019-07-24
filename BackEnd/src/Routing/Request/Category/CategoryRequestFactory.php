@@ -10,36 +10,23 @@ namespace BackEnd\Routing\Request\Category;
 
 use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
+use BackEnd\Routing\Request\RequestFactory;
 use BackEnd\User;
 
 
-class CategoryRequestFactory
+class CategoryRequestFactory extends RequestFactory
 {
-    /** @var Database */
-    private $database;
-
-    public function __construct($database)
+    public function createRequest($type, $data)
     {
-        $this->database = $database;
-    }
-
-    public function createRequest($type)
-    {
-        $postArray = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
         switch ($type) {
             case "Create":
                 return new CategoryCreation($this->database->getTableByName(DBTables::CATEGORIES),
-                    $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
+                    $this->database->getTableByName(DBTables::USERS), new User(), $data);
             case "RetrieveAll":
                 return new RetrieveAllCategories($this->database->getTableByName(DBTables::CATEGORIES),
-                    $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
+                    $this->database->getTableByName(DBTables::USERS), new User(), $data);
             default:
                 throw new \InvalidArgumentException("Request type: " . $type . " not found.");
         }
-    }
-
-    public function getDatabase()
-    {
-        return $this->database;
     }
 }

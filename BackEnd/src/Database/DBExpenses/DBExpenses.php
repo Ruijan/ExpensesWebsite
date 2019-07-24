@@ -107,6 +107,16 @@ class DBExpenses extends DBTable
         return $properties;
     }
 
+    public function doesExpenseIDExist($expenseID)
+    {
+        $query = "SELECT ID FROM " . $this->name . " WHERE ID = " . $this->driver->real_escape_string($expenseID);
+        $result = $this->driver->query($query);
+        if ($result->num_rows == 0) {
+            return false;
+        }
+        return true;
+    }
+
     protected function tryGettingValueFromKey($key, $expenseProperties, $type)
     {
         if (isset($expenseProperties[strtolower($key)]) !== TRUE) {
@@ -137,6 +147,12 @@ class DBExpenses extends DBTable
             $expenses[] = new Expense($row);
         }
         return $expenses;
+    }
+
+    public function deleteExpense($expenseID)
+    {
+        $query = "DELETE FROM " . $this->name . " WHERE ID='" . $this->driver->real_escape_string($expenseID) . "'";
+        $this->driver->query($query);
     }
 
     public function getCategoriesTable(){

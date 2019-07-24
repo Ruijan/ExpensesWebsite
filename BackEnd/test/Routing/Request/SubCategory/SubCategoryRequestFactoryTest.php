@@ -28,7 +28,7 @@ class SubCategoryRequestFactoryTest extends TestCase
             ->method('getTableByName')
             ->withConsecutive([DBTables::SUBCATEGORIES], [DBTables::CATEGORIES], [DBTables::USERS]);
         $factory = new SubCategoryRequestFactory($this->database);
-        $request = $factory->createRequest("Create");
+        $request = $factory->createRequest("Create", array());
         $this->assertEquals(SubCategoryCreation::class, get_class($request));
     }
 
@@ -39,7 +39,7 @@ class SubCategoryRequestFactoryTest extends TestCase
             ->method('getTableByName')
             ->withConsecutive([DBTables::SUBCATEGORIES], [DBTables::USERS]);
         $factory = new SubCategoryRequestFactory($this->database);
-        $request = $factory->createRequest("RetrieveAll");
+        $request = $factory->createRequest("RetrieveAll", array());
         $this->assertEquals(\BackEnd\Routing\Request\SubCategory\RetrieveAllSubCategories::class, get_class($request));
     }
 
@@ -49,7 +49,7 @@ class SubCategoryRequestFactoryTest extends TestCase
             ->method('getTableByName')
             ->withConsecutive([DBTables::SUBCATEGORIES], [DBTables::USERS]);
         $factory = new SubCategoryRequestFactory($this->database);
-        $request = $factory->createRequest("Delete");
+        $request = $factory->createRequest("Delete", array());
         $this->assertEquals(\BackEnd\Routing\Request\SubCategory\DeleteSubCategory::class, get_class($request));
     }
 
@@ -64,6 +64,6 @@ class SubCategoryRequestFactoryTest extends TestCase
     {
         $factory = new SubCategoryRequestFactory($this->database);
         $this->expectException(\InvalidArgumentException::class);
-        $request = $factory->createRequest("Tutut");
+        $request = $factory->createRequest("Tutut", array());
     }
 }
