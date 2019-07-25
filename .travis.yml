@@ -14,15 +14,17 @@ addons:
     organization: ruijan-github
     projectKey: ExpensesWebsite
     token:
-      secure: a13f01ed89e5d3975de0736eeeec33c0de9eb91b
+      secure: d9e4828f4e74c9534dc0ea9c8cb56ab8d6733491
 
 install:
 - composer require --dev phpunit/phpunit ^7.4
 - curl -s http://getcomposer.org/installer | php
 - php composer.phar install -n
+- export CODACY_PROJECT_TOKEN=5960f38a16e74a9d891fbfed681d2251
 
 script:
 - php vendor/bin/phpunit --configuration phpunit.xml --coverage-clover build/logs/clover.xml
+- sonar-scanner
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
