@@ -5,6 +5,7 @@
 [![Build Status](https://travis-ci.org/Ruijan/ExpensesWebsite.svg?branch=master)](https://travis-ci.org/Ruijan/ExpensesWebsite)
 [![CodeFactor](https://www.codefactor.io/repository/github/ruijan/expenseswebsite/badge)](https://www.codefactor.io/repository/github/ruijan/expenseswebsite)
 [![BCH compliance](https://bettercodehub.com/edge/badge/Ruijan/ExpensesWebsite?branch=master)](https://bettercodehub.com/results/Ruijan/ExpensesWebsite)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Ruijan_ExpensesWebsite&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=Ruijan_ExpensesWebsite)
 
 ## How To
 ### Introduction
