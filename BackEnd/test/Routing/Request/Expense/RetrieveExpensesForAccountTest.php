@@ -10,19 +10,26 @@ use BackEnd\Routing\Request\Expense\RetrieveAllExpenses;
 use \BackEnd\Tests\Routing\Request\ConnectedRequestTest;
 use \BackEnd\Database\DBExpenses\DBExpenses;
 use \BackEnd\Expense;
+use \BackEnd\Database\DBAccounts\DBAccounts;
+use \BackEnd\Account\Account;
 
 class RetrieveAllExpensesTest extends ConnectedRequestTest
 {
     protected $expensesTable;
+    protected $accountsTable;
     protected $expense;
+    protected $account;
 
     public function setUp()
     {
         parent::setUp();
         $this->expense = $this->getMockBuilder(Expense::class)->disableOriginalConstructor()
             ->setMethods(['asDict'])->getMock();
-        $this->expensesTable = $this->getMockBuilder(DBExpenses::class)->disableOriginalConstructor()
-            ->setMethods(['getAllExpensesForUser'])->getMock();
+        $this->account = $this->getMockBuilder(Account::class)->disableOriginalConstructor()
+            ->setMethods(['loadExpenses', 'getExpenses', 'asDict'])->getMock();
+        $this->expensesTable = $this->getMockBuilder(DBExpenses::class)->disableOriginalConstructor()->getMock();
+        $this->accountsTable = $this->getMockBuilder(DBAccounts::class)->disableOriginalConstructor()
+            ->setMethods(['getAccountsFromUserID'])->getMock();
     }
 
     public function test__construct()
@@ -39,10 +46,17 @@ class RetrieveAllExpensesTest extends ConnectedRequestTest
         $this->createRequest();
         $this->connectSuccessfullyUser();
 
-        $this->expensesTable->expects($this->once())
-            ->method('getAllExpensesForUser')
-            ->with($this->data["user_id"])->will($this->returnValue(array($this->expense)));
-        $this->expense->expects($this->once())
+
+        $this->accountsTable->expects($this->once())
+            ->method('getAccountsFromUserID')
+            ->with($this->data["user_id"])->will($this->returnValue(array($this->account,$this->account)));
+        $this->account->expects($this->exactly(2))
+            ->method('loadExpenses')
+            ->with($this->expensesTable);
+        $this->account->expects($this->exactly(2))
+            ->method('getExpenses')
+            ->with()->will($this->returnValue(array($this->expense)));
+        $this->expense->expects($this->exactly(2))
             ->method('asDict')
             ->with()->will($this->returnValue($expenses));
         $this->request->execute();
