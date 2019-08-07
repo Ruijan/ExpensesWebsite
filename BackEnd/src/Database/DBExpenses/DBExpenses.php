@@ -10,6 +10,7 @@ namespace BackEnd\Database\DBExpenses;
 use BackEnd\Database\DBCategories\DBCategories;
 use BackEnd\Database\DBCurrencies\DBCurrencies;
 use BackEnd\Database\DBExpenseStates\DBExpenseStates;
+use BackEnd\Database\DBPayees\DBPayees;
 use BackEnd\Database\DBSubCategories\DBSubCategories;
 use BackEnd\Database\DBTables;
 use BackEnd\Database\DBUsers\DBUsers;
@@ -34,7 +35,7 @@ class DBExpenses extends DBTable
     private $categoriesTable;
     /** @var DBSubCategories */
     private $subCategoriesTable;
-    /** @var DBUsers */
+    /** @var DBPayees */
     private $payeesTable;
     /** @var DBCurrencies */
     private $currenciesTable;
@@ -143,7 +144,7 @@ class DBExpenses extends DBTable
             $row["SUB_CATEGORY"] = $this->subCategoriesTable->getSubCategoryFromID($row["SUB_CATEGORY_ID"]);
             $row["PAYEE"] = $this->payeesTable->getPayeeFromID($row["PAYEE_ID"]);
             $row["CURRENCY"] = $this->currenciesTable->getCurrencyFromID($row["CURRENCY_ID"]);
-            $row["STATE"] = $this->statesTable->getStateFromID($row["STATE_ID"]);
+            $row["STATE"] = $this->statesTable->getExpenseStateFromID($row["STATE_ID"]);
             $expenses[] = new Expense($row);
         }
         return $expenses;

@@ -117,8 +117,11 @@ class ExpenseUseCaseTest extends UseCaseTest
             'session_id' => $answerSignIn["DATA"]["SESSION_ID"],
             'user_id' => $answerSignIn["DATA"]["USER_ID"]);
         $answerExpenseCreation = $this->getResponseFromRequest("Create", $this->expenseRequestFactory, $expense);
-        $this->assertResponseStatus($answerPayeeCreation);
+        $this->assertResponseStatus($answerExpenseCreation);
         $expense["expense_id"] = $answerExpenseCreation["DATA"]["ID"];
+        $answerExpenseRetrieval = $this->getResponseFromRequest("RetrieveAllFromAccount", $this->expenseRequestFactory, $expense);
+        $this->assertResponseStatus($answerExpenseRetrieval);
+        $expense["expense_id"] = $answerExpenseRetrieval["DATA"][0]["id"];
         $answerExpenseDeletion = $this->getResponseFromRequest("Delete", $this->expenseRequestFactory, $expense);
         $this->assertResponseStatus($answerExpenseDeletion);
         $answerPayeeDeletion = $this->getResponseFromRequest("Delete", $this->payeeRequestFactory, $payee);

@@ -19,6 +19,9 @@ class ExpenseRequestFactory extends RequestFactory
             case "Create":
                 return new ExpenseCreation($this->database->getTableByName(DBTables::EXPENSES),
                     $this->database->getTableByName(DBTables::USERS), new User(), $data);
+            case "RetrieveAllFromAccount":
+                return new RetrieveAllExpenses($this->database->getTableByName(DBTables::EXPENSES),
+                    $this->database->getTableByName(DBTables::USERS), new User(), $data);
             case "Delete":
                 return new DeleteExpense($this->database->getTableByName(DBTables::EXPENSES),
                     $this->database->getTableByName(DBTables::USERS), new User(), $data);

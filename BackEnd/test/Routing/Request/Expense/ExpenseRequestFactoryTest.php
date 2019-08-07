@@ -12,6 +12,7 @@ use \BackEnd\Routing\Request\Expense\ExpenseCreation;
 use BackEnd\Database\DBTables;
 use \BackEnd\Routing\Request\Expense\ExpenseRequestFactory;
 use BackEnd\Routing\Request\Expense\DeleteExpense;
+use \BackEnd\Routing\Request\Expense\RetrieveAllExpenses;
 
 class ExpenseRequestFactoryTest extends TestCase
 {
@@ -36,11 +37,24 @@ class ExpenseRequestFactoryTest extends TestCase
         $this->assertEquals(ExpenseCreation::class, get_class($request));
     }
 
+    public function testCreateRetrieveAllExpensesFromAccountRequest()
+    {
+        $factory = $this->createSuccessfulFactory();
+        $request = $factory->createRequest("RetrieveAllFromAccount", array());
+        $this->assertEquals(RetrieveAllExpenses::class, get_class($request));
+    }
+
     public function testCreateDeleteExpenseRequest()
     {
         $factory = $this->createSuccessfulFactory();
         $request = $factory->createRequest("Delete", array());
         $this->assertEquals(DeleteExpense::class, get_class($request));
+    }
+
+    public function testCreateWrongTypeOfRequestShouldThrow(){
+        $factory = new ExpenseRequestFactory($this->database);
+        $this->expectException(\InvalidArgumentException::class);
+        $request = $factory->createRequest("Tutut", array());
     }
 
     /**

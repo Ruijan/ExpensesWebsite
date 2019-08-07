@@ -10,30 +10,26 @@ use BackEnd\Routing\Request\Expense\RetrieveAllExpenses;
 use \BackEnd\Tests\Routing\Request\ConnectedRequestTest;
 use \BackEnd\Database\DBExpenses\DBExpenses;
 use \BackEnd\Expense;
-use \BackEnd\Database\DBAccounts\DBAccounts;
-use \BackEnd\Account\Account;
 
-class RetrieveAllExpensesTest extends ConnectedRequestTest
+class RetrieveExpensesForAccountTest extends ConnectedRequestTest
 {
     protected $expensesTable;
-    protected $accountsTable;
     protected $expense;
-    protected $account;
 
     public function setUp()
     {
+        $this->data = array("account_id" => 2);
         parent::setUp();
         $this->expense = $this->getMockBuilder(Expense::class)->disableOriginalConstructor()
-            ->setMethods(['asDict'])->getMock();
-        $this->account = $this->getMockBuilder(Account::class)->disableOriginalConstructor()
-            ->setMethods(['loadExpenses', 'getExpenses', 'asDict'])->getMock();
-        $this->expensesTable = $this->getMockBuilder(DBExpenses::class)->disableOriginalConstructor()->getMock();
-        $this->accountsTable = $this->getMockBuilder(DBAccounts::class)->disableOriginalConstructor()
-            ->setMethods(['getAccountsFromUserID'])->getMock();
+            ->setMethods(['asArray'])->getMock();
+        $this->expensesTable = $this->getMockBuilder(DBExpenses::class)->disableOriginalConstructor()
+            ->setMethods(['getExpensesForAccountID'])->getMock();
+
     }
 
     public function test__construct()
     {
+        $this->mandatoryFields[] = "account_id";
         parent::test__construct();
         $this->assertEquals($this->expensesTable, $this->request->getExpensesTable());
     }
@@ -46,18 +42,11 @@ class RetrieveAllExpensesTest extends ConnectedRequestTest
         $this->createRequest();
         $this->connectSuccessfullyUser();
 
-
-        $this->accountsTable->expects($this->once())
-            ->method('getAccountsFromUserID')
-            ->with($this->data["user_id"])->will($this->returnValue(array($this->account,$this->account)));
-        $this->account->expects($this->exactly(2))
-            ->method('loadExpenses')
-            ->with($this->expensesTable);
-        $this->account->expects($this->exactly(2))
-            ->method('getExpenses')
-            ->with()->will($this->returnValue(array($this->expense)));
-        $this->expense->expects($this->exactly(2))
-            ->method('asDict')
+        $this->expensesTable->expects($this->once())
+            ->method('getExpensesForAccountID')
+            ->with($this->data["account_id"])->will($this->returnValue(array($this->expense)));
+        $this->expense->expects($this->exactly(1))
+            ->method('asArray')
             ->with()->will($this->returnValue($expenses));
         $this->request->execute();
         $response = json_decode($this->request->getResponse(), $assoc = true);

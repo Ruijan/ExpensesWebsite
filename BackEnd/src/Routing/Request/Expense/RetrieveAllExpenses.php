@@ -18,10 +18,12 @@ class RetrieveAllExpenses extends ConnectedRequest
 {
     /** @var DBExpenses */
     protected $expensesTable;
+    protected $accountsTable;
+    protected $accountId;
 
     public function __construct($expensesTable, $usersTable, $user, $data)
     {
-        parent::__construct("RetrieveAllExpenses", [], $usersTable, $user, $data);
+        parent::__construct("RetrieveExpensesForAccount", ["account_id"], $usersTable, $user, $data);
         $this->expensesTable = $expensesTable;
     }
 
@@ -30,11 +32,11 @@ class RetrieveAllExpenses extends ConnectedRequest
         try {
             $this->checkRequiredParameters();
             $this->tryConnectingUser();
-            $expenses = $this->expensesTable->getAllExpensesForUser($this->userId);
+            $expenses = $this->expensesTable->getExpensesForAccountID($this->accountId);
             $this->response["STATUS"] = "OK";
             $this->response["DATA"] = array();
             foreach ($expenses as $expense) {
-                $this->response["DATA"][] = $expense->asDict();
+                $this->response["DATA"][] = $expense->asArray();
             }
         } catch (MissingParametersException | InvalidSessionException $exception) {
             $this->buildResponseFromException($exception);

@@ -125,6 +125,11 @@ class Account
         $this->data["id"] = $accountID;
     }
 
+    public function getID()
+    {
+        return $this->data["id"];
+    }
+
     public function asPrintableArray()
     {
         $keys = array("name", "currency", "current_amount", "user");
