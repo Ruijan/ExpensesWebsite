@@ -70,7 +70,7 @@ class DBExpensesTest extends TableCreationTest
         $this->subCategoriesTable = parent::getMockBuilder(DBSubCategories::class)->disableOriginalConstructor()->setMethods(['getSubCategoryFromID'])->getMock();
         $this->payeesTable = parent::getMockBuilder(DBPayees::class)->disableOriginalConstructor()->setMethods(['getPayeeFromID'])->getMock();
         $this->currenciesTable = parent::getMockBuilder(DBCurrencies::class)->disableOriginalConstructor()->setMethods(['getCurrencyFromID'])->getMock();
-        $this->statesTable = parent::getMockBuilder(DBStates::class)->disableOriginalConstructor()->setMethods(['getStateFromID'])->getMock();
+        $this->statesTable = parent::getMockBuilder(DBStates::class)->disableOriginalConstructor()->setMethods(['getExpenseStateFromID'])->getMock();
     }
 
     public function createTable()
@@ -172,7 +172,7 @@ class DBExpensesTest extends TableCreationTest
             ->method('getCurrencyFromID')
             ->with($this->expenseArray["currency_id"])->will($this->returnValue("CHF"));
         $this->statesTable->expects($this->exactly(2))
-            ->method('getStateFromID')
+            ->method('getExpenseStateFromID')
             ->with($this->expenseArray["state_id"])->will($this->returnValue("Paid"));
         $this->table->addExpense($this->expense);
         $this->table->addExpense($this->expense);
@@ -184,5 +184,34 @@ class DBExpensesTest extends TableCreationTest
             $this->assertEquals($this->expenseArray, $expense->asArray());
             $count += 1;
         }
+    }
+
+    public function testDoesExpenseIDExistShouldReturnFalse(){
+        $exists = $this->table->doesExpenseIDExist(1);
+        $this->assertFalse($exists);
+    }
+
+    public function testDoesExpenseIDExistShouldReturnTrue(){
+        $expenseID = $this->addExpense();
+        $exists = $this->table->doesExpenseIDExist($expenseID);
+        $this->assertTrue($exists);
+    }
+
+    public function testDeleteExpense(){
+        $expenseID = $this->addExpense();
+        $this->table->deleteExpense($expenseID);
+        $this->assertFalse($this->table->doesExpenseIDExist($expenseID));
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function addExpense()
+    {
+        $this->expense->expects($this->once())
+            ->method('asArray')
+            ->with()->will($this->returnValue($this->expenseArray));
+        $expenseID = $this->table->addExpense($this->expense);
+        return $expenseID;
     }
 }

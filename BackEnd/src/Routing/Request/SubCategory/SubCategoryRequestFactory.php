@@ -10,41 +10,28 @@ namespace BackEnd\Routing\Request\SubCategory;
 
 use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
+use BackEnd\Routing\Request\RequestFactory;
 use BackEnd\User;
 use BackEnd\Routing\Request\SubCategory\SubCategoryCreation;
 
 
-class SubCategoryRequestFactory
+class SubCategoryRequestFactory extends RequestFactory
 {
-    /** @var Database */
-    private $database;
-
-    public function __construct($database)
+    public function createRequest($type, $data)
     {
-        $this->database = $database;
-    }
-
-    public function createRequest($type)
-    {
-        $postArray = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
         switch ($type) {
             case "Create":
                 return new SubCategoryCreation($this->database->getTableByName(DBTables::SUBCATEGORIES),
                     $this->database->getTableByName(DBTables::CATEGORIES),
-                    $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
+                    $this->database->getTableByName(DBTables::USERS), new User(), $data);
             case "RetrieveAll":
                 return new RetrieveAllSubCategories($this->database->getTableByName(DBTables::SUBCATEGORIES),
-                    $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
+                    $this->database->getTableByName(DBTables::USERS), new User(), $data);
             case "Delete":
                 return new DeleteSubCategory($this->database->getTableByName(DBTables::SUBCATEGORIES),
-                    $this->database->getTableByName(DBTables::USERS), new User(),$postArray);
+                    $this->database->getTableByName(DBTables::USERS), new User(), $data);
             default:
                 throw new \InvalidArgumentException("Request type: " . $type . " not found.");
         }
-    }
-
-    public function getDatabase()
-    {
-        return $this->database;
     }
 }

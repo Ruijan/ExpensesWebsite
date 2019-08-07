@@ -23,21 +23,21 @@ class PayeeRequestFactoryTest extends TestCase
     public function testCreateExpenseStateCreationRequest()
     {
         $factory = $this->createSuccessfulFactory();
-        $request = $factory->createRequest("Create");
+        $request = $factory->createRequest("Create", array());
         $this->assertEquals(\BackEnd\Routing\Request\Payee\PayeeCreation::class, get_class($request));
     }
 
     public function testCreateRetrieveAllExpenseStatesRequest()
     {
         $factory = $this->createSuccessfulFactory();
-        $request = $factory->createRequest("RetrieveAll");
+        $request = $factory->createRequest("RetrieveAll", array());
         $this->assertEquals(\BackEnd\Routing\Request\Payee\RetrieveAllPayees::class, get_class($request));
     }
 
     public function testCreateDeleteExpenseStateRequest()
     {
         $factory = $this->createSuccessfulFactory();
-        $request = $factory->createRequest("Delete");
+        $request = $factory->createRequest("Delete", array());
         $this->assertEquals(\BackEnd\Routing\Request\Payee\DeletePayee::class, get_class($request));
     }
 
@@ -50,7 +50,7 @@ class PayeeRequestFactoryTest extends TestCase
     public function testCreateWrongTypeOfRequestShouldThrow(){
         $factory = new PayeeRequestFactory($this->database);
         $this->expectException(\InvalidArgumentException::class);
-        $request = $factory->createRequest("Tutut");
+        $request = $factory->createRequest("Tutut", array());
     }
 
     /**

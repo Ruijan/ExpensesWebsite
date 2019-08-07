@@ -8,7 +8,7 @@
 
 namespace BackEnd\Routing\Request\Connection;
 use BackEnd\Database\DBUsers\DBUsers;
-use BackEnd\Database\DBUsers\InsertionException;
+use BackEnd\Database\InsertionException;
 use BackEnd\Database\DBUsers\UndefinedUserEmail;
 use BackEnd\Routing\Request\Request;
 use BackEnd\Routing\Request\MissingParametersException;

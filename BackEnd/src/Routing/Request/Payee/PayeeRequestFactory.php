@@ -9,39 +9,25 @@
 namespace BackEnd\Routing\Request\Payee;
 
 use BackEnd\Database\DBTables;
+use BackEnd\Routing\Request\RequestFactory;
 use BackEnd\User;
-use BackEnd\Database\Database;
 
-class PayeeRequestFactory
+class PayeeRequestFactory extends RequestFactory
 {
-    /** @var Database */
-    private $database;
-
-    public function __construct($database)
+    public function createRequest($type, $data)
     {
-        $this->database = $database;
-    }
-
-    public function createRequest($type)
-    {
-        $postArray = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
         switch ($type) {
             case "Create":
                 return new PayeeCreation($this->database->getTableByName(DBTables::PAYEES),
-                    $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
+                    $this->database->getTableByName(DBTables::USERS), new User(), $data);
             case "RetrieveAll":
                 return new RetrieveAllPayees($this->database->getTableByName(DBTables::PAYEES),
-                    $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
+                    $this->database->getTableByName(DBTables::USERS), new User(), $data);
             case "Delete":
                 return new DeletePayee($this->database->getTableByName(DBTables::PAYEES),
-                    $this->database->getTableByName(DBTables::USERS), new User(), $postArray);
+                    $this->database->getTableByName(DBTables::USERS), new User(), $data);
             default:
                 throw new \InvalidArgumentException("Request type: " . $type . " not found.");
         }
-    }
-
-    public function getDatabase()
-    {
-        return $this->database;
     }
 }

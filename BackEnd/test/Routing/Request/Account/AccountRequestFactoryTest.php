@@ -35,7 +35,7 @@ class AccountRequestFactoryTest extends TestCase
             ->method('getTableByName')
             ->withConsecutive([DBTables::ACCOUNTS], [DBTables::USERS]);
         $factory = new AccountRequestFactory($this->database);
-        $request = $factory->createRequest("Create");
+        $request = $factory->createRequest("Create", array());
         $this->assertEquals(AccountCreation::class, get_class($request));
     }
 
@@ -44,7 +44,7 @@ class AccountRequestFactoryTest extends TestCase
             ->method('getTableByName')
             ->withConsecutive([DBTables::ACCOUNTS], [DBTables::USERS]);
         $factory = new AccountRequestFactory($this->database);
-        $request = $factory->createRequest("Delete");
+        $request = $factory->createRequest("Delete", array());
         $this->assertEquals(DeleteAccount::class, get_class($request));
     }
 
@@ -53,13 +53,13 @@ class AccountRequestFactoryTest extends TestCase
             ->method('getTableByName')
             ->withConsecutive([DBTables::ACCOUNTS], [DBTables::USERS]);
         $factory = new AccountRequestFactory($this->database);
-        $request = $factory->createRequest("Retrieve");
+        $request = $factory->createRequest("Retrieve", array());
         $this->assertEquals(RetrieveAccounts::class, get_class($request));
     }
 
     public function testCreateWrongTypeOfRequestShouldThrow(){
         $factory = new AccountRequestFactory($this->database);
         $this->expectException(\InvalidArgumentException::class);
-        $request = $factory->createRequest("Tutut");
+        $request = $factory->createRequest("Tutut", array());
     }
 }
