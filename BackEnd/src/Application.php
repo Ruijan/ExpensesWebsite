@@ -10,6 +10,10 @@ namespace BackEnd;
 use BackEnd\Database\DBTableFactory;
 use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
+use BackEnd\Routing\Request\Category\CategoryRequestFactory;
+use BackEnd\Routing\Request\ExpenseState\ExpenseStateRequestFactory;
+use BackEnd\Routing\Request\Payee\PayeeRequestFactory;
+use BackEnd\Routing\Request\SubCategory\SubCategoryRequestFactory;
 use BackEnd\Routing\Request\Connection\ConnectionRequestFactory;
 use BackEnd\Routing\Request\Account\AccountRequestFactory;
 use BackEnd\Routing\Request\Currency\CurrencyRequestFactory;
@@ -18,7 +22,9 @@ use BackEnd\Routing\Router;
 
 class Application
 {
+    /** @var Database */
     private $database;
+    /** @var Router */
     private $router;
 
     public function __construct(){
@@ -52,11 +58,19 @@ class Application
     private function initRouter(){
         $connectionRequestFactory = new ConnectionRequestFactory($this->database);
         $accountRequestFactory = new AccountRequestFactory($this->database);
-        $currencyRquestFactory = new CurrencyRequestFactory($this->database);
+        $currencyRequestFactory = new CurrencyRequestFactory($this->database);
+        $categoryRequestFactory = new CategoryRequestFactory($this->database);
+        $subCategoryRequestFactory = new SubCategoryRequestFactory($this->database);
+        $expenseStateRequestFactory = new ExpenseStateRequestFactory($this->database);
+        $payeeRequestFactory = new PayeeRequestFactory($this->database);
         $this->router = new Router(new ServerProperties(),
             ["connection" => $connectionRequestFactory,
                 "account" => $accountRequestFactory,
-                "currency" => $currencyRquestFactory]);
+                "currency" => $currencyRequestFactory,
+                "category" => $categoryRequestFactory,
+                "sub_category" => $subCategoryRequestFactory,
+                "expense_state" => $expenseStateRequestFactory,
+                "payee" => $payeeRequestFactory]);
     }
 
     private function getDBParameters(): array{

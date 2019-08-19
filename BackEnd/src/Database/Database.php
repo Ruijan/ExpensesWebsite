@@ -3,8 +3,11 @@ namespace BackEnd\Database;
 
 class Database
 {
+    /** @var \mysqli */
     protected $driver;
+    /** @var string */
     protected $databaseName;
+    /** @var array  */
     protected $tables = [];
     public function __construct($driver, $databaseName)
     {

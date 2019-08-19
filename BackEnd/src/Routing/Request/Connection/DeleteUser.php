@@ -27,7 +27,7 @@ class DeleteUser extends Request
     public function __construct($usersTable, array $data)
     {
         $mandatoryFields = ["email", "password"];
-        parent::__construct($data, $mandatoryFields);
+        parent::__construct($data, $mandatoryFields, "DeleteUser");
         $this->usersTable = $usersTable;
     }
 
@@ -40,8 +40,7 @@ class DeleteUser extends Request
             $this->response["STATUS"] = "OK";
         }
         catch(MissingParametersException | InvalidCredentialsException | UndefinedUserEmail $exception){
-            $this->response["STATUS"] = "ERROR";
-            $this->response["ERROR_MESSAGE"] = $exception->getMessage();
+            $this->buildResponseFromException($exception);
         }
         $this->response = json_encode($this->response);
     }

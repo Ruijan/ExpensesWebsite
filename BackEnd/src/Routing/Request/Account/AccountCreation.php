@@ -18,31 +18,24 @@ use BackEnd\Database\DBAccounts\AccountDuplicationException;
 use BackEnd\Database\DBAccounts\CurrencyIDException;
 use BackEnd\Database\DBAccounts\UserIDException;
 
-class AccountCreation extends Request
+class AccountCreation extends AccountRequest
 {
     protected $name;
     protected $currentAmount;
     protected $currencyId;
-    protected $sessionId;
-    protected $userId;
+
     /** @var Account */
     protected $account;
-    /** @var User */
-    protected $user;
-    /** @var DBAccounts */
-    protected $accountsTable;
-    /** @var DBUsers */
-    protected $usersTable;
-    /** @var string */
-    protected $response;
 
     public function __construct($accountsTable, $usersTable, $user, $data)
     {
-        $mandatoryFields = ["name", "session_id", "user_id", "current_amount", "currency_id"];
-        parent::__construct($data, $mandatoryFields);
-        $this->accountsTable = $accountsTable;
-        $this->usersTable = $usersTable;
-        $this->user = $user;
+        $mandatoryFields = ["name", "current_amount", "currency_id"];
+        parent::__construct("AccountCreation",
+            $mandatoryFields,
+            $accountsTable,
+            $usersTable,
+            $user,
+            $data);
     }
 
     public function execute(): void{
@@ -57,29 +50,9 @@ class AccountCreation extends Request
         catch(MissingParametersException | InvalidSessionException |
         \BackEnd\Database\DBAccounts\InsertionException | AccountDuplicationException |
         CurrencyIDException | UserIDException $exception){
-            $this->response["STATUS"] = "ERROR";
-            $this->response["ERROR_MESSAGE"] = $exception->getMessage();
+            $this->buildResponseFromException($exception);
         }
         $this->response = json_encode($this->response);
-    }
-
-    public function getAccountsTable(){
-        return $this->accountsTable;
-    }
-
-    public function getUsersTable(){
-        return $this->usersTable;
-    }
-
-    /**
-     * @throws InvalidSessionException
-     */
-    protected function tryConnectingUser(): void
-    {
-        $this->user->connectWithSessionID($this->usersTable, $this->sessionId, $this->userId);
-        if (!$this->user->isConnected()) {
-            throw new InvalidSessionException("AccountCreation");
-        }
     }
 
     /**

@@ -13,10 +13,11 @@ class ArrayToPropertiesSetter
 {
     public function __construct($array)
     {
-        foreach ($array as $key => $value) {
-            $this->{$this->toCamelCase($key)} = $value;
+        if(!empty($array)){
+            foreach ($array as $key => $value) {
+                $this->{$this->toCamelCase($key)} = $value;
+            }
         }
-
     }
 
     public function toCamelCase($string)

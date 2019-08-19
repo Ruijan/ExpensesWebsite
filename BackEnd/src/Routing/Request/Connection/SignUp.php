@@ -8,7 +8,7 @@
 
 namespace BackEnd\Routing\Request\Connection;
 use BackEnd\Database\DBUsers\DBUsers;
-use BackEnd\Database\DBUsers\InsertionException;
+use BackEnd\Database\InsertionException;
 use BackEnd\Database\DBUsers\UndefinedUserEmail;
 use BackEnd\Routing\Request\Request;
 use BackEnd\Routing\Request\MissingParametersException;
@@ -28,7 +28,7 @@ class SignUp extends Request
     public function __construct($usersTable, $data)
     {
         $mandatoryFields = ["email", "password", "first_name", "last_name"];
-        parent::__construct($data, $mandatoryFields);
+        parent::__construct($data, $mandatoryFields, "SignUp");
         $this->usersTable = $usersTable;
         $registeredDate = new \DateTime("now", new \DateTimeZone("UTC"));
         $this->registeredDate = $registeredDate->format("Y-m-d H:i:s");
@@ -45,8 +45,7 @@ class SignUp extends Request
             $this->response["STATUS"] = "OK";
             $this->response["DATA"] = $addedUser;
         }catch(InsertionException | MissingParametersException | UndefinedUserEmail $exception){
-            $this->response["STATUS"] = "ERROR";
-            $this->response["ERROR_MESSAGE"] = $exception->getMessage();
+            $this->buildResponseFromException($exception);
         }
         $this->response = json_encode($this->response);
     }

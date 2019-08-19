@@ -10,23 +10,19 @@ namespace BackEnd\Routing\Request\Connection;
 
 use BackEnd\Database\Database;
 use BackEnd\Database\DBTables;
+use BackEnd\Routing\Request\RequestFactory;
 use BackEnd\User;
 
-class ConnectionRequestFactory
+class ConnectionRequestFactory extends RequestFactory
 {
-    private $database;
-    public function __construct(Database $database)
-    {
-        $this->database = $database;
-    }
-
-    public function createRequest($type){
-        $postArray = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
+    public function createRequest($type, $data){
         switch($type){
             case "SignIn":
-                return new SignIn($this->database->getTableByName(DBTables::USERS), new User(), $postArray);
+                return new SignIn($this->database->getTableByName(DBTables::USERS), new User(), $data);
+            case "Delete":
+                return new DeleteUser($this->database->getTableByName(DBTables::USERS), $data);
             case "SignUp":
-                return new SignUp($this->database->getTableByName(DBTables::USERS), $postArray);
+                return new SignUp($this->database->getTableByName(DBTables::USERS), $data);
             default:
                 throw new \InvalidArgumentException("Request type: ".$type." not found.");
         }

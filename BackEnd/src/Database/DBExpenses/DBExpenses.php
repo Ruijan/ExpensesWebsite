@@ -7,14 +7,17 @@
  */
 
 namespace BackEnd\Database\DBExpenses;
+use BackEnd\Database\DBCategories\DBCategories;
+use BackEnd\Database\DBCurrencies\DBCurrencies;
+use BackEnd\Database\DBExpenseStates\DBExpenseStates;
+use BackEnd\Database\DBPayees\DBPayees;
+use BackEnd\Database\DBSubCategories\DBSubCategories;
 use BackEnd\Database\DBTables;
-use mysql_xdevapi\Exception;
+use BackEnd\Database\DBUsers\DBUsers;
 
 use BackEnd\Database\DBTable;
 use BackEnd\Expense;
-use BackEnd\Database\DBExpenses\WrongTypeKeyException;
-use BackEnd\Database\DBExpenses\InsertionKeyException;
-use BackEnd\Database\DBExpenses\InsertionException;
+use BackEnd\Database\InsertionException;
 
 class DBExpenses extends DBTable
 {
@@ -28,10 +31,15 @@ class DBExpenses extends DBTable
         "AMOUNT" => "double",
         "CURRENCY_ID" => "integer",
         "STATE_ID" => "integer"];
+    /** @var DBCategories */
     private $categoriesTable;
+    /** @var DBSubCategories */
     private $subCategoriesTable;
+    /** @var DBPayees */
     private $payeesTable;
+    /** @var DBCurrencies */
     private $currenciesTable;
+    /** @var DBExpenseStates */
     private $statesTable;
     public function __construct($database){
         parent::__construct($database, "expenses");
@@ -56,9 +64,15 @@ class DBExpenses extends DBTable
             PRIMARY KEY  (ID)";
     }
 
+    /**
+     * @param $expense
+     * @throws InsertionException
+     * @return int insertion id
+     */
     public function addExpense($expense){
         $query = $this->getInsertExpenseQuery($expense);
         $this->tryAddingExpense($query);
+        return $this->driver->insert_id;
     }
 
     protected function getInsertExpenseQuery($expense): string
@@ -71,6 +85,10 @@ class DBExpenses extends DBTable
         return $query;
     }
 
+    /**
+     * @param string $query
+     * @throws InsertionException
+     */
     protected function tryAddingExpense(string $query): void
     {
         $resultQuery = $this->driver->query($query);
@@ -88,6 +106,16 @@ class DBExpenses extends DBTable
             $properties[$key] = $value;
         }
         return $properties;
+    }
+
+    public function doesExpenseIDExist($expenseID)
+    {
+        $query = "SELECT ID FROM " . $this->name . " WHERE ID = " . $this->driver->real_escape_string($expenseID);
+        $result = $this->driver->query($query);
+        if ($result->num_rows == 0) {
+            return false;
+        }
+        return true;
     }
 
     protected function tryGettingValueFromKey($key, $expenseProperties, $type)
@@ -116,10 +144,16 @@ class DBExpenses extends DBTable
             $row["SUB_CATEGORY"] = $this->subCategoriesTable->getSubCategoryFromID($row["SUB_CATEGORY_ID"]);
             $row["PAYEE"] = $this->payeesTable->getPayeeFromID($row["PAYEE_ID"]);
             $row["CURRENCY"] = $this->currenciesTable->getCurrencyFromID($row["CURRENCY_ID"]);
-            $row["STATE"] = $this->statesTable->getStateFromID($row["STATE_ID"]);
+            $row["STATE"] = $this->statesTable->getExpenseStateFromID($row["STATE_ID"]);
             $expenses[] = new Expense($row);
         }
         return $expenses;
+    }
+
+    public function deleteExpense($expenseID)
+    {
+        $query = "DELETE FROM " . $this->name . " WHERE ID='" . $this->driver->real_escape_string($expenseID) . "'";
+        $this->driver->query($query);
     }
 
     public function getCategoriesTable(){

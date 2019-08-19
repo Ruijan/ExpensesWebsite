@@ -5,21 +5,21 @@
 [![Build Status](https://travis-ci.org/Ruijan/ExpensesWebsite.svg?branch=master)](https://travis-ci.org/Ruijan/ExpensesWebsite)
 [![CodeFactor](https://www.codefactor.io/repository/github/ruijan/expenseswebsite/badge)](https://www.codefactor.io/repository/github/ruijan/expenseswebsite)
 [![BCH compliance](https://bettercodehub.com/edge/badge/Ruijan/ExpensesWebsite?branch=master)](https://bettercodehub.com/results/Ruijan/ExpensesWebsite)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Ruijan_ExpensesWebsite&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=Ruijan_ExpensesWebsite)
 
 ## How To
 ### Introduction
 Every request is a HTTP request. It can be a GET or a POST request. 
-Dev server: heroku
-Prod server: heroku
+Dev server: https://pixelnos-ledger-api.herokuapp.com
+Prod server: https://pixelnos-ledger-api.herokuapp.com
 
 To send a request:
 Request: `connection/SignIn`
-Beta: `heroku.com/request`
-Current: `heroku.com/BackEnd/index.php?action=request`
+Current: `https://pixelnos-ledger-api.herokuapp.com/BackEnd/index.php?action=request`
 
 Example in PHP:
 ```php
-$url = 'heroku.com/BackEnd/index.php?action=connection/SignIn';
+$url = 'https://pixelnos-ledger-api.herokuapp.com/BackEnd/index.php?action=connection/SignIn';
 $data = array('email' => 'example@host.com', 'password' => '123456789');
 $options = array(
     'http' => array(
@@ -37,9 +37,35 @@ $result = file_get_contents($url, false, $context);
 *   SignUp: `connection/SignUp`. Required: `email` (string), `password` (string), `first_name` (string), `last_name` (string)
 
 ### Accounts
-*   Creation: `account/Create`. Required: `user_id` (int), `user_key` (int), `name` (string), `currency_id` (int), `current_amount` (float)
-*   Creation: `account/Retrieve`. Required: `user_id` (int), `user_key` (int), `id` (int)
-*   Creation: `account/RetrieveAll`. Required: `user_id` (int), `user_key` (int)
+*   Creation: `account/Create`. Required: `user_id` (int), `session_id` (int), `name` (string), `currency_id` (int), `current_amount` (float)
+*   Retrieve one belonging to user: `account/Retrieve`. Required: `user_id` (int), `session_id` (int), `id` (int)
+*   Retrieve all belonging to user: `account/RetrieveAll`. Required: `user_id` (int), `session_id` (int)
+*   Delete: `account/Delete`. Required:  `category_id`(int), `session_id`(int), `user_id`(int)
+
+### Currencies
+*   Creation: `currency/Create`. Required: `name`(string),  `short_name`(string), `session_id`(int), `user_id`(int)
+*   Retrieve all existing sub categories: `currency/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
+*   Delete: `currency/Delete`. Required:   `name`(string),  `short_name`(string), `user_id` (int), `session_id` (int)
+
+### Categories
+*   Creation: `category/Create`. Required: `name`(string), `session_id`(int), `user_id`(int)
+*   Retrieve all existing categories: `category/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
+
+### SubCategories
+*   Creation: `sub_category/Create`. Required: `name`(string),  `parent_id`(int), `session_id`(int), `user_id`(int)
+*   Retrieve all existing sub categories: `sub_category/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
+*   Delete: `sub_category/Delete`. Required:  `category_id`(int), `user_id` (int), `session_id` (int)
+
+### ExpenseStates
+*   Creation: `expenses_state/Create`. Required: `name`(string),   `session_id`(int), `user_id`(int)
+*   Retrieve all existing sub categories: `expenses_state/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
+*   Delete: `expenses_state/Delete`. Required:  `state_id`(int), `user_id` (int), `session_id` (int)
+
+### Payees
+*   Creation: `payee/Create`. Required: `name`(string),  `session_id`(int), `user_id`(int)
+*   Retrieve all existing sub categories: `payee/RetrieveAll`. Required: `session_id`(int), `user_id`(int)
+*   Delete: `payee/Delete`. Required:  `payee_id`(int), `user_id` (int), `session_id` (int)
+
 
 ## Install
 

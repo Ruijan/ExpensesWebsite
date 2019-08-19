@@ -7,9 +7,9 @@
  */
 
 namespace BackEnd\Database\DBCategories;
+use BackEnd\Category;
 use BackEnd\Database\DBTable;
-use BackEnd\Database\DBUsers\DBUsers;
-use BackEnd\Database\DBCategories\InsertionException;
+use BackEnd\Database\InsertionException;
 
 class DBCategories extends DBTable
 {
@@ -32,27 +32,45 @@ class DBCategories extends DBTable
         return $this->usersTable;
     }
 
+    /**
+     * @param Category $category
+     * @throws InsertionException
+     */
     public function addCategory($category){
-        if($this->usersTable->checkIfIDExists($category["USER_ID"]) == false){
-            throw new InsertionException($category, $this->name, "User ID does not exist.");
+        if($this->usersTable->doesUserIDExist($category->getUserID()) == false){
+            throw new InsertionException("category", $category->asDict(), $this->name, "User ID does not exist.");
         }
-        $values = [];
-        $indexValue = 0;
-        foreach ($category as $value) {
-            $values[$indexValue] = '"'.$this->driver->real_escape_string($value).'"';
-            $indexValue += 1;
-        }
-        $values = implode(", ", $values);
         $query = 'INSERT INTO '.$this->driver->real_escape_string($this->name).
-            ' (NAME, USER_ID, ADDED_DATE) VALUES ('.$values.')';
+            ' (NAME, USER_ID, ADDED_DATE) VALUES ("'.$this->driver->real_escape_string($category->getName()).
+            '", '.$this->driver->real_escape_string($category->getUserID()).
+            ', "'.$this->driver->real_escape_string($category->getAddedDate()).'")';
         if ($this->driver->query($query) === FALSE) {
-            throw new InsertionException($category, $this->name, $this->driver->error_list[0]["error"]);
+            throw new InsertionException("category", $category->asDict(), $this->name, $this->driver->error_list[0]["error"]);
         }
+        $category->setID($this->driver->insert_id);
     }
 
     public function getCategoryFromID($categoryID){
         $query = "SELECT * FROM ".$this->getName()." WHERE ID = '".$this->driver->real_escape_string($categoryID)."'";
         $row = $this->driver->query($query)->fetch_assoc();
         return $row;
+    }
+
+    public function doesCategoryIDExist($userID){
+        $query = "SELECT ID FROM " . $this->name . " WHERE ID = " . $this->driver->real_escape_string($userID);
+        $result = $this->driver->query($query);
+        return $result != false and  $result->num_rows != 0;
+    }
+
+    public function getAllCategories(){
+        $query = "SELECT * FROM ".$this->getName();
+        $result = $this->driver->query($query);
+        $categories = [];
+        while ($result and $row = $result->fetch_assoc()) {
+            $category = new Category($row["NAME"], $row["USER_ID"], $row["ADDED_DATE"]);
+            $category->setID($row["ID"]);
+            $categories[] = $category;
+        }
+        return $categories;
     }
 }

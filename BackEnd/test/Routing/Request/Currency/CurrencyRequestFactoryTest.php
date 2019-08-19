@@ -10,6 +10,9 @@ use BackEnd\Routing\Request\Currency\CurrencyRequestFactory;
 use PHPUnit\Framework\TestCase;
 use BackEnd\Database\DBTables;
 use BackEnd\Routing\Request\Currency\CurrencyCreation;
+use \BackEnd\Routing\Request\Currency\DeleteCurrency;
+use \BackEnd\Routing\Request\Currency\RetrieveAllCurrencies;
+use BackEnd\Database\Database;
 
 class CurrencyRequestFactoryTest extends TestCase
 {
@@ -28,17 +31,34 @@ class CurrencyRequestFactoryTest extends TestCase
     }
 
     public function testCreateCurrencyCreationRequest(){
-        $this->database->expects($this->once())
+        $this->database->expects($this->exactly(2))
+            ->method('getTableByName')
+            ->withConsecutive([DBTables::CURRENCIES], [DBTables::USERS]);
+        $factory = new CurrencyRequestFactory($this->database);
+        $request = $factory->createRequest("Create", array());
+        $this->assertEquals(CurrencyCreation::class, get_class($request));
+    }
+    public function testCreateCurrencyDeleteRequest(){
+        $this->database->expects($this->exactly(2))
+            ->method('getTableByName')
+            ->withConsecutive([DBTables::CURRENCIES], [DBTables::USERS]);
+        $factory = new CurrencyRequestFactory($this->database);
+        $request = $factory->createRequest("Delete", array());
+        $this->assertEquals(DeleteCurrency::class, get_class($request));
+    }
+
+    public function testCreateRetrieveAllRequest(){
+        $this->database->expects($this->exactly(1))
             ->method('getTableByName')
             ->with(DBTables::CURRENCIES);
         $factory = new CurrencyRequestFactory($this->database);
-        $request = $factory->createRequest("Create");
-        $this->assertEquals(CurrencyCreation::class, get_class($request));
+        $request = $factory->createRequest("RetrieveAll", array());
+        $this->assertEquals(RetrieveAllCurrencies::class, get_class($request));
     }
 
     public function testCreateWrongTypeOfRequestShouldThrow(){
         $factory = new CurrencyRequestFactory($this->database);
         $this->expectException(\InvalidArgumentException::class);
-        $factory->createRequest("Tutut");
+        $factory->createRequest("Tutut", array());
     }
 }

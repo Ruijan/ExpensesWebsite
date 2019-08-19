@@ -58,7 +58,8 @@ class Router
         }
         unset($path[0]);
         $newRoute = implode('/', $path);
-        $this->request = $this->requestFactories[$factoryName]->createRequest($newRoute);
+        $postArray = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
+        $this->request = $this->requestFactories[$factoryName]->createRequest($newRoute, $postArray);
     }
 
     public function getResponse(){

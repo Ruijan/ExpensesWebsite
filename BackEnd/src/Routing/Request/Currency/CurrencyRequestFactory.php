@@ -9,27 +9,27 @@
 namespace BackEnd\Routing\Request\Currency;
 use BackEnd\Database\DBTables;
 use BackEnd\Database\Database;
+use BackEnd\Routing\Request\RequestFactory;
+use BackEnd\User;
 
-class CurrencyRequestFactory
+class CurrencyRequestFactory extends RequestFactory
 {
-    private $database;
-    public function __construct($database)
-    {
-        $this->database = $database;
-    }
-
-    public function createRequest($type){
-        $postArray = filter_var_array($_POST, FILTER_SANITIZE_SPECIAL_CHARS);
+    public function createRequest($type, $data){
         switch($type){
             case "Create":
                 return new CurrencyCreation($this->database->getTableByName(DBTables::CURRENCIES),
-                    $postArray);
+                    $this->database->getTableByName(DBTables::USERS),
+                    new User(),
+                    $data);
+            case "Delete":
+                return new DeleteCurrency($this->database->getTableByName(DBTables::CURRENCIES),
+                    $this->database->getTableByName(DBTables::USERS),
+                    new User(),
+                    $data);
+            case "RetrieveAll":
+                return new RetrieveAllCurrencies($this->database->getTableByName(DBTables::CURRENCIES), $data);
             default:
                 throw new \InvalidArgumentException("Request type: ".$type." not found.");
         }
-    }
-
-    public function getDatabase(){
-        return $this->database;
     }
 }

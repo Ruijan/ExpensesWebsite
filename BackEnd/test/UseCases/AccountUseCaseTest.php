@@ -7,99 +7,65 @@
  */
 
 namespace BackEnd\Tests\UseCases;
-use BackEnd\Application;
-use BackEnd\Database\Database;
-use PHPUnit\Framework\TestCase;
-use BackEnd\Database\DBTables;
-use BackEnd\User;
+use BackEnd\Routing\Request\Account\AccountRequestFactory;
+use BackEnd\Routing\Request\Connection\ConnectionRequestFactory;
+use BackEnd\Routing\Request\Currency\CurrencyRequestFactory;
 
-class AccountUseCaseTest extends TestCase
+
+class AccountUseCaseTest extends UseCaseTest
 {
-    /** @var Database */
-    private $db;
+
+    /** @var AccountRequestFactory */
+    private $accountRequestFactory;
+    /** @var ConnectionRequestFactory */
+    private $userRequestFactory;
+    /** @var CurrencyRequestFactory */
+    private $currencyRequestFactory;
+
     public function setUp(){
-        $app = new Application();
-        $this->db = $app->getDatabase();
+        parent::setUp();
+        $this->accountRequestFactory = new AccountRequestFactory($this->db);
+        $this->userRequestFactory = new ConnectionRequestFactory($this->db);
+        $this->currencyRequestFactory = new CurrencyRequestFactory($this->db);
     }
 
-    public function test__AccountCreation(){
+    public function testPipelineExecution(){
         $user = array("email" => "test@example.com",
             "password" => "12345678",
             "first_name" => "juju",
             "last_name" => "david");
+
+
+        $answerSignUp = $this->getResponseFromRequest("SignUp", $this->userRequestFactory, $user);
+        $this->assertResponseStatus($answerSignUp);
+        $answerSignIn = $this->getResponseFromRequest("SignIn", $this->userRequestFactory, $user);
+        $this->assertResponseStatus($answerSignIn);
         $currency = array("name" => "euro",
             "short_name" => "EUR",
-            "currency_dollars_change" => 1.12);
-
-        $this->signUp($user);
-        $answer = $this->signIn($user);
-        $this->createCurrency($currency);
+            "currency_dollars_change" => 1.12,
+            'session_id' => $answerSignIn["DATA"]["SESSION_ID"],
+            'user_id' => $answerSignIn["DATA"]["USER_ID"]);
+        $answerCurrencyCreation = $this->getResponseFromRequest("Create", $this->currencyRequestFactory, $currency);
+        $this->assertResponseStatus($answerCurrencyCreation);
         $account = array('name' => 'Current',
-            'currency_id' => 1,
+            'currency_id' => $answerCurrencyCreation["DATA"]["CURRENCY_ID"],
             'current_amount' => 4061.68,
-            'session_id' => $answer["DATA"]["SESSION_ID"],
-            'user_id' => $answer["DATA"]["USER_ID"]);
-        $answer = $this->createAccount($account);
-        $this->deleteAccount($account);
-        $this->deleteUser($user);
-        $this->assertEquals("OK", $answer["STATUS"]);
-    }
+            'session_id' => $answerSignIn["DATA"]["SESSION_ID"],
+            'user_id' => $answerSignIn["DATA"]["USER_ID"]);
 
-    private function signUp($data){
-        $request = new \BackEnd\Routing\Request\Connection\SignUp(
-            $this->db->getTableByName(DBTables::USERS),
-            $data);
-        $request->execute();
-        return json_decode($request->getResponse(), true);
-    }
-
-    private function signIn($data){
-        $request = new \BackEnd\Routing\Request\Connection\SignIn(
-            $this->db->getTableByName(DBTables::USERS),
-            new User(),
-            $data);
-        $request->execute();
-        return json_decode($request->getResponse(), true);
-    }
-
-    private function createCurrency($data){
-        $request = new \BackEnd\Routing\Request\Currency\CurrencyCreation(
-            $this->db->getTableByName(DBTables::CURRENCIES),
-            $data);
-        $request->execute();
-        return json_decode($request->getResponse(), true);
-    }
-
-    private function createAccount($data){
-        $request = new \BackEnd\Routing\Request\Account\AccountCreation(
-            $this->db->getTableByName(DBTables::ACCOUNTS),
-            $this->db->getTableByName(DBTables::USERS),
-            new User(),
-            $data);
-        $request->execute();
-        return json_decode($request->getResponse(), true);
-    }
-
-    private function deleteAccount($data){
-        $request = new \BackEnd\Routing\Request\Account\DeleteAccount(
-            $this->db->getTableByName(DBTables::ACCOUNTS),
-            $this->db->getTableByName(DBTables::USERS),
-            new User(),
-            $data);
-        $request->execute();
-        return json_decode($request->getResponse(), true);
-    }
-
-    private function deleteUser($data){
-        $request = new \BackEnd\Routing\Request\Connection\DeleteUser(
-            $this->db->getTableByName(DBTables::USERS),
-            $data);
-        $request->execute();
-        return json_decode($request->getResponse(), true);
-    }
-
-    public function tearDown()
-    {
-        $this->db->dropDatabase();
+        $answerAccountCreation = $this->getResponseFromRequest("Create", $this->accountRequestFactory, $account);
+        $this->assertResponseStatus($answerAccountCreation);
+        $condensedUser = array(
+            'session_id' => $answerSignIn["DATA"]["SESSION_ID"],
+            'user_id' => $answerSignIn["DATA"]["USER_ID"]);
+        $answerRetrieval = $this->getResponseFromRequest("Retrieve", $this->accountRequestFactory, $condensedUser);
+        $this->assertResponseStatus($answerRetrieval);
+        $this->assertEquals($account["name"], $answerRetrieval["DATA"][0]["name"]);
+        $answerAccountDeletion = $this->getResponseFromRequest("Delete", $this->accountRequestFactory, $account);
+        $this->assertResponseStatus($answerAccountDeletion);
+        $answerCurrencyDeletion = $this->getResponseFromRequest("Delete", $this->currencyRequestFactory, $currency);
+        $this->assertResponseStatus($answerCurrencyDeletion);
+        $answerUserDeletion = $this->getResponseFromRequest("Delete", $this->userRequestFactory, $user);
+        $this->assertResponseStatus($answerUserDeletion);
     }
 }
