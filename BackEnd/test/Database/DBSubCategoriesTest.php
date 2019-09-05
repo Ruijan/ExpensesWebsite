@@ -164,4 +164,12 @@ class DBSubCategoriesTest extends TableCreationTest
         $this->expectException(UndefinedSubCategoryID::class);
         $this->table->deleteSubCategory(2);
     }
+
+    public function testDeleteSubCategoryFromParentID(){
+        $this->expectsSuccessfullSubCategoryInsertion();
+        $this->table->addSubCategory($this->subCategory);
+        $this->table->deleteSubCategoryFromParentID($this->subCategoryArray["PARENT_ID"]);
+        $subCategory = $this->table->getSubCategoryFromID(1);
+        $this->assertNull($subCategory);
+    }
 }

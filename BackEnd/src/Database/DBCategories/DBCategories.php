@@ -73,4 +73,22 @@ class DBCategories extends DBTable
         }
         return $categories;
     }
+
+    public function checkIfIDExists($categoryID)
+    {
+        if (!$this->doesCategoryIDExist($categoryID)) {
+            throw new UndefinedCategoryID($categoryID);
+        }
+    }
+
+    /**
+     * @param $categoryID
+     * @throws UndefinedCategoryID
+     */
+    public function deleteCategory($categoryID)
+    {
+        $this->checkIfIDExists($categoryID);
+        $query = "DELETE FROM " . $this->name . " WHERE ID='" . $this->driver->real_escape_string($categoryID) . "'";
+        $this->driver->query($query);
+    }
 }

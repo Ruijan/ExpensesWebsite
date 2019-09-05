@@ -22,8 +22,19 @@ class CategoryRequestFactory extends RequestFactory
             case "Create":
                 return new CategoryCreation($this->database->getTableByName(DBTables::CATEGORIES),
                     $this->database->getTableByName(DBTables::USERS), new User(), $data);
+            case "Delete":
+                return new DeleteCategory($this->database->getTableByName(DBTables::CATEGORIES),
+                    $this->database->getTableByName(DBTables::USERS), new User(), $data);
+            case "DeleteTree":
+                return new DeleteCategoryTree($this->database->getTableByName(DBTables::CATEGORIES),
+                    $this->database->getTableByName(DBTables::SUBCATEGORIES),
+                    $this->database->getTableByName(DBTables::USERS), new User(), $data);
             case "RetrieveAll":
                 return new RetrieveAllCategories($this->database->getTableByName(DBTables::CATEGORIES),
+                    $this->database->getTableByName(DBTables::USERS), new User(), $data);
+            case "RetrieveTree":
+                return new RetrieveAllTree($this->database->getTableByName(DBTables::CATEGORIES),
+                    $this->database->getTableByName(DBTables::SUBCATEGORIES),
                     $this->database->getTableByName(DBTables::USERS), new User(), $data);
             default:
                 throw new \InvalidArgumentException("Request type: " . $type . " not found.");

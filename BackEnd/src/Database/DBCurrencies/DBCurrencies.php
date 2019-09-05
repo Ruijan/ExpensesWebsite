@@ -23,7 +23,7 @@ class DBCurrencies extends DBTable
         return "ID int(11) AUTO_INCREMENT UNIQUE,
                         NAME char(50) NOT NULL UNIQUE,
                         SHORT_NAME char(5) NOT NULL,
-                        CURRENT_DOLLARS_CHANGE int(11) NOT NULL,
+                        CURRENT_DOLLARS_CHANGE float(24) NOT NULL,
                         PRIMARY KEY (ID)";
     }
 

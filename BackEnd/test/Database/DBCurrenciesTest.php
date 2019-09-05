@@ -23,7 +23,7 @@ class DBCurrenciesTest extends TableCreationTest
         $this->columns = ["ID" => "int(11)",
             "NAME" => "char(50)",
             "SHORT_NAME" => "char(5)",
-            "CURRENT_DOLLARS_CHANGE" => "int(11)"];
+            "CURRENT_DOLLARS_CHANGE" => "float"];
         $this->name = "currencies";
         $this->currencyName = "Swiss Francs";
         $this->shortCurrencyName = "CHF";

@@ -82,8 +82,8 @@ class DBSubCategories extends DBTable
         $result = $this->driver->query($query);
         $categories = [];
         while ($result and $row = $result->fetch_assoc()) {
-            $subCategory = new SubCategory($row["NAME"], $row["USER_ID"], $row["PARENT_ID"], $row["ADDED_DATE"]);
-            $subCategory->setID($row["ID"]);
+            $subCategory = new SubCategory($row["NAME"], $row["ID"], $row["USER_ID"], $row["ADDED_DATE"]);
+            $subCategory->setID($row["PARENT_ID"]);
             $categories[] = $subCategory;
         }
         return $categories;
@@ -97,6 +97,12 @@ class DBSubCategories extends DBTable
     {
         $this->checkIfIDExists($categoryID);
         $query = "DELETE FROM " . $this->name . " WHERE ID='" . $this->driver->real_escape_string($categoryID) . "'";
+        $this->driver->query($query);
+    }
+
+    public function deleteSubCategoryFromParentID($parentCategoryID)
+    {
+        $query = "DELETE FROM " . $this->name . " WHERE PARENT_ID='" . $this->driver->real_escape_string($parentCategoryID) . "'";
         $this->driver->query($query);
     }
 

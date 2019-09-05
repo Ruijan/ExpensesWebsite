@@ -11,29 +11,23 @@ namespace BackEnd;
 
 class SubCategory extends Category
 {
-    protected $subCategoryID;
+    protected $parentCategoryID;
 
-    public function __construct($name, $subCategoryID, $userID, $addedDate){
+    public function __construct($name, $parentCategoryID, $userID, $addedDate){
         parent::__construct($name, $userID, $addedDate);
-        $this->subCategoryID = $subCategoryID;
+        $this->parentCategoryID = $parentCategoryID;
     }
 
     public function asDict(){
         return array(
-            "id" => $this->subCategoryID,
+            "id" => $this->categoryID,
             "name" => $this->name,
-            "parent_id" => $this->categoryID,
+            "parent_id" => $this->parentCategoryID,
             "user_id" => $this->userID,
             "added_date" => $this->addedDate);
     }
 
     public function getParentID(){
-        return $this->subCategoryID;
+        return $this->parentCategoryID;
     }
-
-    public function setID($subCategoryID)
-    {
-        $this->subCategoryID = $subCategoryID;
-    }
-
 }

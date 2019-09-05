@@ -8,10 +8,10 @@
 
 namespace BackEnd\Tests\Database;
 use BackEnd\Category;
-use BackEnd\Tests\Database\TableCreationTest;
 use BackEnd\Database\DBUsers\DBUsers;
 use BackEnd\Database\DBCategories\DBCategories;
 use BackEnd\Database\InsertionException;
+use BackEnd\Database\DBCategories\UndefinedCategoryID;
 
 class DBCategoriesTest extends TableCreationTest
 {
@@ -44,9 +44,8 @@ class DBCategoriesTest extends TableCreationTest
     }
 
     public function testAddCategory(){
-        $this->expectsSuccessfullCategoryInsertion();
-        $this->usersTable->expects($this->once())
-            ->method('doesUserIDExist')->with($this->categoryDict["USER_ID"])->will($this->returnValue(true));
+        $this->expectsSuccessfulCategoryInsertion();
+
         $this->table->addCategory($this->category);
         $result = $this->driver->query("SELECT * FROM ".$this->name)->fetch_assoc();
         $this->assertArraySubset($this->categoryDict, $result, true);
@@ -103,7 +102,7 @@ class DBCategoriesTest extends TableCreationTest
     }
 
     public function testGetCategoryFromID(){
-        $this->expectsSuccessfullCategoryInsertion();
+        $this->expectsSuccessfulCategoryInsertion();
         $this->usersTable->expects($this->once())
             ->method('doesUserIDExist')->with($this->categoryDict["USER_ID"])->will($this->returnValue(true));
         $this->table->addCategory($this->category);
@@ -112,7 +111,7 @@ class DBCategoriesTest extends TableCreationTest
     }
 
     public function testGetAllCategories(){
-        $this->expectsSuccessfullCategoryInsertion();
+        $this->expectsSuccessfulCategoryInsertion();
         $this->usersTable->expects($this->once())
             ->method('doesUserIDExist')->with($this->categoryDict["USER_ID"])->will($this->returnValue(true));
         $this->table->addCategory($this->category);
@@ -120,7 +119,7 @@ class DBCategoriesTest extends TableCreationTest
         $this->assertEquals($this->categoryDict["NAME"] , $categories[0]->getName());
     }
 
-    protected function expectsSuccessfullCategoryInsertion(): void
+    protected function expectsSuccessfulCategoryInsertion(): void
     {
         $this->category->expects($this->exactly(2))->method("getUserID")
             ->will($this->returnValue($this->categoryDict["USER_ID"]));
@@ -128,5 +127,22 @@ class DBCategoriesTest extends TableCreationTest
             ->will($this->returnValue($this->categoryDict["ADDED_DATE"]));
         $this->category->expects($this->exactly(1))->method("getName")
             ->will($this->returnValue($this->categoryDict["NAME"]));
+        $this->usersTable->expects($this->once())
+            ->method('doesUserIDExist')->with($this->categoryDict["USER_ID"])->will($this->returnValue(true));
+    }
+
+    public function testDeleteSubCategory(){
+        $this->expectsSuccessfulCategoryInsertion();
+        $this->table->addCategory($this->category);
+        $this->table->deleteCategory(1);
+        $category = $this->table->getCategoryFromID(1);
+        $this->assertNull($category);
+    }
+
+    public function testDeleteSubCategoryWithWrongIDShouldThrow(){
+        $this->expectsSuccessfulCategoryInsertion();
+        $this->table->addCategory($this->category);
+        $this->expectException(UndefinedCategoryID::class);
+        $this->table->deleteCategory(2);
     }
 }
